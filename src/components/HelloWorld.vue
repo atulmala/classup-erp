@@ -85,10 +85,7 @@ export default {
               this.$store.dispatch("set_logged_status", true);
               this.$store.dispatch("set_user", this.input.user);
               this.$store.dispatch("set_user_type", result.data["user_type"]);
-              this.$store.dispatch(
-                "set_school_name",
-                result.data["school_name"]
-              );
+              this.$store.dispatch("set_school_name", result.data["school_name"]);
               this.$store.dispatch("set_id", result.data["school_id"]);
             } else {
               this.showDismissibleAlert = true;
@@ -97,6 +94,7 @@ export default {
               this.$store.dispatch("set_logged_status", false);
               this.$store.dispatch("set_user", "unknown");
               this.$store.dispatch("set_user_type", "unknown");
+
               this.$store.dispatch("set_school_name", "ClassUp");
               this.$store.dispatch("set_id", 0);
             }

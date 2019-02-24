@@ -2,16 +2,25 @@
   <v-app>
     <div id="app">
       <v-toolbar app :fixed="toolbar.fixed" :clipped-left="toolbar.clippedLeft">
-        <v-toolbar-side-icon :disabled="!get_logged_status"></v-toolbar-side-icon>
+        <v-toolbar-side-icon 
+        :disabled="!get_logged_status" @click.stop="toggleDrawer">
+        </v-toolbar-side-icon>
         <v-toolbar-title>{{ get_title }}</v-toolbar-title>
-        <v-toolbar-items class="hidden-sm-and-down"></v-toolbar-items>
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+          <v-btn flat>About</v-btn>
+          <v-btn flat v-on:click="logout()">Log Out</v-btn>
+        </v-toolbar-items>
       </v-toolbar>
-      <v-navigation-drawer app v-if="get_logged_status"
+      <v-navigation-drawer
+        app
+        v-if="get_logged_status"
         :clipped="drawer.clipped"
         :fixed="drawer.fixed"
         :permanent="drawer.permanent"
         :mini-variant="drawer.mini"
-        v-model="drawer.open">
+        v-model="drawer.open"
+      >
         <v-divider></v-divider>
         <v-list dense class="pt-0">
           <v-list-tile v-for="item in items" :key="item.title">
@@ -24,7 +33,7 @@
           </v-list-tile>
         </v-list>
       </v-navigation-drawer>
-      
+
       <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
         <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
       </v-footer>
@@ -60,13 +69,33 @@ export default {
       right: null
     };
   },
+  methods: {
+    toggleDrawer() {
+      if (this.drawer.permanent) {
+        this.drawer.permanent = !this.drawer.permanent;
+        this.drawer.clipped = true;
+        this.toolbar.clippedLeft = true;
+      } 
+      else {
+        this.drawer.open = !this.drawer.open;
+      }
+    },
+    logout()  {
+      this.drawer.open = false
+      this.$store.dispatch("set_logged_status", false);
+      this.$store.dispatch("set_user", "unknown");
+      this.$store.dispatch("set_user_type", "unknown");
+      this.$store.dispatch("set_school_name", "ClassUp");
+      this.$store.dispatch("set_id", 0);
+    }
+  },
 
   computed: {
     get_title() {
       return this.$store.getters.get_school_name;
     },
     get_logged_status() {
-      return this.$store.getters.get_logged_status
+      return this.$store.getters.get_logged_status;
     }
   }
 };
