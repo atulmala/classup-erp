@@ -1,15 +1,20 @@
 <template>
   <v-app>
     <div id="app">
-      <v-toolbar app :fixed="toolbar.fixed" :clipped-left="toolbar.clippedLeft">
+      <v-toolbar app v-if="get_logged_status" :fixed="toolbar.fixed" :clipped-left="toolbar.clippedLeft">
         <v-toolbar-side-icon 
         :disabled="!get_logged_status" @click.stop="toggleDrawer">
         </v-toolbar-side-icon>
-        <v-toolbar-title>{{ get_title }}</v-toolbar-title>
+        <v-toolbar-title>{{ get_title }} </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn flat>About</v-btn>
-          <v-btn flat v-on:click="logout()">Log Out</v-btn>
+    <v-chip color="indigo" text-color="white" >
+      <v-avatar>
+        <v-icon>account_circle</v-icon>
+      </v-avatar>
+      {{ get_user_name }}
+    </v-chip>
+          <v-btn flat :disabled="!get_logged_status" v-on:click="logout()">Log Out</v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <v-navigation-drawer
@@ -33,6 +38,7 @@
           </v-list-tile>
         </v-list>
       </v-navigation-drawer>
+      <hello></hello>
 
       <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
         <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
@@ -43,8 +49,12 @@
 </template>
 
 <script>
+import HelloWorld from '@/components/HelloWorld'
 export default {
   name: "App",
+  components: {
+        hello: HelloWorld
+  },
   data() {
     return {
       drawer: {
@@ -63,7 +73,7 @@ export default {
         clippedLeft: true
       },
       items: [
-        { title: "Home", icon: "dashboard" },
+        { title: "Fees Management", icon: "dashboard" },
         { title: "About", icon: "question_answer" }
       ],
       right: null
@@ -93,6 +103,9 @@ export default {
   computed: {
     get_title() {
       return this.$store.getters.get_school_name;
+    },
+    get_user_name() {
+      return this.$store.getters.get_user_name
     },
     get_logged_status() {
       return this.$store.getters.get_logged_status;

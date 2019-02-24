@@ -7,6 +7,7 @@ export const store = new Vuex.Store({
   state: {
     logged_status: false,
     logged_user: 'unknown',
+    user_name: 'unknown',
     user_type: 'unknown',
     school_id: 0,
     school_name: 'ClassUp'
@@ -17,6 +18,9 @@ export const store = new Vuex.Store({
     },
     SET_USER(state, user) {
       state.logged_user = user
+    },
+    SET_USER_NAME(state, user_name) {
+      state.user_name = user_name
     },
     SET_USER_TYPE(state, user_type) {
       state.user_type = user_type
@@ -35,6 +39,9 @@ export const store = new Vuex.Store({
     set_user(context, user) {
       context.commit('SET_USER', user)
     },
+    set_user_name(context, user_name) {
+      context.commit('SET_USER_NAME', user_name)
+    },
     set_user_type(context, user_type) {
       context.commit('SET_USER_TYPE', user_type)
     },
@@ -52,6 +59,9 @@ export const store = new Vuex.Store({
     },
     get_logged_user(state) {
       return state.logged_user
+    },
+    get_user_name(state)  {
+      return state.user_name
     },
     get_user_type(state)  {
       return state.user_type

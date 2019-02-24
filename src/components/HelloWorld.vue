@@ -1,45 +1,47 @@
 <template>
-  <div class="hello">
-    <v-content>
-      <v-container>
-        <v-layout align-center justify-center>
-          <v-flex xs12 sm8 md4>
-            <img
-              src="https://storage.cloud.google.com/classup/classup2/static/prod/images/ClassUp_mobile_logo.png?_ga=2.134540216.-83250823.1538650499"
-            >
-            <h1>{{ msg }}</h1>
-            <h2>Please Login</h2>
-            <v-card class="elevation-12">
-              <v-card-text>
-                <v-form>
-                  <v-text-field
-                    prepend-icon="person"
-                    v-model="input.user"
-                    v-on:focus="dismiss()"
-                    label="Login"
-                    type="text"
-                  ></v-text-field>
-                  <v-text-field
-                    prepend-icon="lock"
-                    v-model="input.password"
-                    v-on:focus="dismiss()"
-                    label="Password"
-                    id="password"
-                    type="password"
-                  ></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn v-on:click="login()">Login</v-btn>
-              </v-card-actions>
-            </v-card>
-            <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-content>
-  </div>
+  <v-app id="hello">
+    <div class="hello">
+      <v-content>
+        <v-container>
+          <v-layout align-center justify-center>
+            <v-flex xs12 sm8 md4>
+              <img
+                src="https://storage.cloud.google.com/classup/classup2/static/prod/images/ClassUp_mobile_logo.png?_ga=2.134540216.-83250823.1538650499"
+              >
+              <h1>{{ msg }}</h1>
+              <h2>Please Login</h2>
+              <v-card class="elevation-12">
+                <v-card-text>
+                  <v-form>
+                    <v-text-field
+                      prepend-icon="person"
+                      v-model="input.user"
+                      v-on:focus="dismiss()"
+                      label="Login"
+                      type="text"
+                    ></v-text-field>
+                    <v-text-field
+                      prepend-icon="lock"
+                      v-model="input.password"
+                      v-on:focus="dismiss()"
+                      label="Password"
+                      id="password"
+                      type="password"
+                    ></v-text-field>
+                  </v-form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn v-on:click="login()">Login</v-btn>
+                </v-card-actions>
+              </v-card>
+              <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-content>
+    </div>
+  </v-app>
 </template>
 
 <script>
@@ -65,6 +67,7 @@ export default {
     dismiss() {
       this.showDismissibleAlert = false;
     },
+    
     login() {
       if (this.input.user != "" && this.input.password != "") {
         console.log("username and password have been specified");
@@ -84,8 +87,12 @@ export default {
               this.alert_message = result.data["message"];
               this.$store.dispatch("set_logged_status", true);
               this.$store.dispatch("set_user", this.input.user);
+              this.$store.dispatch("set_user_name", result.data["user_name"])
               this.$store.dispatch("set_user_type", result.data["user_type"]);
-              this.$store.dispatch("set_school_name", result.data["school_name"]);
+              this.$store.dispatch(
+                "set_school_name",
+                result.data["school_name"]
+              );
               this.$store.dispatch("set_id", result.data["school_id"]);
             } else {
               this.showDismissibleAlert = true;
@@ -93,8 +100,8 @@ export default {
               this.alert_type = "error";
               this.$store.dispatch("set_logged_status", false);
               this.$store.dispatch("set_user", "unknown");
+              this.$store.dispatch("set_user_name", "");
               this.$store.dispatch("set_user_type", "unknown");
-
               this.$store.dispatch("set_school_name", "ClassUp");
               this.$store.dispatch("set_id", 0);
             }
