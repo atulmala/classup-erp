@@ -72,10 +72,13 @@ export default {
     login() {
       if (this.input.user != "" && this.input.password != "") {
         console.log("username and password have been specified");
+        let ip = this.$store.getters.get_server_ip
+        console.log(ip)
+        let url = ip.concat("/auth/login/")
 
         axios({
           method: "POST",
-          url: "http://localhost:8000/auth/login/",
+          url: url,
           data: this.input
         }).then(
           result => {

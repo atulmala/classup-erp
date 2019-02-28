@@ -10,7 +10,8 @@ export const store = new Vuex.Store({
     user_name: 'unknown',
     user_type: 'unknown',
     school_id: 0,
-    school_name: 'ClassUp'
+    school_name: 'ClassUp',
+    server_ip: 'http://localhost:8000'
   },
   mutations: {
     SET_LOGGED_STATUS(state, status) {
@@ -71,7 +72,9 @@ export const store = new Vuex.Store({
     },
     get_school_name(state) {
       return state.school_name
+    },
+    get_server_ip(state) {
+      return state.server_ip
     }
   }
 });
-
