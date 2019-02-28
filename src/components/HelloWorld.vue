@@ -1,11 +1,11 @@
-<template>
-  <v-app id="hello">
+<template >
+  <v-app id="hello" v-if="show_it">
     <div class="hello">
       <v-content>
         <v-container>
           <v-layout align-center justify-center>
             <v-flex xs12 sm8 md4>
-              <img
+              <img 
                 src="https://storage.cloud.google.com/classup/classup2/static/prod/images/ClassUp_mobile_logo.png?_ga=2.134540216.-83250823.1538650499"
               >
               <h1>{{ msg }}</h1>
@@ -55,6 +55,7 @@ export default {
         user: "",
         password: ""
       },
+      show_it: true,
       alert_type: "",
       alert_message: "",
       response: "",
@@ -82,6 +83,7 @@ export default {
             console.log(this.response);
 
             if (result.data["outcome"] == "success") {
+              this.show_it = false
               this.alert_type = "success";
               this.showDismissibleAlert = true;
               this.alert_message = result.data["message"];
@@ -89,11 +91,10 @@ export default {
               this.$store.dispatch("set_user", this.input.user);
               this.$store.dispatch("set_user_name", result.data["user_name"])
               this.$store.dispatch("set_user_type", result.data["user_type"]);
-              this.$store.dispatch(
-                "set_school_name",
-                result.data["school_name"]
+              this.$store.dispatch("set_school_name", result.data["school_name"]
               );
               this.$store.dispatch("set_id", result.data["school_id"]);
+              this.$router.push('/dashboard')
             } else {
               this.showDismissibleAlert = true;
               this.alert_message = result.data["message"];
@@ -121,6 +122,9 @@ export default {
         this.showDismissibleAlert = true;
         this.dismissCountDown = this.dismissSecs;
       }
+    },
+    get_logged_status() {
+      return this.$store.getters.get_logged_status;
     }
   }
 };
