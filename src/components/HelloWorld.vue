@@ -5,7 +5,7 @@
         <v-container>
           <v-layout align-center justify-center>
             <v-flex xs12 sm8 md4>
-              <img 
+              <img
                 src="https://storage.cloud.google.com/classup/classup2/static/prod/images/ClassUp_mobile_logo.png?_ga=2.134540216.-83250823.1538650499"
               >
               <h1>{{ msg }}</h1>
@@ -59,8 +59,6 @@ export default {
       alert_type: "",
       alert_message: "",
       response: "",
-      dismissSecs: 10,
-      dismissCountDown: 0,
       showDismissibleAlert: false
     };
   },
@@ -68,14 +66,13 @@ export default {
     dismiss() {
       this.showDismissibleAlert = false;
     },
-    
+
     login() {
       if (this.input.user != "" && this.input.password != "") {
         console.log("username and password have been specified");
-        let ip = this.$store.getters.get_server_ip
-        console.log(ip)
-        let url = ip.concat("/auth/login/")
-
+        let ip = this.$store.getters.get_server_ip;
+        console.log(ip);
+        let url = ip.concat("/auth/login/");
         axios({
           method: "POST",
           url: url,
@@ -86,18 +83,20 @@ export default {
             console.log(this.response);
 
             if (result.data["outcome"] == "success") {
-              this.show_it = false
+              this.show_it = false;
               this.alert_type = "success";
               this.showDismissibleAlert = true;
               this.alert_message = result.data["message"];
               this.$store.dispatch("set_logged_status", true);
               this.$store.dispatch("set_user", this.input.user);
-              this.$store.dispatch("set_user_name", result.data["user_name"])
+              this.$store.dispatch("set_user_name", result.data["user_name"]);
               this.$store.dispatch("set_user_type", result.data["user_type"]);
-              this.$store.dispatch("set_school_name", result.data["school_name"]
+              this.$store.dispatch(
+                "set_school_name",
+                result.data["school_name"]
               );
               this.$store.dispatch("set_id", result.data["school_id"]);
-              this.$router.push('/dashboard')
+              this.$router.push("/dashboard");
             } else {
               this.showDismissibleAlert = true;
               this.alert_message = result.data["message"];

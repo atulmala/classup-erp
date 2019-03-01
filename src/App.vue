@@ -28,9 +28,10 @@
       >
         <v-divider></v-divider>
         <v-list dense class="pt-0">
-          <v-list-tile v-for="item in items" :key="item.title">
+          <v-list-tile v-for="item in items" :key="item.title" v-on:click="item.action">
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
+              
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
@@ -73,7 +74,7 @@ export default {
         clippedLeft: true
       },
       items: [
-        { title: "Fees Management", icon: "dashboard" },
+        { title: "Fees Management", icon: "dashboard", action: this.student_search },
         { title: "About", icon: "question_answer" }
       ],
       right: null
@@ -97,6 +98,9 @@ export default {
       this.$store.dispatch("set_user_type", "unknown");
       this.$store.dispatch("set_school_name", "ClassUp");
       this.$store.dispatch("set_id", 0);
+    },
+    student_search()  {
+      this.$router.push('/student_search')
     }
   },
 
