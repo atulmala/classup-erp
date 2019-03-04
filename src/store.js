@@ -10,6 +10,7 @@ export const store = new Vuex.Store({
     user_name: 'unknown',
     user_type: 'unknown',
     school_id: 0,
+    student_id: 'unknown',
     school_name: 'ClassUp',
     server_ip: 'http://localhost:8000'
   },
@@ -31,6 +32,9 @@ export const store = new Vuex.Store({
     },
     SET_SCHOOL_NAME(state, school_name) {
       state.school_name = school_name
+    },
+    SET_STUDENT_ID(state, id) {
+      state.student_id = id
     }
   },
   actions: {
@@ -51,8 +55,10 @@ export const store = new Vuex.Store({
     },
     set_school_name(context, school_name) {
       context.commit('SET_SCHOOL_NAME', school_name)
+    },
+    set_student_id(context, id) {
+      context.commit('SET_STUDENT_ID', id)
     }
-
   },
   getters: {
     get_logged_status(state) {
@@ -75,6 +81,9 @@ export const store = new Vuex.Store({
     },
     get_server_ip(state) {
       return state.server_ip
+    },
+    get_student_id(state) {
+      return state.student_id
     }
   }
 });

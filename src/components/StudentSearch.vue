@@ -49,11 +49,12 @@
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td>{{ props.item.name }}</td>
-          <td class="text-xs-right">{{ props.item.name }}</td>
-          <td class="text-xs-right">{{ props.item.reg_no }}</td>
-          <td class="text-xs-right">{{ props.item.the_clss }}</td>
-          <td class="text-xs-right">{{ props.item.parent }}</td>
+          <tr @click="showAlert(props.item)">
+            <td class="text-xs-left">{{ props.item.name }}</td>
+            <td class="text-xs-left">{{ props.item.reg_no }}</td>
+            <td class="text-xs-left">{{ props.item.the_class }}</td>
+            <td class="text-xs-left">{{ props.item.parent }}</td>
+          </tr>
         </template>
       </v-data-table>
     </v-content>
@@ -74,14 +75,7 @@ export default {
       first_name: "",
       last_name: "",
       the_class: "",
-      class_list: [
-        {
-          'name': 'the_chako',
-          'reg_no': '420',
-          'parent': 'super chako',
-          'the_class': 'IV-C'
-        }
-      ],
+
       students: [],
       alert_type: "",
       alert_message: "",
@@ -147,7 +141,7 @@ export default {
         );
 
         axios
-          .get(url, {
+          .get(url, { 
             params: {
               reg_no: this.reg_no,
               first_name: this.first_name,
@@ -176,10 +170,10 @@ export default {
                   "-" +
                   response.data[i]["current_section"];
                 student["parent"] = response.data[i]["parent"];
-                console.log(student)
+                console.log(student);
                 self.students.push(student);
               }
-              console.log(self.students)
+              console.log(self.students);
               self.show_student_list = true;
             }
           })
@@ -194,6 +188,14 @@ export default {
     },
     dismiss() {
       this.showDismissibleAlert = false;
+    },
+    showAlert(a){
+      if (event.target.classList.contains('btn__content')) return;
+      let response = confirm('Are you sure you want to process the fees for ' + a.name + ' (' + a.reg_no + ')?');
+      if(response)  {
+        confirm(a.reg_no)
+        this.$store.dispatch("set_student_id", a.reg_no)
+      }
     }
   }
 };
@@ -237,4 +239,3 @@ export default {
   }
 }
 </style>
-content_copy
