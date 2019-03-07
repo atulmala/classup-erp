@@ -100,7 +100,7 @@ export default {
       this.$store.dispatch("set_id", 0);
     },
     student_search()  {
-      this.$router.push('/student_search')
+      this.$router.replace('/student_search')
     }
   },
 

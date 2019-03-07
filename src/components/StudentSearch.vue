@@ -63,6 +63,7 @@
 
 <script>
 import axios from "axios";
+import FeePayment from '@/components/FeePayment'
 export default {
   name: "StudentSearch",
   data() {
@@ -141,7 +142,7 @@ export default {
         );
 
         axios
-          .get(url, { 
+          .get(url, {
             params: {
               reg_no: this.reg_no,
               first_name: this.first_name,
@@ -189,12 +190,22 @@ export default {
     dismiss() {
       this.showDismissibleAlert = false;
     },
-    showAlert(a){
-      if (event.target.classList.contains('btn__content')) return;
-      let response = confirm('Are you sure you want to process the fees for ' + a.name + ' (' + a.reg_no + ')?');
-      if(response)  {
-        confirm(a.reg_no)
-        this.$store.dispatch("set_student_id", a.reg_no)
+    showAlert(a) {
+      if (event.target.classList.contains("btn__content")) return;
+      let response = confirm(
+        "Are you sure you want to process the fees for " +
+          a.name +
+          " (" +
+          a.reg_no +
+          ")?"
+      );
+      if (response) {
+        confirm(a.reg_no);
+        this.$store.dispatch("set_student_id", a.reg_no);
+        this.$router.replace('/fee_payment')
+        
+
+        
       }
     }
   }
