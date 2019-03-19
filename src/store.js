@@ -12,7 +12,8 @@ export const store = new Vuex.Store({
     school_id: 0,
     student_id: 'unknown',
     school_name: 'ClassUp',
-    server_ip: 'http://localhost:8000'
+    server_ip: 'http://localhost:8000',
+    adm_fee: false
   },
   mutations: {
     SET_LOGGED_STATUS(state, status) {
@@ -35,6 +36,9 @@ export const store = new Vuex.Store({
     },
     SET_STUDENT_ID(state, id) {
       state.student_id = id
+    },
+    SET_ADM_FEE(state, status)  {
+      state.adm_fee = status
     }
   },
   actions: {
@@ -58,6 +62,9 @@ export const store = new Vuex.Store({
     },
     set_student_id(context, id) {
       context.commit('SET_STUDENT_ID', id)
+    },
+    set_adm_fee(context, status)  {
+      context.commit('SET_ADM_FEE', status)
     }
   },
   getters: {
@@ -84,6 +91,9 @@ export const store = new Vuex.Store({
     },
     get_student_id(state) {
       return state.student_id
+    },
+    get_adm_fee(state) {
+      return state.adm_fee
     }
   }
 });

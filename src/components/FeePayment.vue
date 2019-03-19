@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <v-content></v-content>
+    <v-content>
+      <h3>Fee Details</h3>
+    </v-content>
   </v-app>
 </template>
 
