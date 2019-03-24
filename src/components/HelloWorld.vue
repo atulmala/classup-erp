@@ -91,10 +91,7 @@ export default {
               this.$store.dispatch("set_user", this.input.user);
               this.$store.dispatch("set_user_name", result.data["user_name"]);
               this.$store.dispatch("set_user_type", result.data["user_type"]);
-              this.$store.dispatch(
-                "set_school_name",
-                result.data["school_name"]
-              );
+              this.$store.dispatch("set_school_name", result.data["school_name"]);
               this.$store.dispatch("set_id", result.data["school_id"]);
               this.$router.push("/dashboard");
             } else {

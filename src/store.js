@@ -11,6 +11,8 @@ export const store = new Vuex.Store({
     user_type: 'unknown',
     school_id: 0,
     student_id: 'unknown',
+    student_name: 'unknown',
+    parent: 'unknown',
     school_name: 'ClassUp',
     server_ip: 'http://localhost:8000',
     adm_fee: false
@@ -37,6 +39,12 @@ export const store = new Vuex.Store({
     SET_STUDENT_ID(state, id) {
       state.student_id = id
     },
+    SET_STUDENT_NAME(state, name) {
+      state.student_name = name
+    },
+    SET_PARENT(state, parent) {
+      state.parent = parent
+    },
     SET_ADM_FEE(state, status)  {
       state.adm_fee = status
     }
@@ -62,6 +70,12 @@ export const store = new Vuex.Store({
     },
     set_student_id(context, id) {
       context.commit('SET_STUDENT_ID', id)
+    },
+    set_student_name(context, name) {
+      context.commit('SET_STUDENT_NAME', name)
+    },
+    set_parent(context, parent) {
+      context.commit('SET_PARENT', parent)
     },
     set_adm_fee(context, status)  {
       context.commit('SET_ADM_FEE', status)
@@ -91,6 +105,12 @@ export const store = new Vuex.Store({
     },
     get_student_id(state) {
       return state.student_id
+    },
+    get_student_name(state) {
+      return state.student_name
+    },
+    get_parent(state) {
+      return state.parent
     },
     get_adm_fee(state) {
       return state.adm_fee

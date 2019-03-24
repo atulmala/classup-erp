@@ -3,20 +3,20 @@
     <v-content>
       <v-form v-if="show_search_criteria">
         <v-container fluid>
-          <v-layout row wrap>
-            <v-flex xs12 sm6 md3>
+          <v-layout xs6 row wrap>
+            <v-flex xs6 sm6 md3>
               <v-text-field label="Reg/Adm/Sch Number" v-model="reg_no" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
 
-            <v-flex xs12 sm6 md3>
+            <v-flex xs6 sm6 md3>
               <v-text-field label="First Name" v-model="first_name" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
 
-            <v-flex xs12 sm6 md3>
+            <v-flex xs6 sm6 md3>
               <v-text-field label="Surname/Last Name" v-model="last_name" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
 
-            <v-flex xs12 sm6 md3>
+            <v-flex xs6 sm6 md3>
               <v-select
                 :items="class_list"
                 label="Class/Standard"
@@ -42,32 +42,23 @@
           </v-layout>
         </v-container>
       </v-form>
-      <v-data-table
-        v-if="show_student_list"
-        :headers="headers"
-        :items="students"
-        class="elevation-1"
-      >
-        <template slot="items" slot-scope="props">
-          <tr @click="showAlert(props.item)">
-            <td class="text-xs-left">{{ props.item.name }}</td>
-            <td class="text-xs-left">{{ props.item.reg_no }}</td>
-            <td class="text-xs-left">{{ props.item.the_class }}</td>
-            <td class="text-xs-left">{{ props.item.parent }}</td>
-          </tr>
-        </template>
-      </v-data-table>
-      <v-dialog v-model="dialog" max-width="400">
-        <v-card>
-          <v-card-title class="headline">{{ headline }}</v-card-title>
-          <v-card-text>{{ fee_message }}</v-card-text>
-          <v-card-actions>
-            <v-btn id="yes" color="green darken-1" flat="flat" @click="adm_yes()">Yes</v-btn>
-            <v-btn id="No" color="red darken-1" flat="flat" @click="adm_no()">No</v-btn>
-            <v-btn id="cancel" color="amber darken-1" flat="flat" @click="take_fees()">Cancel</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <v-flex d-flex xs8 order-xs5 offset-sm2>
+        <v-data-table
+          v-if="show_student_list"
+          :headers="headers"
+          :items="students"
+          class="elevation-1"
+        >
+          <template slot="items" slot-scope="props">
+            <tr @click="showAlert(props.item)">
+              <td class="text-xs-left">{{ props.item.name }}</td>
+              <td class="text-xs-left">{{ props.item.reg_no }}</td>
+              <td class="text-xs-left">{{ props.item.the_class }}</td>
+              <td class="text-xs-left">{{ props.item.parent }}</td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-flex>
     </v-content>
   </v-app>
 </template>
@@ -87,6 +78,7 @@ export default {
       first_name: "",
       last_name: "",
       the_class: "",
+      class_list: [],
 
       students: [],
       alert_type: "",
@@ -102,11 +94,7 @@ export default {
         { text: "Reg/Adm/Sch Number", value: "reg_no" },
         { text: "Class", value: "the_class" },
         { text: "Parent", value: "parent" }
-      ],
-      dialog: false,
-      headline: "",
-      fee_message: ""
-      
+      ]
     };
   },
   mounted: function() {
@@ -185,7 +173,7 @@ export default {
                   "-" +
                   response.data[i]["current_section"];
                 student["parent"] = response.data[i]["parent"];
-                student["adm_fee"] = response.data[i]["adm_fee"]
+                student["adm_fee"] = response.data[i]["adm_fee"];
                 console.log(student);
                 self.students.push(student);
               }
@@ -206,38 +194,20 @@ export default {
       this.showDismissibleAlert = false;
     },
     showAlert(a) {
-      this.dialog = true;
-      this.headline = "Fee processing for " + a.name + " (" + a.reg_no + ")\n"
-      this.fee_message += "Include Admission fee?"
-      // if (event.target.classList.contains("btn__content")) return;
-      // let response = confirm(
-      //   "Are you sure you want to process the fees for " +
-      //     a.name +
-      //     " (" +
-      //     a.reg_no +
-      //     ")?"
-      // );
-      // if (response) {
-      //   confirm(a.reg_no);
-      //   this.$store.dispatch("set_student_id", a.reg_no);
-      //   this.$router.replace('/fee_payment')
-      // }
-    },
-    adm_yes() {
-      this.$store.dispatch("set_adm_fee", true);
-      console.log(this.$store.getters.get_adm_fee)
-      this.take_fees()
-    },
-    adm_no()  {
-      this.$store.dispatch("set_adm_fee", false);
-      console.log(this.$store.getters.get_adm_fee)
-      this.take_fees();
-    },
-    take_fees()  {
-      this.fee_message = "";
-      this.dialog = false;
-      this.$store.dispatch("set_student_id", a.reg_no);
-      this.$router.replace('/fee_payment');
+      if (event.target.classList.contains("btn__content")) return;
+      let response = confirm(
+        "Are you sure you want to process the fees for " +
+          a.name +
+          " (" +
+          a.reg_no +
+          ")?"
+      );
+      if (response) {
+        this.$store.dispatch("set_student_id", a.reg_no);
+        this.$store.dispatch("set_student_name", a.name);
+        this.$store.dispatch("set_parent", a.parent);
+        this.$router.replace("/fee_payment");
+      }
     }
   }
 };
