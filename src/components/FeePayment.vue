@@ -160,7 +160,7 @@ export default {
     this.student_name = this.$store.getters.get_student_name;
     this.parent = this.$store.getters.get_parent;
     let ip = this.$store.getters.get_server_ip;
-    let url = ip.concat("/erp/fee_payment/", school_id, "/", student_id, "/");
+    let url = ip.concat("/erp/fee_details/", school_id, "/", student_id, "/");
     axios
       .get(url)
       .then(function(response) {
@@ -252,11 +252,14 @@ export default {
       axios
         .post(url, {
           reg_no: this.student_erp_id,
-          amount: this.actual_paid,
+          heads: this.heads,
+          due_this_term: this.due_this_term,
+          previous_due: this.previous_due,
           fine: this.late_fee,
           discount: this.discount,
+          net_payable: this.net_payable,
+          actual_paid: this.actual_paid,
           balance: this.balance,
-          previous_due: this.previous_due,
           mode: this.payment_mode,
           cheque_no: this.cheque_no,
           bank: this.bank
@@ -271,15 +274,6 @@ export default {
           link.setAttribute("download", file_name); //or any other extension
           document.body.appendChild(link);
           link.click();
-          // if (response.data["status"] == "success") {
-          //   self.alert_message = response.data["message"];
-          //   self.showDismissibleAlert = true;
-          //   self.alert_type = "success"
-          // } else {
-          //   self.alert_message = response.data["message"];
-          //   self.showDismissibleAlert = true;
-          //   self.alert_type = "error"
-          // }
         })
         .catch(function(error) {
           console.log(error);
