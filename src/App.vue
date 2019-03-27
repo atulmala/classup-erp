@@ -74,6 +74,7 @@ export default {
       },
       items: [
         { title: "Fees Management", icon: "dashboard", action: this.student_search },
+        { title: "Correction"},
         { title: "About", icon: "question_answer" }
       ],
       right: null
