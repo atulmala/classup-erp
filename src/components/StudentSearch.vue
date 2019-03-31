@@ -143,7 +143,6 @@ export default {
           "/",
           "in_params"
         );
-
         axios
           .get(url, {
             params: {

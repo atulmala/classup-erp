@@ -1,19 +1,22 @@
 <template>
   <v-app>
     <div id="app">
-      <v-toolbar app v-if="get_logged_status" :fixed="toolbar.fixed" :clipped-left="toolbar.clippedLeft">
-        <v-toolbar-side-icon 
-        :disabled="!get_logged_status" @click.stop="toggleDrawer">
-        </v-toolbar-side-icon>
-        <v-toolbar-title>{{ get_title }} </v-toolbar-title>
+      <v-toolbar
+        app
+        v-if="get_logged_status"
+        :fixed="toolbar.fixed"
+        :clipped-left="toolbar.clippedLeft"
+      >
+        <v-toolbar-side-icon :disabled="!get_logged_status" @click.stop="toggleDrawer"></v-toolbar-side-icon>
+        <v-toolbar-title>{{ get_title }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-    <v-chip color="indigo" text-color="white" >
-      <v-avatar>
-        <v-icon>account_circle</v-icon>
-      </v-avatar>
-      {{ get_user_name }}
-    </v-chip>
+          <v-chip color="indigo" text-color="white">
+            <v-avatar>
+              <v-icon>account_circle</v-icon>
+            </v-avatar>
+            {{ get_user_name }}
+          </v-chip>
           <v-btn flat :disabled="!get_logged_status" v-on:click="logout()">Log Out</v-btn>
         </v-toolbar-items>
       </v-toolbar>
@@ -26,16 +29,38 @@
         :mini-variant="drawer.mini"
         v-model="drawer.open"
       >
-        <v-divider></v-divider>
+        <v-divider></v-divider>`
         <v-list dense class="pt-0">
-          <v-list-tile v-for="item in items" :key="item.title" v-on:click="item.action">
-            <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+          <v-list-group prepend-icon value="true">
+            <template v-slot:activator>
+              <v-list-tile>
+                <v-list-tile-title>Fees Management</v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list-tile v-for="item in fee_items" :key="item.title" v-on:click="item.action">
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+          <v-list-group prepend-icon value="true">
+            <template v-slot:activator>
+              <v-list-tile>
+                <v-list-tile-title>Reports</v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list-tile v-for="item in report_items" :key="item.title" v-on:click="item.action">
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
         </v-list>
       </v-navigation-drawer>
       <hello></hello>
@@ -49,11 +74,12 @@
 </template>
 
 <script>
-import HelloWorld from '@/components/HelloWorld'
+import axios from "axios";
+import HelloWorld from "@/components/HelloWorld";
 export default {
   name: "App",
   components: {
-        hello: HelloWorld
+    hello: HelloWorld
   },
   data() {
     return {
@@ -72,10 +98,21 @@ export default {
         fixed: true,
         clippedLeft: true
       },
-      items: [
-        { title: "Fees Management", icon: "dashboard", action: this.student_search },
-        { title: "Correction"},
-        { title: "About", icon: "question_answer" }
+      fee_items: [
+        {
+          title: "Take Fee",
+          action: this.student_search
+        },
+        { title: "Correction" },
+        {
+          title: "Defaulter Report",
+          action: this.defaulter_report
+        }
+      ],
+      report_items: [
+        {
+          title: "Monthly Attendance of Class"
+        }
       ],
       right: null
     };
@@ -86,21 +123,51 @@ export default {
         this.drawer.permanent = !this.drawer.permanent;
         this.drawer.clipped = true;
         this.toolbar.clippedLeft = true;
-      } 
-      else {
+      } else {
         this.drawer.open = !this.drawer.open;
       }
     },
-    logout()  {
-      this.drawer.open = false
+    logout() {
+      this.drawer.open = false;
       this.$store.dispatch("set_logged_status", false);
       this.$store.dispatch("set_user", "unknown");
       this.$store.dispatch("set_user_type", "unknown");
       this.$store.dispatch("set_school_name", "ClassUp");
       this.$store.dispatch("set_id", 0);
+      this.$router.replace("/");
     },
-    student_search()  {
-      this.$router.replace('/student_search')
+    student_search() {
+      this.$router.replace("/student_search");
+    },
+    defaulter_report() {
+      let ip = this.$store.getters.get_server_ip;
+      let school_id = this.$store.getters.get_school_id;
+      let url = ip.concat("/erp/defaulter_list/", school_id, "/");
+      axios
+        .get(url, {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          },
+          responseType: "arraybuffer"
+        })
+        .then(function(response) {
+          console.log(response);
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          var file_name = "fee_defaulter_report.xlsx";
+          link.setAttribute("download", file_name); //or any other extension
+          document.body.appendChild(link);
+          link.click();
+          confirm("Fee Defaulter Report downloaded");
+        })
+        .catch(function(error) {
+          console.log(error);
+        })
+        .then(function() {
+          // always executed
+        });
     }
   },
 
@@ -109,7 +176,7 @@ export default {
       return this.$store.getters.get_school_name;
     },
     get_user_name() {
-      return this.$store.getters.get_user_name
+      return this.$store.getters.get_user_name;
     },
     get_logged_status() {
       return this.$store.getters.get_logged_status;

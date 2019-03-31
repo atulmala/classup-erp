@@ -8,6 +8,8 @@
             <v-flex d-flex xs8>
               <h5>Student:</h5>
               <h3>{{ student_name }}</h3>
+              <h5>Class:</h5>
+              <h3>{{ the_class }}</h3>
               <h5>Reg/Adm/Sch No</h5>
               <h3>{{ student_erp_id }}</h3>
               <h5>Parent</h5>
@@ -111,6 +113,7 @@ export default {
       school_id: "",
       student_id: "",
       student_erp_id: "",
+      the_class: "",
       student_name: "",
       parent: "",
       alert_message: "",
@@ -160,13 +163,19 @@ export default {
     this.student_name = this.$store.getters.get_student_name;
     this.parent = this.$store.getters.get_parent;
     let ip = this.$store.getters.get_server_ip;
-    let url = ip.concat("/erp/fee_details/", school_id, "/", student_id, "/");
+    let url = ip.concat("/erp/fee_details/");
     axios
-      .get(url)
+      .get(url, {
+        params: {
+          school_id: school_id,
+          student_id: student_id
+        }
+      })
       .then(function(response) {
         // handle success
         //self.class_list = response.data;
         self.student_erp_id = response.data["reg_no"];
+        self.the_class = response.data["current_class"];
         var i;
         for (i = 0; i < response.data["heads"].length; i++) {
           var head = {};
@@ -266,14 +275,18 @@ export default {
         })
         .then(function(response) {
           console.log(response);
-          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const url = window.URL.createObjectURL(
+            new Blob([response.data])
+          );
           const link = document.createElement("a");
           link.href = url;
-          var file_name = self.student_name + " (" + self.student_erp_id + ")"
-          file_name += "_fee_receipt.pdf"
+          var file_name = self.student_name + " (" + self.student_erp_id + ")";
+          file_name += "_fee_receipt.pdf";
           link.setAttribute("download", file_name); //or any other extension
           document.body.appendChild(link);
           link.click();
+          confirm("Fees successfully deposited");
+          self.$router.replace("/student_search");
         })
         .catch(function(error) {
           console.log(error);
