@@ -14,7 +14,8 @@ export const store = new Vuex.Store({
     student_name: 'unknown',
     parent: 'unknown',
     school_name: 'ClassUp',
-    server_ip: 'http://localhost:8000',
+    //server_ip: 'http://localhost:8000',
+    server_ip: 'https://www.classupclient.com',
     adm_fee: false
   },
   mutations: {
