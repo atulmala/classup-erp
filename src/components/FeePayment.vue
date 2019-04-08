@@ -5,7 +5,7 @@
       <v-layout row wrap>
         <v-flex d-flex xs6 order-xs5 offset-sm3>
           <v-layout column>
-            <v-flex d-flex xs8>
+            <v-flex d-flex xs6>
               <h5>Student:</h5>
               <h3>{{ student_name }}</h3>
               <h5>Class:</h5>
@@ -35,48 +35,57 @@
         </v-data-table>
       </v-flex>
 
-      <v-flex d-flex xs6 order-xs7 offset-sm3>
+      <v-flex d-flex xs7 order-xs10 offset-sm3>
         <v-form>
           <v-container fluid>
             <v-layout row wrap>
-              <v-flex xs2 sm6 md3>
-                <v-text-field label="Due this term" v-model="due_this_term" disabled="true"></v-text-field>
+              <v-flex d-flex xs2 sm6 md2>
+                <v-text-field label="Due this Month/Qtr" v-model="due_this_term" disabled="true"></v-text-field>
               </v-flex>
-              <v-flex d-flex xs2 sm6 md3>
+              <v-flex d-flex xs2 sm6 md2>
                 <v-text-field label="Previous Due" v-model="previous_due" disabled="true"></v-text-field>
               </v-flex>
-              <v-flex xs3 sm6 md3>
+              <v-flex d-flex xs2 sm6 md2>
+                <v-text-field label="Paid Till Date" v-model="paid_till_date" disabled="true" v-on:focus="dismiss()"></v-text-field>
+              </v-flex>
+              <v-flex d-flex xs2 sm6 md2>
                 <v-text-field label="Delay" v-model="delay" disabled="true"></v-text-field>
               </v-flex>
-              <v-flex xs3 sm6 md3>
-                <v-text-field label="Fine" v-model="late_fee" v-on:focus="dismiss()"></v-text-field>
+              <v-flex d-flex xs2 sm6 md2>
+                <v-text-field label="Penalty" v-model="late_fee" v-on:focus="dismiss()"></v-text-field>
               </v-flex>
+              
             </v-layout>
             <v-layout row wrap>
-              <v-flex xs3 sm6 md3>
+              <v-flex xs2 sm6 md2>
+                <v-text-field label="Other/One time Charges" v-model="one_time" v-on:focus="dismiss()"></v-text-field>
+              </v-flex>
+              <v-flex xs2 sm6 md2>
                 <v-text-field label="Discount" v-model="discount" v-on:focus="dismiss()"></v-text-field>
               </v-flex>
-              <v-flex xs3 sm6 md3>
+              <v-flex xs2 sm6 md2>
                 <v-text-field label="Net Payable" v-model="net_payable" disabled="true"></v-text-field>
               </v-flex>
-              <v-flex xs3 sm6 md3>
+              <v-flex xs2 sm6 md2>
                 <v-text-field label="Actual Paid" v-model="actual_paid" v-on:focus="dismiss()"></v-text-field>
               </v-flex>
-              <v-flex xs3 sm6 md3>
+              <v-flex xs3 sm6 md2>
                 <v-text-field label="Remaining Balance" v-model="balance" disabled="true"></v-text-field>
               </v-flex>
             </v-layout>
             <v-layout row wrap>
+              <v-flex xs4 sm3 md5>
               <v-radio-group v-model="payment_mode" @click="dismiss()" row>
                 <v-radio label="Cash" value="cash"></v-radio>
                 <v-radio label="Cheque" value="cheque"></v-radio>
                 <v-radio label="Card" value="card"></v-radio>
               </v-radio-group>
+              </v-flex>
 
-              <v-flex xs3 sm6 md3>
+              <v-flex xs3 sm3 md2>
                 <v-text-field label="Cheque No" v-model="cheque_no" v-on:focus="dismiss()"></v-text-field>
               </v-flex>
-              <v-flex xs3 sm6 md3>
+              <v-flex xs3 sm3 md2>
                 <v-text-field label="Bank" v-model="bank" v-on:focus="dismiss()"></v-text-field>
               </v-flex>
             </v-layout>
@@ -127,10 +136,13 @@ export default {
         },
         { text: "Amount", value: "reg_no" }
       ],
+      due_till_now: 0.0,
       due_this_term: 0.0,
-      previous_due: 0.0,
+      paid_till_date: 0.0,
+      dues: 0.0,
       delay: "No Delay",
       late_fee: 0.0,
+      one_time: 0.0,
       discount: 0.0,
       actual_paid: 0.0,
       payment_mode: "",
@@ -143,13 +155,19 @@ export default {
     };
   },
   computed: {
+    previous_due: function() {
+      let self = this;
+      return this.dues + eval(this.due_till_now);
+    },
     net_payable: function() {
       let self = this;
       return (
         this.due_this_term +
         eval(self.late_fee) +
+        eval(self.one_time) + 
         eval(this.previous_due) -
-        this.discount
+        this.discount -
+        this.paid_till_date
       );
     },
     balance: function() {
@@ -183,8 +201,11 @@ export default {
           head["amount"] = response.data["heads"][i]["amount"];
           self.heads.push(head);
         }
+        self.due_till_now = response.data["Due till now"];
+        console.log(self.due_till_now)
         self.due_this_term = response.data["Due this term"];
-        self.previous_due = response.data["Previous Outstanding"];
+        self.dues = response.data["Previous Outstanding"];
+        self.paid_till_date = response.data["Paid till date"];
         self.delay =
           response.data["Days Delay"] +
           " Days/" +
@@ -265,6 +286,7 @@ export default {
           due_this_term: this.due_this_term,
           previous_due: this.previous_due,
           fine: this.late_fee,
+          one_time: this.one_time,
           discount: this.discount,
           net_payable: this.net_payable,
           actual_paid: this.actual_paid,
@@ -275,9 +297,7 @@ export default {
         })
         .then(function(response) {
           console.log(response);
-          const url = window.URL.createObjectURL(
-            new Blob([response.data])
-          );
+          const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
           var file_name = self.student_name + " (" + self.student_erp_id + ")";

@@ -3,20 +3,20 @@
     <v-content>
       <v-form v-if="show_search_criteria">
         <v-container fluid>
-          <v-layout xs6 row wrap>
-            <v-flex xs6 sm6 md3>
+          <v-layout xs4 row wrap>
+            <v-flex xs6 sm6 md2>
               <v-text-field label="Reg/Adm/Sch Number" v-model="reg_no" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
 
-            <v-flex xs6 sm6 md3>
+            <v-flex xs6 sm6 md2>
               <v-text-field label="First Name" v-model="first_name" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
 
-            <v-flex xs6 sm6 md3>
+            <v-flex xs6 sm6 md2>
               <v-text-field label="Surname/Last Name" v-model="last_name" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
 
-            <v-flex xs6 sm6 md3>
+            <v-flex xs6 sm6 md2>
               <v-select
                 :items="class_list"
                 label="Class/Standard"
@@ -24,6 +24,8 @@
                 v-on:focus="dismiss()"
               ></v-select>
             </v-flex>
+          </v-layout>
+          <v-layout xs4 row wrap>
             <div class="text-xs-center">
               <v-btn
                 :loading="loading"

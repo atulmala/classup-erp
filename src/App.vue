@@ -63,6 +63,11 @@
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
+      <template>
+        <div class="text-xs-center">
+          <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+        </div>
+      </template>
       <hello></hello>
 
       <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
@@ -83,6 +88,7 @@ export default {
   },
   data() {
     return {
+      waiting: false,
       drawer: {
         open: true,
         clipped: false,
@@ -140,6 +146,9 @@ export default {
       this.$router.replace("/student_search");
     },
     defaulter_report() {
+      let self = this;
+      alert("Report will be downloaded. This can take some time");
+      self.waiting = true;
       let ip = this.$store.getters.get_server_ip;
       let school_id = this.$store.getters.get_school_id;
       let url = ip.concat("/erp/defaulter_list/", school_id, "/");
@@ -160,6 +169,7 @@ export default {
           link.setAttribute("download", file_name); //or any other extension
           document.body.appendChild(link);
           link.click();
+          self.waiting = false;
           confirm("Fee Defaulter Report downloaded");
         })
         .catch(function(error) {
@@ -185,7 +195,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="stylus" scoped>
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -194,4 +204,7 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
+.v-progress-circular 
+  margin: 1rem
 </style>
