@@ -3,7 +3,8 @@
     <v-content>
       <v-form v-if="show_search_criteria">
         <v-container fluid>
-          <v-layout xs4 row wrap>
+          <h2>Student Search</h2>
+          <v-layout xs4 row wrap justify-center="">
             <v-flex xs6 sm6 md2>
               <v-text-field label="Reg/Adm/Sch Number" v-model="reg_no" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
@@ -25,7 +26,7 @@
               ></v-select>
             </v-flex>
           </v-layout>
-          <v-layout xs4 row wrap>
+          <v-layout xs4 row wrap justify-space-around="">
             <div class="text-xs-center">
               <v-btn
                 :loading="loading"
@@ -196,18 +197,43 @@ export default {
     },
     showAlert(a) {
       if (event.target.classList.contains("btn__content")) return;
-      let response = confirm(
-        "Are you sure you want to process the fees for " +
-          a.name +
-          " (" +
-          a.reg_no +
-          ")?"
-      );
-      if (response) {
-        this.$store.dispatch("set_student_id", a.reg_no);
-        this.$store.dispatch("set_student_name", a.name);
-        this.$store.dispatch("set_parent", a.parent);
-        this.$router.replace("/fee_payment");
+      let coming_from = this.$store.getters.get_coming_from;
+      console.log(coming_from)
+      if (coming_from == "fee_payment") {
+        let response = confirm(
+          "Are you sure you want to process the fees for " +
+            a.name +
+            " (" +
+            a.reg_no +
+            ")?"
+        );
+        if (response) {
+          this.$store.dispatch("set_student_id", a.reg_no);
+          this.$store.dispatch("set_student_name", a.name);
+          this.$store.dispatch("set_parent", a.parent);
+          this.$router.replace("/fee_payment");
+        }
+      }
+
+      if (coming_from == "correction")  {
+        let response = confirm(
+          "Are you sure you want to do correction for " +
+            a.name +
+            " (" +
+            a.reg_no +
+            ")?"
+        );
+        if (response) {
+          this.$store.dispatch("set_student_id", a.reg_no);
+          this.$store.dispatch("set_student_name", a.name);
+          var the_class = a.current_class;
+          console.log(the_class)
+          let section = a.current_section
+          console.log(section)
+          this.$store.dispatch("set_student_class", a.the_class);
+          this.$store.dispatch("set_parent", a.parent);
+          this.$router.replace("/correction");
+        }
       }
     }
   }

@@ -28,7 +28,7 @@
         >
           <template slot="items" slot-scope="props">
             <tr @click="showAlert(props.item)">
-              <td class="text-xs-left">{{ props.item.head }}</td>
+              <td> class="text-xs-left">{{ props.item.head }}</td>
               <td class="text-xs-left">{{ props.item.amount }}</td>
             </tr>
           </template>

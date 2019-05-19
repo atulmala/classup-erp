@@ -109,7 +109,10 @@ export default {
           title: "Take Fee",
           action: this.student_search
         },
-        { title: "Correction" },
+        { 
+          title: "Correction",
+          action: this.correction
+        },
         {
           title: "Defaulter Report",
           action: this.defaulter_report
@@ -143,6 +146,7 @@ export default {
       this.$router.replace("/");
     },
     student_search() {
+      this.$store.dispatch("set_coming_status", "fee_payment");
       this.$router.replace("/student_search");
     },
     defaulter_report() {
@@ -178,6 +182,10 @@ export default {
         .then(function() {
           // always executed
         });
+    },
+    correction()  {
+      this.$store.dispatch("set_coming_status", "correction");
+      this.$router.replace("/student_search");
     }
   },
 

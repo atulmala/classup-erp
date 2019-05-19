@@ -4,6 +4,8 @@ import App from '../App'
 import Dashboard from '../components/Dashboard'
 import StudentSearch from '../components/StudentSearch'
 import FeePayment from '../components/FeePayment'
+import Correction from '../components/Correction'
+
 Vue.use(Router)
 
 export default new Router({
@@ -27,6 +29,11 @@ export default new Router({
       path: '/fee_payment',
       name: 'FeePayment',
       component: FeePayment
+    },
+    {
+      path: '/correction',
+      name: 'Coprrection',
+      component: Correction
     }
   ]
 })

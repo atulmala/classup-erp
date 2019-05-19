@@ -5,6 +5,8 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
+    // server_ip: 'http://localhost:8000',
+    server_ip: 'https://www.classupclient.com',
     logged_status: false,
     logged_user: 'unknown',
     user_name: 'unknown',
@@ -12,10 +14,11 @@ export const store = new Vuex.Store({
     school_id: 0,
     student_id: 'unknown',
     student_name: 'unknown',
+    student_class: 'unknown',
     parent: 'unknown',
     school_name: 'ClassUp',
-    //server_ip: 'http://localhost:8000',
-    server_ip: 'https://www.classupclient.com',
+    coming_from: 'unknown',
+    // server_ip: 'https://www.classupclient.com',
     adm_fee: false
   },
   mutations: {
@@ -43,11 +46,17 @@ export const store = new Vuex.Store({
     SET_STUDENT_NAME(state, name) {
       state.student_name = name
     },
+    SET_STUDENT_CLASS(state, the_class) {
+      state.student_class = the_class
+    },
     SET_PARENT(state, parent) {
       state.parent = parent
     },
     SET_ADM_FEE(state, status)  {
       state.adm_fee = status
+    },
+    SET_COMING_STATUS(state, coming_from) {
+      state.coming_from = coming_from
     }
   },
   actions: {
@@ -75,11 +84,17 @@ export const store = new Vuex.Store({
     set_student_name(context, name) {
       context.commit('SET_STUDENT_NAME', name)
     },
+    set_student_class(context, the_class) {
+      context.commit('SET_STUDENT_CLASS', the_class)
+    },
     set_parent(context, parent) {
       context.commit('SET_PARENT', parent)
     },
     set_adm_fee(context, status)  {
       context.commit('SET_ADM_FEE', status)
+    },
+    set_coming_status(context, coming_from) {
+      context.commit('SET_COMING_STATUS', coming_from)
     }
   },
   getters: {
@@ -110,11 +125,17 @@ export const store = new Vuex.Store({
     get_student_name(state) {
       return state.student_name
     },
+    get_student_class(state)  {
+      return state.student_class
+    },
     get_parent(state) {
       return state.parent
     },
     get_adm_fee(state) {
       return state.adm_fee
+    },
+    get_coming_from(state)  {
+      return state.coming_from
     }
   }
 });
