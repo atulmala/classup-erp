@@ -28,8 +28,34 @@
         >
           <template slot="items" slot-scope="props">
             <tr @click="showAlert(props.item)">
-              <td> class="text-xs-left">{{ props.item.head }}</td>
-              <td class="text-xs-left">{{ props.item.amount }}</td>
+              <td class="text-xs-left">{{ props.item.head }}</td>
+              <td class="text-xs-left">
+                <v-edit-dialog
+                  :return-value.sync="props.item.amount"
+                  large
+                  lazy
+                  persistent
+                  @save="save(props.item)"
+                  @cancel="cancel"
+                  @open="open"
+                  @close="close"
+                >
+                  <div>{{ props.item.amount }}</div>
+                  <template v-slot:input>
+                    <div class="mt-3 title">Update Amount</div>
+                  </template>
+                  <template v-slot:input>
+                    <v-text-field
+                      v-model="props.item.amount"
+                      :rules="[max25chars]"
+                      label="Edit"
+                      single-line
+                      counter
+                      autofocus
+                    ></v-text-field>
+                  </template>
+                </v-edit-dialog>
+              </td>
             </tr>
           </template>
         </v-data-table>
@@ -46,7 +72,12 @@
                 <v-text-field label="Previous Due" v-model="previous_due" disabled="true"></v-text-field>
               </v-flex>
               <v-flex d-flex xs2 sm6 md2>
-                <v-text-field label="Paid Till Date" v-model="paid_till_date" disabled="true" v-on:focus="dismiss()"></v-text-field>
+                <v-text-field
+                  label="Paid Till Date"
+                  v-model="paid_till_date"
+                  disabled="true"
+                  v-on:focus="dismiss()"
+                ></v-text-field>
               </v-flex>
               <v-flex d-flex xs2 sm6 md2>
                 <v-text-field label="Delay" v-model="delay" disabled="true"></v-text-field>
@@ -54,11 +85,14 @@
               <v-flex d-flex xs2 sm6 md2>
                 <v-text-field label="Penalty" v-model="late_fee" v-on:focus="dismiss()"></v-text-field>
               </v-flex>
-              
             </v-layout>
             <v-layout row wrap>
               <v-flex xs2 sm6 md2>
-                <v-text-field label="Other/One time Charges" v-model="one_time" v-on:focus="dismiss()"></v-text-field>
+                <v-text-field
+                  label="Other/One time Charges"
+                  v-model="one_time"
+                  v-on:focus="dismiss()"
+                ></v-text-field>
               </v-flex>
               <v-flex xs2 sm6 md2>
                 <v-text-field label="Discount" v-model="discount" v-on:focus="dismiss()"></v-text-field>
@@ -75,11 +109,11 @@
             </v-layout>
             <v-layout row wrap>
               <v-flex xs4 sm3 md5>
-              <v-radio-group v-model="payment_mode" @click="dismiss()" row>
-                <v-radio label="Cash" value="cash"></v-radio>
-                <v-radio label="Cheque" value="cheque"></v-radio>
-                <v-radio label="Card" value="card"></v-radio>
-              </v-radio-group>
+                <v-radio-group v-model="payment_mode" @click="dismiss()" row>
+                  <v-radio label="Cash" value="cash"></v-radio>
+                  <v-radio label="Cheque" value="cheque"></v-radio>
+                  <v-radio label="Card" value="card"></v-radio>
+                </v-radio-group>
               </v-flex>
 
               <v-flex xs3 sm3 md2>
@@ -138,6 +172,7 @@ export default {
       ],
       due_till_now: 0.0,
       due_this_term: 0.0,
+      transport_fee: 0.0,
       paid_till_date: 0.0,
       dues: 0.0,
       delay: "No Delay",
@@ -151,7 +186,8 @@ export default {
       showDismissibleAlert: false,
       alert_type: "error",
       confirm: false,
-      caption: ""
+      caption: "",
+      max25chars: v => v.length <= 30 || "Input too long!"
     };
   },
   computed: {
@@ -164,7 +200,7 @@ export default {
       return (
         this.due_this_term +
         eval(self.late_fee) +
-        eval(self.one_time) + 
+        eval(self.one_time) +
         eval(this.previous_due) -
         this.discount -
         this.paid_till_date
@@ -200,9 +236,13 @@ export default {
           head["head"] = response.data["heads"][i]["head"];
           head["amount"] = response.data["heads"][i]["amount"];
           self.heads.push(head);
+          if (head["head"] == "Transportation Fee") {
+            self.transport_fee = head["amount"];
+            console.log("transportation fee = ", self.transport_fee);
+          }
         }
         self.due_till_now = response.data["Due till now"];
-        console.log(self.due_till_now)
+        console.log(self.due_till_now);
         self.due_this_term = response.data["Due this term"];
         self.dues = response.data["Previous Outstanding"];
         self.paid_till_date = response.data["Paid till date"];
@@ -270,6 +310,14 @@ export default {
       if (this.actual_paid == this.net_payable) {
         this.process_fee();
       }
+    },
+    save(item) {
+      console.log("inside save function");
+      console.log(item)
+      this.due_this_term -= this.transport_fee
+      this.transport_fee = item.amount
+      this.due_this_term += eval(this.transport_fee)
+      this.heads["Transportation Fee"] = item.amount
     },
     process_fee() {
       let self = this;
