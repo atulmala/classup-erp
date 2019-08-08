@@ -110,7 +110,7 @@ export default {
           action: this.student_search
         },
         { 
-          title: "Correction",
+          title: "Cancel Fee",
           action: this.correction
         },
         {
@@ -155,7 +155,7 @@ export default {
       self.waiting = true;
       let ip = this.$store.getters.get_server_ip;
       let school_id = this.$store.getters.get_school_id;
-      let url = ip.concat("/erp/defaulter_list/", school_id, "/");
+      let url = ip.concat("/fee_processing/defaulter_list/", school_id, "/");
       axios
         .get(url, {
           headers: {

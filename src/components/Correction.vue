@@ -121,12 +121,13 @@ export default {
     self.reg_no = this.$store.getters.get_student_id;
     this.the_class = this.$store.getters.get_student_class;
     let ip = this.$store.getters.get_server_ip;
-    let url = ip.concat("/erp/get_fee_history/");
+    let url = ip.concat("/fee_processing/get_fee_history/");
     axios
       .get(url, {
         params: {
           school_id: school_id,
-          reg_no: self.reg_no
+          reg_no: self.reg_no,
+          download: "false"
         }
       })
       .then(function(response) {
@@ -260,7 +261,7 @@ export default {
       if (response) {
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
-        let url = ip.concat("/erp/correct_fee/", school_id, "/");
+        let url = ip.concat("/fee_processing/correct_fee/", school_id, "/");
 
         axios
         .post(url, {

@@ -27,18 +27,15 @@
           loading="true"
         >
           <template slot="items" slot-scope="props">
-            <tr @click="showAlert(props.item)">
+            <tr @click="click(props.item)">
               <td class="text-xs-left">{{ props.item.head }}</td>
               <td class="text-xs-left">
-                <v-edit-dialog
-                  :return-value.sync="props.item.amount"
-                  large
-                  lazy
+                <v-edit-dialog 
+                  :return-value.sync="props.item.amount" 
+                  @save="update_fee(props.item)"
+                  large 
+                  lazy 
                   persistent
-                  @save="save(props.item)"
-                  @cancel="cancel"
-                  @open="open"
-                  @close="close"
                 >
                   <div>{{ props.item.amount }}</div>
                   <template v-slot:input>
@@ -47,7 +44,7 @@
                   <template v-slot:input>
                     <v-text-field
                       v-model="props.item.amount"
-                      :rules="[max25chars]"
+                      :disabled="props.item.head !== 'Transportation Fee'"
                       label="Edit"
                       single-line
                       counter
@@ -56,6 +53,31 @@
                   </template>
                 </v-edit-dialog>
               </td>
+              <td class="text-xs-left">
+                <v-edit-dialog
+                  :return-value.sync="props.item.discount_perc"
+                  @save="apply_discount(props.item)"
+                  large
+                  lazy
+                  persistent
+                >
+                  <div>{{ props.item.discount_perc }}</div>
+                  <template v-slot:input>
+                    <div class="mt-3 title">Enter Dicount %</div>
+                  </template>
+                  <template v-slot:input>
+                    <v-text-field
+                      v-model="props.item.discount_perc"
+                      label="Edit"
+                      single-line
+                      counter
+                      autofocus
+                    ></v-text-field>
+                  </template>
+                </v-edit-dialog>
+              </td>
+              <td class="text-xs-left">{{ props.item.discount_amt }}</td>
+              <td class="text-xs-left">{{ props.item.net_payable }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -95,7 +117,7 @@
                 ></v-text-field>
               </v-flex>
               <v-flex xs2 sm6 md2>
-                <v-text-field label="Discount" v-model="discount" v-on:focus="dismiss()"></v-text-field>
+                <v-text-field label="Waivers" v-model="waiver" v-on:focus="dismiss()"></v-text-field>
               </v-flex>
               <v-flex xs2 sm6 md2>
                 <v-text-field label="Net Payable" v-model="net_payable" disabled="true"></v-text-field>
@@ -108,11 +130,12 @@
               </v-flex>
             </v-layout>
             <v-layout row wrap>
-              <v-flex xs4 sm3 md5>
+              <v-flex xs4 sm4 md6>
                 <v-radio-group v-model="payment_mode" @click="dismiss()" row>
                   <v-radio label="Cash" value="cash"></v-radio>
                   <v-radio label="Cheque" value="cheque"></v-radio>
                   <v-radio label="Card" value="card"></v-radio>
+                  <v-radio label="Net Banking" value="netbanking"></v-radio>
                 </v-radio-group>
               </v-flex>
 
@@ -125,6 +148,7 @@
             </v-layout>
 
             <v-layout row wrap>
+              <v-btn color="success" @click="fee_history">Download Payment History</v-btn>
               <v-btn color="success" @click="validate_fee">Accept Fee</v-btn>
             </v-layout>
             <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
@@ -168,17 +192,20 @@ export default {
           sortable: false,
           value: "name"
         },
-        { text: "Amount", value: "reg_no" }
+        { text: "Amount", value: "reg_no" },
+        { text: "Discount (%)", value: 0.0 },
+        { text: "Dicsount (Amount)", value: 0.0 },
+        { text: "Net payable", value: 0.0 }
       ],
       due_till_now: 0.0,
-      due_this_term: 0.0,
       transport_fee: 0.0,
       paid_till_date: 0.0,
       dues: 0.0,
       delay: "No Delay",
       late_fee: 0.0,
       one_time: 0.0,
-      discount: 0.0,
+      discount_given: 0.0,
+      waiver: 0.0,
       actual_paid: 0.0,
       payment_mode: "",
       cheque_no: "N/A",
@@ -187,6 +214,7 @@ export default {
       alert_type: "error",
       confirm: false,
       caption: "",
+      allow_edit: false,
       max25chars: v => v.length <= 30 || "Input too long!"
     };
   },
@@ -195,6 +223,19 @@ export default {
       let self = this;
       return this.dues + eval(this.due_till_now);
     },
+    due_this_term: function() {
+      let self = this;
+      var amt = 0.0;
+      console.log(self.heads);
+      for (var i = 0; i < self.heads.length; i++) {
+        console.log("head value = ", self.heads[i]["head"]);
+        if (self.heads[i]["amount"] != "N/A") {
+          amt += eval(self.heads[i]["net_payable"]);
+        }
+      }
+      console.log("amount as computed = ", amt);
+      return amt;
+    },
     net_payable: function() {
       let self = this;
       return (
@@ -202,7 +243,7 @@ export default {
         eval(self.late_fee) +
         eval(self.one_time) +
         eval(this.previous_due) -
-        this.discount -
+        this.waiver -
         this.paid_till_date
       );
     },
@@ -217,7 +258,7 @@ export default {
     this.student_name = this.$store.getters.get_student_name;
     this.parent = this.$store.getters.get_parent;
     let ip = this.$store.getters.get_server_ip;
-    let url = ip.concat("/erp/fee_details/");
+    let url = ip.concat("/fee_processing/fee_details/");
     axios
       .get(url, {
         params: {
@@ -233,17 +274,21 @@ export default {
         var i;
         for (i = 0; i < response.data["heads"].length; i++) {
           var head = {};
-          head["head"] = response.data["heads"][i]["head"];
-          head["amount"] = response.data["heads"][i]["amount"];
-          self.heads.push(head);
-          if (head["head"] == "Transportation Fee") {
-            self.transport_fee = head["amount"];
-            console.log("transportation fee = ", self.transport_fee);
+          if (response.data["heads"][i]["amount"] != "N/A") {
+            head["head"] = response.data["heads"][i]["head"];
+            head["amount"] = response.data["heads"][i]["amount"];
+            head["discount_perc"] = 0.0;
+            head["discount_amt"] = 0.0;
+            head["net_payable"] = response.data["heads"][i]["amount"];
+            self.heads.push(head);
+            if (head["head"] == "Transportation Fee") {
+              self.transport_fee = head["amount"];
+              console.log("transportation fee = ", self.transport_fee);
+            }
           }
         }
         self.due_till_now = response.data["Due till now"];
         console.log(self.due_till_now);
-        self.due_this_term = response.data["Due this term"];
         self.dues = response.data["Previous Outstanding"];
         self.paid_till_date = response.data["Paid till date"];
         self.delay =
@@ -258,6 +303,27 @@ export default {
       });
   },
   methods: {
+    click() {},
+    apply_discount(item) {
+      console.log("inside apply_discount");
+      console.log("discount to be given = ", item.discount_perc);
+      const index = this.heads.indexOf(item);
+      var original_amt = this.heads[index]["amount"];
+      console.log("original amount = ", original_amt);
+      let discount = (original_amt * item.discount_perc) / 100.0;
+      this.heads[index]["discount_amt"] = discount;
+      console.log("discount = ", discount);
+      let discounted_amt = original_amt - discount;
+      console.log("discounted amount = ", discounted_amt);
+      this.heads[index]["net_payable"] = discounted_amt;
+      this.discount_given += discount
+    },
+    update_fee(item)  {
+      console.log("inside update_fee");
+      const index = this.heads.indexOf(item);
+      this.heads[index]["net_payable"] = item.amount
+
+    },
     validate_fee() {
       if (this.actual_paid == 0.0) {
         this.alert_message = "Please enter actual fees paid";
@@ -308,16 +374,48 @@ export default {
       }
       // no issues, accept fee
       if (this.actual_paid == this.net_payable) {
-        this.process_fee();
+        this.caption = "Confirm fee submission";
+        this.alert_message = "Are you sure you want to accept this fee? ";
+        this.confirm = true;
+        //this.process_fee();
       }
     },
-    save(item) {
-      console.log("inside save function");
-      console.log(item)
-      this.due_this_term -= this.transport_fee
-      this.transport_fee = item.amount
-      this.due_this_term += eval(this.transport_fee)
-      this.heads["Transportation Fee"] = item.amount
+
+    close() {
+      console.log("Dialog closed");
+    },
+    fee_history() {
+      let self = this;
+      let ip = this.$store.getters.get_server_ip;
+      let school_id = this.$store.getters.get_school_id;
+      let reg_no = this.student_erp_id
+      let url = ip.concat("/fee_processing/fee_history_download/?school_id=", school_id, "&reg_no=", reg_no );
+      axios
+        .get(url, {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          },
+          responseType: "arraybuffer"
+        })
+        .then(function(response) {
+          console.log(response);
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          var file_name = self.$store.getters.get_student_name + "_fee_history.xlsx";
+          link.setAttribute("download", file_name); //or any other extension
+          document.body.appendChild(link);
+          link.click();
+          self.waiting = false;
+          confirm("Fee Payment History Downloaded");
+        })
+        .catch(function(error) {
+          console.log(error);
+        })
+        .then(function() {
+          // always executed
+        });
     },
     process_fee() {
       let self = this;
@@ -325,7 +423,7 @@ export default {
       this.confirm = false;
       let ip = this.$store.getters.get_server_ip;
       let school_id = this.$store.getters.get_school_id;
-      let url = ip.concat("/erp/process_fee/", school_id, "/");
+      let url = ip.concat("/fee_processing/process_fee/", school_id, "/");
 
       axios
         .post(url, {
@@ -335,7 +433,8 @@ export default {
           previous_due: this.previous_due,
           fine: this.late_fee,
           one_time: this.one_time,
-          discount: this.discount,
+          discount: this.discount_given,
+          waiver: this.waiver,
           net_payable: this.net_payable,
           actual_paid: this.actual_paid,
           balance: this.balance,
