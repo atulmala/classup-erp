@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import App from '../App'
-import Dashboard from '../components/Dashboard'
-import StudentSearch from '../components/StudentSearch'
-import FeePayment from '../components/FeePayment'
-import Correction from '../components/Correction'
-import AddStudent from '../components/AddStudent'
+import Dashboard from '../components/Common/Dashboard'
+import StudentSearch from '../components/Common/StudentSearch'
+import FeePayment from '../components/Fee/FeePayment'
+import Correction from '../components/Fee/Correction'
+import AddStudent from '../components/Student/AddStudent'
+import UpdateStudent from '../components/Student/UpdateStudent'
 
 Vue.use(Router)
 
@@ -40,6 +41,11 @@ export default new Router({
       path: '/add_student',
       name: 'add_student',
       component: AddStudent
+    },
+    {
+      path: '/update_student',
+      name: 'update_student',
+      component: UpdateStudent
     }
   ]
 })

@@ -99,7 +99,7 @@
 
 <script>
 import axios from "axios";
-import HelloWorld from "@/components/HelloWorld";
+import HelloWorld from "@/components/Common/HelloWorld";
 export default {
   name: "App",
   components: {

@@ -68,7 +68,7 @@
 
 <script>
 import axios from "axios";
-import FeePayment from "@/components/FeePayment";
+import FeePayment from "@/components/Fee/FeePayment";
 export default {
   name: "StudentSearch",
   data() {
@@ -233,6 +233,23 @@ export default {
           this.$store.dispatch("set_student_class", a.the_class);
           this.$store.dispatch("set_parent", a.parent);
           this.$router.replace("/correction");
+        }
+      }
+
+      if (coming_from == "update_student")  {
+        let response = confirm(
+          "Are you sure you want to do update for " +
+            a.name +
+            " (" +
+            a.reg_no +
+            ")?"
+        );
+        if (response) {
+          this.$store.dispatch("set_student_id", a.reg_no);
+          this.$store.dispatch("set_student_name", a.name);
+          this.$store.dispatch("set_student_class", a.the_class);
+          this.$store.dispatch("set_parent", a.parent);
+          this.$router.replace("/update_student");
         }
       }
     }
