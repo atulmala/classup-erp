@@ -34,6 +34,25 @@
           <v-list-group prepend-icon value="true">
             <template v-slot:activator>
               <v-list-tile>
+                <v-list-tile-title>Student Management</v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list-tile
+              v-for="item in student_management_items"
+              :key="item.title"
+              v-on:click="item.action"
+            >
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+          <v-list-group prepend-icon value="true">
+            <template v-slot:activator>
+              <v-list-tile>
                 <v-list-tile-title>Fees Management</v-list-tile-title>
               </v-list-tile>
             </template>
@@ -73,7 +92,7 @@
       <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
         <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
       </v-footer>
-      <router-view/>
+      <router-view />
     </div>
   </v-app>
 </template>
@@ -104,12 +123,22 @@ export default {
         fixed: true,
         clippedLeft: true
       },
+      student_management_items: [
+        {
+          title: "Add Student",
+          action: this.add_student
+        },
+        {
+          title: "Update Student",
+          action: this.update_student
+        }
+      ],
       fee_items: [
         {
           title: "Take Fee",
           action: this.student_search
         },
-        { 
+        {
           title: "Cancel Fee",
           action: this.correction
         },
@@ -149,6 +178,14 @@ export default {
       this.$store.dispatch("set_coming_status", "fee_payment");
       this.$router.replace("/student_search");
     },
+    add_student() {
+      this.$store.dispatch("set_coming_from", "add_student");
+      this.$router.replace("/add_student");
+    },
+    update_student() {
+      this.$store.dispatch("set_coming_status", "update_student");
+      this.$router.replace("/student_search");
+    },
     defaulter_report() {
       let self = this;
       alert("Report will be downloaded. This can take some time");
@@ -183,7 +220,7 @@ export default {
           // always executed
         });
     },
-    correction()  {
+    correction() {
       this.$store.dispatch("set_coming_status", "correction");
       this.$router.replace("/student_search");
     }
@@ -205,7 +242,7 @@ export default {
 
 <style lang="stylus" scoped>
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -213,6 +250,7 @@ export default {
   margin-top: 60px;
 }
 
-.v-progress-circular 
-  margin: 1rem
+.v-progress-circular {
+  margin: 1rem;
+}
 </style>
