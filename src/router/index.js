@@ -7,6 +7,8 @@ import FeePayment from '../components/Fee/FeePayment'
 import Correction from '../components/Fee/Correction'
 import AddStudent from '../components/Student/AddStudent'
 import UpdateStudent from '../components/Student/UpdateStudent'
+import ClassSearch from '../components/Exams/ClassSearch'
+import PerformanceAnalysis from '../components/Exams/PerformanceAnalysis'
 
 Vue.use(Router)
 
@@ -46,6 +48,16 @@ export default new Router({
       path: '/update_student',
       name: 'update_student',
       component: UpdateStudent
+    },
+    {
+      path: '/class_search',
+      name: 'class_search',
+      component: ClassSearch
+    },
+    {
+      path: '/performance_analysis',
+      name: 'performance_analysis',
+      component: PerformanceAnalysis
     }
   ]
 })

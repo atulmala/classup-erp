@@ -53,6 +53,21 @@
           <v-list-group prepend-icon value="true">
             <template v-slot:activator>
               <v-list-tile>
+                <v-list-tile-title>Exam & Results</v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list-tile v-for="item in exam_items" :key="item.title" v-on:click="item.action">
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+          <v-list-group prepend-icon value="true">
+            <template v-slot:activator>
+              <v-list-tile>
                 <v-list-tile-title>Fees Management</v-list-tile-title>
               </v-list-tile>
             </template>
@@ -87,7 +102,9 @@
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
         </div>
       </template>
-      <hello></hello>
+      <div v-if="get_logged_status === false">
+        <hello></hello>
+      </div>
 
       <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
         <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
@@ -133,6 +150,20 @@ export default {
           action: this.update_student
         }
       ],
+      exam_items: [
+        {
+          title: "Result Analysis Sheets",
+          action: this.class_search
+        },
+        {
+          title: "Download Mark Sheets",
+          action: this.class_search
+        },
+        {
+          title: "Download Performance Sheets",
+          action: this.performance_analysis
+        }
+      ],
       fee_items: [
         {
           title: "Take Fee",
@@ -174,12 +205,20 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
     },
+    class_search()  {
+      this.$store.dispatch("set_coming_status", "class_search");
+      this.$router.replace("/class_search");
+    },
+    performance_analysis()  {
+      this.$store.dispatch("set_coming_status", "performance_analysis");
+      this.$router.replace("/performance_analysis");
+    },
     student_search() {
       this.$store.dispatch("set_coming_status", "fee_payment");
       this.$router.replace("/student_search");
     },
     add_student() {
-      this.$store.dispatch("set_coming_from", "add_student");
+      this.$store.dispatch("set_coming_status", "add_student");
       this.$router.replace("/add_student");
     },
     update_student() {
