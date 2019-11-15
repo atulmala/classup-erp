@@ -2,13 +2,11 @@
   <v-app>
     <v-content>
       <v-form enctype="multipart/form-data">
-        <v-container fluid>
-          <h2>Send Bulk SMS (Broadcast)</h2>
-          <p />
-          <p />
+        <v-container  fluid>
+          <h2 id="h2">Send Bulk SMS (Broadcast)</h2>
           <v-layout row wrap justify-center>
             <v-flex xs6 sm6 md10>
-              <h3>Compose Message</h3>
+              <h3 id="h3">Compose Message</h3>
               <p />
               <v-textarea
                 v-model="message"
@@ -100,7 +98,6 @@
               </div>
             </v-layout>
           </v-flex>
-          <p />
           <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
               <v-btn color="info" @click="validate()">
@@ -120,7 +117,6 @@
           <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
         </v-container>
       </v-form>
-
       <v-dialog v-model="confirm" persistent max-width="360">
         <v-card>
           <v-card-title class="headline">{{ caption }}</v-card-title>

@@ -4,7 +4,7 @@
       <v-form v-if="show_search_criteria">
         <v-container fluid>
           <h2>Student Search</h2>
-          <v-layout xs4 row wrap justify-center="">
+          <v-layout xs4 row wrap justify-center>
             <v-flex xs6 sm6 md2>
               <v-text-field label="Reg/Adm/Sch Number" v-model="reg_no" v-on:focus="dismiss()"></v-text-field>
             </v-flex>
@@ -26,7 +26,7 @@
               ></v-select>
             </v-flex>
           </v-layout>
-          <v-layout xs4 row wrap justify-space-around="">
+          <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
               <v-btn
                 :loading="loading"
@@ -41,8 +41,14 @@
                 </span>
               </v-btn>
             </div>
-            <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
           </v-layout>
+          <div class="text-xs-center">
+            <v-layout xs4 row wrap justify-center>
+            <v-flex xs6 sm6 md6>
+            <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+            </v-flex>
+            </v-layout>
+          </div>
         </v-container>
       </v-form>
       <v-flex d-flex xs8 order-xs5 offset-sm2>
@@ -198,7 +204,7 @@ export default {
     showAlert(a) {
       if (event.target.classList.contains("btn__content")) return;
       let coming_from = this.$store.getters.get_coming_from;
-      console.log(coming_from)
+      console.log(coming_from);
       if (coming_from == "fee_payment") {
         let response = confirm(
           "Are you sure you want to process the fees for " +
@@ -215,7 +221,7 @@ export default {
         }
       }
 
-      if (coming_from == "correction")  {
+      if (coming_from == "correction") {
         let response = confirm(
           "Are you sure you want to do correction for " +
             a.name +
@@ -227,16 +233,16 @@ export default {
           this.$store.dispatch("set_student_id", a.reg_no);
           this.$store.dispatch("set_student_name", a.name);
           var the_class = a.current_class;
-          console.log(the_class)
-          let section = a.current_section
-          console.log(section)
+          console.log(the_class);
+          let section = a.current_section;
+          console.log(section);
           this.$store.dispatch("set_student_class", a.the_class);
           this.$store.dispatch("set_parent", a.parent);
           this.$router.replace("/correction");
         }
       }
 
-      if (coming_from == "update_student")  {
+      if (coming_from == "update_student") {
         let response = confirm(
           "Are you sure you want to do update for " +
             a.name +

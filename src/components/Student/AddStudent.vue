@@ -3,6 +3,10 @@
     <v-content>
       <v-form>
         <v-container fluid>
+          <div class="text-center">
+            <v-overlay :value="overlay">
+            </v-overlay>
+          </div>
           <h2>Add Student</h2>
           <v-layout xs4 row wrap justify-center>
             <v-flex xs6 sm6 md2>
@@ -202,7 +206,8 @@ export default {
       confirm: false,
       caption: "",
       allow_edit: false,
-      max25chars: v => v.length <= 30 || "Input too long!"
+      max25chars: v => v.length <= 30 || "Input too long!";
+      overlay: false
     };
   },
   computed: {},
@@ -315,6 +320,7 @@ export default {
       this.caption = "Confirm Student Addition";
       this.alert_message = "Are you sure you want to Add this Student ";
       this.confirm = true;
+      this.overlay = true;
     },
 
     close() {
@@ -359,6 +365,7 @@ export default {
         })
         .then(function(response) {
           console.log(response);
+          self.overlay = false;
           if (response.data["status"] != "success") {
             self.showDismissibleAlert = true;
             self.alert_message = response.data["message"];

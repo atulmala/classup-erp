@@ -3,6 +3,7 @@
     <div id="app">
       <v-toolbar
         app
+        class="my-toolbar"
         v-if="get_logged_status"
         :fixed="toolbar.fixed"
         :clipped-left="toolbar.clippedLeft"
@@ -238,19 +239,19 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
     },
-    bulk_message()  {
+    bulk_message() {
       this.$store.dispatch("set_coming_status", "bulk_sms");
       this.$router.replace("/bulk_sms");
     },
-    class_search()  {
+    class_search() {
       this.$store.dispatch("set_coming_status", "class_search");
       this.$router.replace("/class_search");
     },
-    mark_sheet()  {
-      this.$store.dispatch("set_coming_status", "mark_sheet");      
+    mark_sheet() {
+      this.$store.dispatch("set_coming_status", "mark_sheet");
       this.$router.replace("/mark_sheet");
     },
-    performance_analysis()  {
+    performance_analysis() {
       this.$store.dispatch("set_coming_status", "performance_analysis");
       this.$router.replace("/performance_analysis");
     },
@@ -321,6 +322,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

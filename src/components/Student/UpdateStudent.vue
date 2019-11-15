@@ -3,10 +3,19 @@
     <v-content>
       <v-form>
         <v-container fluid>
+          <div class="text-center">
+            <v-overlay :value="overlay">
+            </v-overlay>
+          </div>
           <h2>Update Student</h2>
           <v-layout xs4 row wrap justify-center>
             <v-flex xs6 sm6 md2>
-              <v-text-field disabled="true" label="Reg/Adm/Sch No" v-model="reg_no" v-on:focus="dismiss()"></v-text-field>
+              <v-text-field
+                disabled="true"
+                label="Reg/Adm/Sch No"
+                v-model="reg_no"
+                v-on:focus="dismiss()"
+              ></v-text-field>
             </v-flex>
             <v-flex xs6 sm6 md2>
               <v-text-field label="First Name" v-model="first_name" v-on:focus="dismiss()"></v-text-field>
@@ -59,6 +68,7 @@
                   v-model="dob"
                   prepend-icon="event"
                   readonly
+                  @click="dismiss()"
                 ></v-text-field>
                 <v-date-picker v-model="dob" title="Date of Birth(DOB)" no-title scrollable actions>
                   <template scope="{ save_dob, cancel_dob }"></template>
@@ -136,14 +146,18 @@
                 @click="loader = 'loading'"
                 v-on:click="validate_entries()"
               >
-                Add Student
+                Update Student
                 <span slot="loader" class="custom-loader">
                   <v-icon light>cached</v-icon>
                 </span>
               </v-btn>
             </div>
           </v-layout>
-          <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+          <v-layout xs8 row wrap justify-space-around>
+            <v-flex xs6 sm6 md6>
+              <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+            </v-flex>
+          </v-layout>
         </v-container>
       </v-form>
       <v-dialog v-model="confirm" persistent max-width="360">
@@ -152,7 +166,7 @@
           <v-card-text>{{ alert_message }}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat="flat" @click="add_student()">OK</v-btn>
+            <v-btn color="green darken-1" flat="flat" @click="update_student()">OK</v-btn>
             <v-btn color="green darken-1" flat="flat" @click="confirm = false">Cancel</v-btn>
           </v-card-actions>
         </v-card>
@@ -202,7 +216,8 @@ export default {
       confirm: false,
       caption: "",
       allow_edit: false,
-      max25chars: v => v.length <= 30 || "Input too long!"
+      max25chars: v => v.length <= 30 || "Input too long!",
+      ovelay: false
     };
   },
   computed: {},
@@ -244,17 +259,22 @@ export default {
         console.log(error);
       });
 
-    let url3 = ip.concat("/student/single_student_details/", school_id, "?student_id=", student_id)
+    let url3 = ip.concat(
+      "/student/single_student_details/",
+      school_id,
+      "?student_id=",
+      student_id
+    );
     axios
       .get(url3)
-      .then(function(response)  {
-        console.log(response.data)
+      .then(function(response) {
+        console.log(response.data);
         self.reg_no = response.data[0].student_erp_id;
         self.first_name = response.data[0].fist_name;
         self.last_name = response.data[0].last_name;
         self.the_class = response.data[0].current_class;
         self.section = response.data[0].current_section;
-        self.gender = response.data[0].getters;
+        self.gender = response.data[0].gender;
         self.parent = response.data[0].parent;
         if (response.data[0].dob != "Not Available")
           self.dob = response.data[0].dob;
@@ -268,24 +288,17 @@ export default {
         self.adhar = response.data[0].adhar;
         self.blood_group = response.data[0].blood_group;
         self.house = response.data[0].house;
-        self.father_occupation = response.data[0].father_occ
-        self.mother_occupation = response.data[0].mother_occ
+        self.father_occupation = response.data[0].father_occ;
+        self.mother_occupation = response.data[0].mother_occ;
         self.transport = response.data[0].bus_user;
         self.bus_rout = response.data[0].bus_rout;
         self.bus_stop = response.data[0].bus_stop;
       })
-      .catch(function(error)  {
-
-      });
-
-      
+      .catch(function(error) {});
   },
   methods: {
-    add_student() {},
-    save_dob() {
-      console.log("saving dob...");
-    },
     validate_entries() {
+      console.log("gender =", this.gender);
       if (this.reg_no == "") {
         this.alert_message =
           "Please enter Registration/Admission/Scholar Number";
@@ -302,22 +315,12 @@ export default {
         this.showDismissibleAlert = true;
         return;
       }
-      if (this.the_class == "") {
-        this.alert_message = "Please Select Class in which student is admitted";
-        this.showDismissibleAlert = true;
-        return;
-      }
-      if (this.section == "") {
-        this.alert_message =
-          "Please Select Section in which student is admitted";
-        this.showDismissibleAlert = true;
-        return;
-      }
-      if (this.gender == "") {
+      if (this.gender == " " || this.gender == "Not Available") {
         this.alert_message = "Please Select Gender)";
         this.showDismissibleAlert = true;
         return;
       }
+
       if (this.dob == "") {
         this.alert_message = "Please enter Student's Date of Birth (DOB)";
         this.showDismissibleAlert = true;
@@ -331,6 +334,18 @@ export default {
       if (this.father_mobile == "") {
         this.alert_message = "Please enter Father's mobile number (10 digits)";
         this.showDismissibleAlert = true;
+        return;
+      }
+      if (this.father_mobile.length != 10) {
+        this.alert_message =
+          "Father's mobile number should be exactly 10 digits";
+        this.showDismissibleAlert = true;
+        return;
+      }
+      if (this.mother_mobile.length != 10) {
+        this.alert_message =
+          "Mother's mobile number should be exactly 10 digits";
+        this.mother_mobile.this.showDismissibleAlert = true;
         return;
       }
       if (this.mother_name == "") {
@@ -349,24 +364,26 @@ export default {
         return;
       }
 
-      this.caption = "Confirm Student Addition";
-      this.alert_message = "Are you sure you want to Add this Student ";
+      this.caption = "Confirm Student Update";
+      this.alert_message = "Are you sure you want to Update this Student ";
       this.confirm = true;
+      this.ovelay = true;
     },
 
     close() {
       console.log("Dialog closed");
     },
 
-    add_student() {
+    update_student() {
       let self = this;
-      console.log("inside add student");
+      
+      console.log("inside update student");
       this.confirm = false;
       let school_id = this.$store.getters.get_school_id;
       console.log(school_id);
       let ip = this.$store.getters.get_server_ip;
       let sender = this.$store.getters.get_logged_user;
-      let url = ip.concat("/student/add_student_web/");
+      let url = ip.concat("/student/update_student_web/");
 
       axios
         .post(url, {
@@ -395,6 +412,7 @@ export default {
           address: this.address
         })
         .then(function(response) {
+          self.ovelay = false;
           console.log(response);
           if (response.data["status"] != "success") {
             self.showDismissibleAlert = true;
@@ -402,7 +420,7 @@ export default {
             return;
           }
 
-          confirm("student successfully added");
+          confirm("student successfully updated");
         })
         .catch(function(error) {
           console.log(error);
