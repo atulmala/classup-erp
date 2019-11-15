@@ -9,6 +9,8 @@ import AddStudent from '../components/Student/AddStudent'
 import UpdateStudent from '../components/Student/UpdateStudent'
 import ClassSearch from '../components/Exams/ClassSearch'
 import PerformanceAnalysis from '../components/Exams/PerformanceAnalysis'
+import Marksheet from '../components/Exams/Marksheet'
+import BulkSMS from '../components/Communication/BulkSMS'
 
 Vue.use(Router)
 
@@ -58,6 +60,16 @@ export default new Router({
       path: '/performance_analysis',
       name: 'performance_analysis',
       component: PerformanceAnalysis
+    },
+    {
+      path: '/mark_sheet',
+      name: 'mark_sheet',
+      component: Marksheet
+    },
+    {
+      path: '/bulk_sms',
+      name: 'bulk_sms',
+      component: BulkSMS
     }
   ]
 })

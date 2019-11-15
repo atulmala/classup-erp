@@ -34,6 +34,25 @@
           <v-list-group prepend-icon value="true">
             <template v-slot:activator>
               <v-list-tile>
+                <v-list-tile-title>Communications & Messaging</v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list-tile
+              v-for="item in communication_items"
+              :key="item.title"
+              v-on:click="item.action"
+            >
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+          <v-list-group prepend-icon value="true">
+            <template v-slot:activator>
+              <v-list-tile>
                 <v-list-tile-title>Student Management</v-list-tile-title>
               </v-list-tile>
             </template>
@@ -140,6 +159,20 @@ export default {
         fixed: true,
         clippedLeft: true
       },
+      communication_items: [
+        {
+          title: "Send Bulk Message",
+          action: this.bulk_message
+        },
+        {
+          title: "Download Monthly Communication Report",
+          action: this.monthly_communication
+        },
+        {
+          title: "Download Parent Communication Report",
+          action: this.parent_communication
+        }
+      ],
       student_management_items: [
         {
           title: "Add Student",
@@ -157,7 +190,7 @@ export default {
         },
         {
           title: "Download Mark Sheets",
-          action: this.class_search
+          action: this.mark_sheet
         },
         {
           title: "Download Performance Sheets",
@@ -205,9 +238,17 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
     },
+    bulk_message()  {
+      this.$store.dispatch("set_coming_status", "bulk_sms");
+      this.$router.replace("/bulk_sms");
+    },
     class_search()  {
       this.$store.dispatch("set_coming_status", "class_search");
       this.$router.replace("/class_search");
+    },
+    mark_sheet()  {
+      this.$store.dispatch("set_coming_status", "mark_sheet");      
+      this.$router.replace("/mark_sheet");
     },
     performance_analysis()  {
       this.$store.dispatch("set_coming_status", "performance_analysis");

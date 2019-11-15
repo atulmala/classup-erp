@@ -66,21 +66,7 @@
         </div>
       </template>
       <v-flex d-flex xs8 order-xs5 offset-sm2>
-        <!-- <v-data-table
-          v-if="show_student_list"
-          :headers="headers"
-          :items="students"
-          class="elevation-1"
-        >
-          <template slot="items" slot-scope="props">
-            <tr @click="showAlert(props.item)">
-              <td class="text-xs-left">{{ props.item.name }}</td>
-              <td class="text-xs-left">{{ props.item.reg_no }}</td>
-              <td class="text-xs-left">{{ props.item.the_class }}</td>
-              <td class="text-xs-left">{{ props.item.parent }}</td>
-            </tr>
-          </template>
-        </v-data-table>-->
+       
       </v-flex>
     </v-content>
   </v-app>
@@ -236,7 +222,7 @@ export default {
         if (this.coming_from ==  "performance_analysis")
           url = ip.concat("/analytics/performance_sheet/");
         if (this.coming_from == "mark_sheet")
-          url = ip.concat("/exam/academics/prepare_results/", school_id, "/", the_class, "/", section)
+          url = ip.concat("/exam/term_results/academics/prepare_results/", school_id, "/", the_class, "/", section)
         console.log("url=", url)
         
         axios
@@ -257,12 +243,11 @@ export default {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-
             var file_name = ""
             if (whole_class)
-              file_name = self.the_class + "-" + self.section + "_Performance_Analysis" +  ".pdf";
+              file_name = self.the_class + "-" + self.section + "_Mark_Sheet" +  ".pdf";
             if (student != "")
-              file_name = student + "_Performance_Analysis" +  ".pdf";
+              file_name = student + "_Mark_Sheet" +  ".pdf";
             link.setAttribute("download", file_name); //or any other extension
             document.body.appendChild(link);
             link.click();
