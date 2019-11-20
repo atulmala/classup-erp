@@ -2,7 +2,7 @@
   <v-app>
     <v-content>
       <v-form v-if="show_search_criteria">
-        <v-container fluid>
+        <v-container>
           <h2>Student Search</h2>
           <v-layout xs4 row wrap justify-center>
             <v-flex xs6 sm6 md2>

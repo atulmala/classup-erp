@@ -11,6 +11,8 @@ import ClassSearch from '../components/Exams/ClassSearch'
 import PerformanceAnalysis from '../components/Exams/PerformanceAnalysis'
 import Marksheet from '../components/Exams/Marksheet'
 import BulkSMS from '../components/Communication/BulkSMS'
+import ClassMonthlyAttendance from '../components/TeacherMenu/ClassMonthlyAttendance'
+import ScheduleTest from '../components/Exams/ScheduleTest'
 
 Vue.use(Router)
 
@@ -70,6 +72,17 @@ export default new Router({
       path: '/bulk_sms',
       name: 'bulk_sms',
       component: BulkSMS
+    },
+    {
+      path: '/class_monthly_attendance',
+      name: 'class_monthly_attendance',
+      component: ClassMonthlyAttendance
+    },
+    {
+      path: '/schedule_test',
+      name: 'schedule_test',
+      component: ScheduleTest
     }
+
   ]
 })

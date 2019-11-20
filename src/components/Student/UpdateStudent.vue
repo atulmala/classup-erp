@@ -421,6 +421,7 @@ export default {
           }
 
           confirm("student successfully updated");
+          self.$router.replace("/student_search");
         })
         .catch(function(error) {
           console.log(error);

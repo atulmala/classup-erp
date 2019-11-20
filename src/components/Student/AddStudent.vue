@@ -206,7 +206,7 @@ export default {
       confirm: false,
       caption: "",
       allow_edit: false,
-      max25chars: v => v.length <= 30 || "Input too long!";
+      max25chars: v => v.length <= 30 || "Input too long!",
       overlay: false
     };
   },
@@ -373,6 +373,7 @@ export default {
           }
 
           confirm("student successfully added");
+          self.$router.replace("/student_search");
         })
         .catch(function(error) {
           console.log(error);
