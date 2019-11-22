@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import App from '../App'
 import Dashboard from '../components/Common/Dashboard'
 import StudentSearch from '../components/Common/StudentSearch'
 import FeePayment from '../components/Fee/FeePayment'
@@ -13,6 +12,7 @@ import Marksheet from '../components/Exams/Marksheet'
 import BulkSMS from '../components/Communication/BulkSMS'
 import ClassMonthlyAttendance from '../components/TeacherMenu/ClassMonthlyAttendance'
 import ScheduleTest from '../components/Exams/ScheduleTest'
+import ShowTestList from '../components/Exams/ShowTestList'
 
 Vue.use(Router)
 
@@ -82,7 +82,11 @@ export default new Router({
       path: '/schedule_test',
       name: 'schedule_test',
       component: ScheduleTest
+    },
+    {
+      path: '/show_test_list',
+      name: 'show_test_list',
+      component: ShowTestList
     }
-
   ]
 })

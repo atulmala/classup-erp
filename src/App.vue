@@ -221,6 +221,10 @@ export default {
         {
           title: "Schedule Test",
           action: this.schedule_test
+        },
+        {
+          title: "Test Marks Entry",
+          action: this.test_marks_entry
         }
       ],
       right: null
@@ -258,6 +262,10 @@ export default {
     schedule_test() {
       this.$store.dispatch("set_coming_status", "schedule_test")
       this.$router.replace("/schedule_test")
+    },
+    test_marks_entry()  {
+      this.$store.dispatch("set_coming_status", "show_test_list")
+      this.$router.replace("/show_test_list")
     },
     class_monthly_attendance()  {
       this.$store.dispatch("set_coming_status", "class_monthly_attendance");

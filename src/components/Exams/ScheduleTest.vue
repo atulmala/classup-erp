@@ -19,6 +19,7 @@
                 :items="class_list"
                 label="Class"
                 v-model="the_class"
+                @change="exam_selected"
                 v-on:focus="dismiss()"
               ></v-select>
             </v-flex>
@@ -178,7 +179,6 @@ export default {
       passing_marks: "",
       syllabus: "",
       date: "",
-
       caption: "",
       alert_type: "",
       alert_message: "",
@@ -228,12 +228,13 @@ export default {
         self.ip.concat("/academics/subject_list/", self.school_id, "/")
       );
     }
+    
     axios
       .all([
         get_exam_list(),
         get_class_list(),
         get_section_list(),
-        get_subject_list()
+        get_subject_list(),
       ])
       .then(
         axios.spread(function(exams, classes, sections, subjects) {
@@ -282,15 +283,21 @@ export default {
     exam_selected() {
       let i = this.exam_list.indexOf(this.exam);
       this.exam_id = this.exam_id_list[i];
-      console.log("exam_id = ", this.exam_id)
       this.start_date = this.start_dates[i];
       this.test_date = this.start_date;
       this.end_date = this.end_dates[i];
 
       this.exam_type = this.exam_types[i];
       if (this.exam_type == "term") {
-        this.max_marks = 80;
-        this.passing_marks = 25;
+        let higher_classes = ["XI", "XII"]
+        if (higher_classes.indexOf(this.the_class) > -1)  {
+          this.max_marks = 100;
+          this.passing_marks = 40;
+        }
+        else  {
+          this.max_marks = 80;
+          this.passing_marks = 30;
+        }
       } else {
         this.max_marks = "";
         this.passing_marks = "";
@@ -351,7 +358,7 @@ export default {
             ddmmyyyy +
             "). Is this a coincidence?";
         } else {
-          this.confirm = true
+          this.confirm = true;
           this.caption = "Confirm Test Scheduling";
           this.alert_message = "Are you sure you want to schedule this Test?";
         }
@@ -359,7 +366,7 @@ export default {
     },
     schecule_test() {
       let self = this;
-      this.confirm = false
+      this.confirm = false;
       this.waiting = true;
       this.loading = true;
       let ip = this.$store.getters.get_server_ip;
@@ -369,33 +376,29 @@ export default {
       if (self.grade_based) {
         self.max_marks = self.passing_marks = 0;
       }
-      
 
       let url = ip.concat("/exam/schedule_test/");
       console.log("url=", url);
 
       axios
-        .post(
-          url,
-          {
-            school_id: school_id,
-            teacher: teacher,
-            exam_id: self.exam_id,
-            the_class: self.the_class,
-            section: self.section,
-            subject: self.subject,
-            date: self.test_date,
-            grade_based: self.grade_based,
-            max_marks: self.max_marks,
-            passing_marks: self.passing_marks,
-            syllabus: self.syllabus
-          }
-        )
+        .post(url, {
+          school_id: school_id,
+          teacher: teacher,
+          exam_id: self.exam_id,
+          the_class: self.the_class,
+          section: self.section,
+          subject: self.subject,
+          date: self.test_date,
+          grade_based: self.grade_based,
+          max_marks: self.max_marks,
+          passing_marks: self.passing_marks,
+          syllabus: self.syllabus
+        })
         .then(function(response) {
           self.waiting = false;
           self.loading = false;
           console.log(response);
-          
+
           confirm(response.data["outcome"]);
         })
         .catch(function(error) {
