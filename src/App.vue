@@ -1,26 +1,26 @@
 <template>
   <v-app>
     <div id="app">
-      <v-toolbar
+      <v-app-bar
         app
         class="my-toolbar"
         v-if="get_logged_status"
         :fixed="toolbar.fixed"
         :clipped-left="toolbar.clippedLeft"
       >
-        <v-toolbar-side-icon :disabled="!get_logged_status" @click.stop="toggleDrawer"></v-toolbar-side-icon>
+        <v-app-bar-nav-icon :disabled="!get_logged_status" @click.stop="toggleDrawer"></v-app-bar-nav-icon>
         <v-toolbar-title>{{ get_title }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-chip color="indigo" text-color="white">
+          <v-chip color="indigo" large class="ma-2" text-color="white">
             <v-avatar>
               <v-icon>account_circle</v-icon>
             </v-avatar>
             {{ get_user_name }}
           </v-chip>
-          <v-btn flat :disabled="!get_logged_status" v-on:click="logout()">Log Out</v-btn>
+          <v-btn text :disabled="!get_logged_status" v-on:click="logout()">Log Out</v-btn>
         </v-toolbar-items>
-      </v-toolbar>
+      </v-app-bar>
       <v-navigation-drawer
         app
         v-if="get_logged_status"
@@ -30,90 +30,100 @@
         :mini-variant="drawer.mini"
         v-model="drawer.open"
       >
-        <v-divider></v-divider>`
-        <v-list dense class="pt-0">
-          <v-list-group prepend-icon value="true" >
+        <v-list class="pt-0">
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-home</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item>
+          <v-divider class="mx-4"></v-divider>
+          <v-list-group prepend-icon value="true">
             <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>Communications & Messaging</v-list-tile-title>
-              </v-list-tile>
+              
+                <v-list-item-title>Communications</v-list-item-title>
             </template>
-            <v-list-tile
+            <v-list-item
               v-for="item in communication_items"
               :key="item.title"
               v-on:click="item.action"
             >
-              <v-list-tile-action>
+              <v-list-item-action>
                 <v-icon>{{ item.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
-          <v-list-group prepend-icon value="true" >
+          <v-divider class="mx-4"></v-divider>
+          <v-list-group prepend-icon value="true">
             <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>Student Management</v-list-tile-title>
-              </v-list-tile>
+              <v-list-item>
+                <v-list-item-title>Student Management</v-list-item-title>
+              </v-list-item>
             </template>
-            <v-list-tile
+            <v-list-item
               v-for="item in student_management_items"
               :key="item.title"
               v-on:click="item.action"
             >
-              <v-list-tile-action>
+              <v-list-item-action>
                 <v-icon>{{ item.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
-          <v-list-group prepend-icon value="true" >
-            <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>Exam & Results</v-list-tile-title>
-              </v-list-tile>
-            </template>
-            <v-list-tile v-for="item in exam_items" :key="item.title" v-on:click="item.action">
-              <v-list-tile-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list-group>
-          <v-list-group prepend-icon value="true" >
-            <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>Fees Management</v-list-tile-title>
-              </v-list-tile>
-            </template>
-            <v-list-tile v-for="item in fee_items" :key="item.title" v-on:click="item.action">
-              <v-list-tile-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list-group>
+          <v-divider class="mx-4"></v-divider>
           <v-list-group prepend-icon value="true">
             <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>Teacher's Corner</v-list-tile-title>
-              </v-list-tile>
+              <v-list-item>
+                <v-list-item-title>Exam & Results</v-list-item-title>
+              </v-list-item>
             </template>
-            <v-list-tile v-for="item in teacher_menu" :key="item.title" v-on:click="item.action">
-              <v-list-tile-action>
+            <v-list-item v-for="item in exam_items" :key="item.title" v-on:click="item.action">
+              <v-list-item-action>
                 <v-icon>{{ item.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-divider class="mx-4"></v-divider>
+          <v-list-group prepend-icon value="true">
+            <template v-slot:activator>
+              <v-list-item v-on="on">
+                <v-list-item-title>Fees Management</v-list-item-title>
+              </v-list-item>
+            </template>
+            <v-list-item v-for="item in fee_items" :key="item.title" v-on:click="item.action">
+              <v-list-item-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-divider class="mx-4"></v-divider>
+          <v-list-group prepend-icon value="true">
+            <template v-slot:activator>
+              <v-list-item>
+                <v-list-item-title>Teacher's Corner</v-list-item-title>
+              </v-list-item>
+            </template>
+            <v-list-item v-for="item in teacher_menu" :key="item.title" v-on:click="item.action">
+              <v-list-item-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
@@ -233,12 +243,12 @@ export default {
   mounted: function() {
     let self = this;
 
-    self.user_type = this.$store.getters.get_user_type
-    console.log("user_type = " + self.user_type)
+    self.user_type = this.$store.getters.get_user_type;
+    console.log("user_type = " + self.user_type);
   },
   updated: function() {
-    self.user_type = this.$store.getters.get_user_type
-    console.log("user_type = " + self.user_type)
+    self.user_type = this.$store.getters.get_user_type;
+    console.log("user_type = " + self.user_type);
   },
   methods: {
     toggleDrawer() {
@@ -260,14 +270,14 @@ export default {
       this.$router.replace("/");
     },
     schedule_test() {
-      this.$store.dispatch("set_coming_status", "schedule_test")
-      this.$router.replace("/schedule_test")
+      this.$store.dispatch("set_coming_status", "schedule_test");
+      this.$router.replace("/schedule_test");
     },
-    test_marks_entry()  {
-      this.$store.dispatch("set_coming_status", "show_test_list")
-      this.$router.replace("/show_test_list")
+    test_marks_entry() {
+      this.$store.dispatch("set_coming_status", "show_test_list");
+      this.$router.replace("/show_test_list");
     },
-    class_monthly_attendance()  {
+    class_monthly_attendance() {
       this.$store.dispatch("set_coming_status", "class_monthly_attendance");
       this.$router.replace("/class_monthly_attendance");
     },
@@ -354,7 +364,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

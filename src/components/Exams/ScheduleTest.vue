@@ -5,7 +5,7 @@
         <v-container fluid class="pa-md-4 mx-lg-auto">
           <h1>{{ heading }}</h1>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-select
                 :items="exam_list"
                 label="Exam"
@@ -13,8 +13,8 @@
                 @change="exam_selected"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
                 label="Class"
@@ -22,56 +22,56 @@
                 @change="exam_selected"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="section_list"
                 label="Section"
                 v-model="section"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="subject_list"
                 label="Subject"
                 v-model="subject"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-checkbox
                 v-model="grade_based"
                 value="grade_based"
                 :label="`Grade Based?`"
                 @change="set_grade_based()"
               ></v-checkbox>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field
                 label="Max Marks"
                 v-model="max_marks"
                 :disabled="exam_type == 'term' || grade_based"
                 v-on:focus="dismiss()"
               ></v-text-field>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field
                 label="Pass Marks"
                 v-model="passing_marks"
                 :disabled="exam_type == 'term' || grade_based"
                 v-on:focus="dismiss()"
               ></v-text-field>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="3">
               <v-text-field label="Syllabus (optional)" v-model="syllabus" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
           </v-layout>
           <h3>Select Date</h3>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md4>
+            <v-col cols="12" md="3">
               <v-date-picker
                 v-model="test_date"
                 show-current
@@ -80,7 +80,7 @@
                 :max="end_date"
                 @change="dismiss()"
               ></v-date-picker>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout></v-layout>
           <v-layout xs4 row wrap justify-space-around>
@@ -88,7 +88,7 @@
               <v-btn
                 :loading="loading"
                 :disabled="loading"
-                color="info"
+                color="green"
                 @click="loader = 'loading'"
                 v-on:click="validate()"
               >
@@ -100,13 +100,13 @@
             </div>
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
-            <v-flex xs6 sm6 md4>
-              <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
-            </v-flex>
+            <v-col cols="12" md="6">
+              <v-alert :value="showDismissibleAlert" :color="alert_color" :type="alert_type">{{ alert_message }}</v-alert>
+            </v-col>
           </v-layout>
         </v-container>
       </v-form>
-      <v-dialog v-model="confirm_date" persistent max-width="360">
+      <v-dialog v-model="confirm_date" persistent max-width="440">
         <v-card>
           <v-card-title class="headline">{{ caption }}</v-card-title>
           <v-card-text>{{ alert_message }}</v-card-text>
@@ -114,22 +114,22 @@
             <v-spacer></v-spacer>
             <v-btn
               color="green darken-1"
-              flat="flat"
+              text
               @click="confirm_date = false; confirm = true; 
             caption='Confirm Test Scheduling'; alert_message = 'Are you sure you want to schedule this Test?'"
             >Yes, Date is Correct</v-btn>
-            <v-btn color="green darken-1" flat="flat" @click="confirm_date = false">Change Date</v-btn>
+            <v-btn color="amber darken-1" text @click="confirm_date = false">Change Date</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="confirm" persistent max-width="360">
+      <v-dialog v-model="confirm" persistent max-width="440">
         <v-card>
           <v-card-title class="headline">{{ caption }}</v-card-title>
           <v-card-text>{{ alert_message }}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat="flat" @click="schecule_test()">OK</v-btn>
-            <v-btn color="green darken-1" flat="flat" @click="confirm = false">Cancel</v-btn>
+            <v-btn color="green darken-1" text @click="schecule_test()">OK</v-btn>
+            <v-btn color="green darken-1" text @click="confirm = false">Cancel</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -138,7 +138,7 @@
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
         </div>
       </template>
-      <v-flex d-flex xs8 order-xs5 offset-sm2></v-flex>
+      <v-col cols="12" md="3"></v-col>
     </v-content>
   </v-app>
 </template>
@@ -183,6 +183,7 @@ export default {
       alert_type: "",
       alert_message: "",
       showDismissibleAlert: false,
+      alert_color: "",
       waiting: false,
       confirm: "",
 
@@ -309,36 +310,43 @@ export default {
       if (this.test_date == "") {
         this.alert_message = "Please select a date for this Test";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_schedule = false;
       }
       if (this.max_marks == "") {
         this.alert_message = "Please enter Maximum Marks for this Test";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_schedule = false;
       }
       if (this.passing_marks == "") {
         this.alert_message = "Please enter Passing Marks for this Test";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_schedule = false;
       }
       if (this.subject == "") {
         this.alert_message = "Please select a Subject";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_schedule = false;
       }
       if (this.section == "") {
         this.alert_message = "Please select a Section";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_schedule = false;
       }
       if (this.the_class == "") {
         this.alert_message = "Please select a Class";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_schedule = false;
       }
       if (this.exam == "") {
         this.alert_message = "Please select an Exam";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_schedule = false;
       }
       if (can_schedule) {

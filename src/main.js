@@ -7,10 +7,15 @@ import router from './router'
 import { store } from './store.js'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
-import VFileInput from 'v-file-input'
+import '@mdi/font/css/materialdesignicons.css'
  
-Vue.use(VFileInput)
-
+const opts = {
+  theme: { disable: true },
+  iconfont: 'fa4',
+  icons: {
+    iconfont: 'mdiSvg' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
+  }
+}
 Vue.use(Vuetify)
 
 Vue.config.productionTip = false
@@ -19,6 +24,7 @@ new Vue({
   el: '#app',
   router,
   store,
+  vuetify: new Vuetify(opts),
   components: { App },
   template: '<App/>'
 })

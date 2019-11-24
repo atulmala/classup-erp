@@ -1,31 +1,49 @@
 <template>
   <v-app>
     <v-content>
-      <h3>Test List (Click on Subject to start entering marks)</h3>
-      <v-flex d-flex xs9 order-xs5 offset-sm1>
-        <v-data-table dark dense :headers="headers" :items="tests" class="elevation-1">
-          <template slot="items" slot-scope="props">
-            <tr @click="showAlert(props.item)">
-              <td class="text-xs-left">{{ props.item.date_conducted }}</td>
-              <td class="text-xs-left">{{ props.item.subject }}</td>
-              <td class="text-xs-left">{{ props.item.the_class }}</td>
-              <td class="text-xs-left">{{ props.item.exam }}</td>
-              <td class="text-xs-left">{{ props.item.test_type }}</td>
-              <td class="text-xs-left">
-                <v-chip color="teal">{{ props.item.max_marks }}</v-chip>
-              </td>
-              <td class="text-xs-left">
-                <v-chip :color="status_color(props.item.is_completed)" class="ma-2" label>{{ props.item.is_completed }}</v-chip>
-              </td>
-              <td class="text-xs-left">
-                <tr>
-                  <v-icon small color="blue" class="mr-2" @click="editItem(item)">edit</v-icon>
-                  <v-icon small color="red" @click="deleteItem(item)">delete</v-icon>
-                </tr>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
+      <v-flex d-flex xs8 order-xs offset-sm2>
+        <template>
+          <v-data-table
+            dark
+            loading-text="Fetching tests... Please wait"
+            :headers="headers"
+            :items="tests"
+            item-key="id"
+            :items-per-page="10"
+            class="elevation-1"
+          >
+            <template v-slot:top>
+              <v-toolbar flat color="blue">
+                <v-toolbar-title>Test List</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>Click on a subject to enter marks
+                <v-spacer></v-spacer>
+                <v-btn color="orange" class="mb-0">Schedule Test</v-btn>
+              </v-toolbar>
+            </template>
+            <template v-slot:item.max_marks="{ item }">
+              <v-chip small color="teal" dark>{{ item.max_marks }}</v-chip>
+            </template>
+            <template v-slot:item.is_completed="{ item }">
+              <v-chip outlined="" :color="status_color(item.is_completed)" >{{ item.is_completed }}</v-chip>
+            </template>
+            <template v-slot:item.action="{ item }">
+              <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
+              <v-icon small @click="deleteItem(item)">delete</v-icon>
+            </template>
+            <template v-slot:expanded-item="{ item }">
+              <v-card flat>
+                <v-card-subtitle
+                  class="headline mb-0"
+                >Exam {{ item.exam }} Marks Entry - Subject: {{ item.subject }} Class: {{ item.the_class }}</v-card-subtitle>
+                <v-card-text></v-card-text>
+                <v-card-actions>
+                  <v-btn text>Save</v-btn>
+                  <v-btn text>Submit</v-btn>
+                </v-card-actions>
+              </v-card>
+            </template>
+          </v-data-table>
+        </template>
       </v-flex>
     </v-content>
   </v-app>
@@ -38,7 +56,7 @@ export default {
   data() {
     return {
       loader: null,
-      loading: false,
+      loading: true,
       tests: [],
       test_id: "",
       date_conducted: "",
@@ -66,9 +84,12 @@ export default {
         { text: "Exam", value: "exam" },
         { text: "Type", value: "test_type" },
         { text: "Max Marks", value: "max_marks" },
-        { text: "Status", value: "completed" },
+        { text: "Status", value: "is_completed" },
         { text: "Actions", value: "action", sortable: false }
-      ]
+      ],
+
+      formTitle: "Schedule a new Test",
+      dialog: true
     };
   },
   mounted: function() {
@@ -121,6 +142,8 @@ export default {
             }
             self.tests.push(test);
           }
+          console.log(self.tests);
+          self.loading = false;
         }
       })
       .catch(function(error) {
@@ -130,70 +153,24 @@ export default {
   },
 
   methods: {
-    status_color(status)  {
-      if (status == "Pending")
-        return "amber"
-      if (status == "Completed")
-        return "green"
+    status_color(status) {
+      if (status == "Pending") return "amber";
+      if (status == "Completed") return "green";
     },
     dismiss() {
       this.showDismissibleAlert = false;
     },
     showAlert(a) {
-      if (event.target.classList.contains("btn__content")) return;
-      let coming_from = this.$store.getters.get_coming_from;
-      if (coming_from == "fee_payment") {
-        let response = confirm(
-          "Are you sure you want to process the fees for " +
-            a.name +
-            " (" +
-            a.reg_no +
-            ")?"
-        );
-        if (response) {
-          this.$store.dispatch("set_student_id", a.reg_no);
-          this.$store.dispatch("set_student_name", a.name);
-          this.$store.dispatch("set_parent", a.parent);
-          this.$router.replace("/fee_payment");
-        }
-      }
-
-      if (coming_from == "correction") {
-        let response = confirm(
-          "Are you sure you want to do correction for " +
-            a.name +
-            " (" +
-            a.reg_no +
-            ")?"
-        );
-        if (response) {
-          this.$store.dispatch("set_student_id", a.reg_no);
-          this.$store.dispatch("set_student_name", a.name);
-          var the_class = a.current_class;
-          console.log(the_class);
-          let section = a.current_section;
-          console.log(section);
-          this.$store.dispatch("set_student_class", a.the_class);
-          this.$store.dispatch("set_parent", a.parent);
-          this.$router.replace("/correction");
-        }
-      }
-
-      if (coming_from == "update_student") {
-        let response = confirm(
-          "Are you sure you want to do update for " +
-            a.name +
-            " (" +
-            a.reg_no +
-            ")?"
-        );
-        if (response) {
-          this.$store.dispatch("set_student_id", a.reg_no);
-          this.$store.dispatch("set_student_name", a.name);
-          this.$store.dispatch("set_student_class", a.the_class);
-          this.$store.dispatch("set_parent", a.parent);
-          this.$router.replace("/update_student");
-        }
+      console.log(a);
+      let response = confirm(
+        "Are you sure you want to Enter/Update marks for this test ",
+        a.id,
+        " ",
+        a.subject,
+        "a.date_coducted"
+      );
+      if (response) {
+        this.$store.dispatch("set_student_id", a.id);
       }
     }
   }

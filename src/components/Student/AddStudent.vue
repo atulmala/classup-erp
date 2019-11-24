@@ -4,131 +4,131 @@
       <v-form>
         <v-container fluid>
           <div class="text-center">
-            <v-overlay :value="overlay">
-            </v-overlay>
+            <v-overlay :value="overlay"></v-overlay>
           </div>
           <h2>Add Student</h2>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-text-field label="Reg/Adm/Sch No" v-model="reg_no" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="First Name" v-model="first_name" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="Surname/Last Name" v-model="last_name" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
 
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
                 label="Class/Standard"
                 v-model="the_class"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="section_list"
                 label="Section"
                 v-model="section"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs6 row wrap justify-center>
-            <v-flex xs6 sm6 md3 justify-space-between>
+            <v-col cols="12" md="3">
               <v-radio-group v-model="gender" @click="dismiss()" row>
                 <v-radio label="Male" value="male"></v-radio>
                 <v-radio label="Female" value="female"></v-radio>
                 <v-radio label="Other" value="other"></v-radio>
               </v-radio-group>
-            </v-flex>
-            <v-flex xs6 sm6 md2 justify-end>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-menu
-                lazy
+                ref="menu"
+                v-model="menu"
                 :close-on-content-click="false"
-                v-model="dob_menu"
+                :return-value.sync="date"
                 transition="scale-transition"
                 offset-y
-                full-width
-                :nudge-right="40"
-                max-width="290px"
                 min-width="290px"
               >
-                <v-text-field
-                  slot="activator"
-                  label="Date of Birth(DOB)"
-                  v-model="dob"
-                  prepend-icon="event"
-                  readonly
-                ></v-text-field>
-                <v-date-picker v-model="dob" title="Date of Birth(DOB)" no-title scrollable actions>
-                  <template scope="{ save_dob, cancel_dob }"></template>
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="date"
+                    label="Picker in menu"
+                    prepend-icon="event"
+                    readonly
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
                 </v-date-picker>
               </v-menu>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="Adhar No" v-model="adhar" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
 
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-text-field label="Blood Group" v-model="blood_group" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="1">
               <v-text-field label="House" v-model="house" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs3 sm3 md2>
+            <v-col cols="12" md="2">
               <v-text-field label="Father Name" v-model="father_name" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-            <v-flex xs3 sm3 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="Email" v-model="email" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-            <v-flex xs3 sm3 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="Father Mob" v-model="father_mobile" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-            <v-flex xs3 sm3 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="Mother Name" v-model="mother_name" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-            <v-flex xs3 sm3 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="Mother Mob" v-model="mother_mobile" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs6 row wrap justify-center>
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-text-field
                 label="Father Occupation"
                 v-model="father_occupation"
                 v-on:focus="dismiss()"
               ></v-text-field>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field
                 label="Mother Occupation"
                 v-model="mother_occupation"
                 v-on:focus="dismiss()"
               ></v-text-field>
-            </v-flex>
-            <v-flex xs6 sm6 md2 justify-space-between>
+            </v-col>
+            <v-col cols="12" md="3" justify-space-between>
               <v-radio-group v-model="transport" @click="dismiss()" row>
                 <v-radio label="Bus User" value="bus_user"></v-radio>
                 <v-radio label="Walker" value="walker"></v-radio>
               </v-radio-group>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="1">
               <v-text-field label="Bus Route" v-model="bus_rout" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-text-field label="Bus Stop" v-model="bus_stop" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md10>
+            <v-col cols="12" md="10">
               <v-text-field label="Address" v-model="address" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
           </v-layout>
 
           <v-layout xs4 row wrap justify-space-around>
@@ -136,7 +136,7 @@
               <v-btn
                 :loading="loading"
                 :disabled="loading"
-                color="info"
+                color="green"
                 @click="loader = 'loading'"
                 v-on:click="validate_entries()"
               >
@@ -147,7 +147,15 @@
               </v-btn>
             </div>
           </v-layout>
-          <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+          <v-layout xs4 row wrap justify-space-around>
+            <v-col cols="12" md="10">
+              <v-alert
+                :value="showDismissibleAlert"
+                :color="alert_color"
+                :type="alert_type"
+              >{{ alert_message }}</v-alert>
+            </v-col>
+          </v-layout>
         </v-container>
       </v-form>
       <v-dialog v-model="confirm" persistent max-width="360">
@@ -203,6 +211,7 @@ export default {
 
       showDismissibleAlert: false,
       alert_type: "error",
+      alert_color: "",
       confirm: false,
       caption: "",
       allow_edit: false,
@@ -258,62 +267,74 @@ export default {
         this.alert_message =
           "Please enter Registration/Admission/Scholar Number";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.first_name == "") {
         this.alert_message = "Please enter First Name";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.last_name == "") {
         this.alert_message = "Please enter Last Name";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.the_class == "") {
         this.alert_message = "Please Select Class in which student is admitted";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.section == "") {
         this.alert_message =
           "Please Select Section in which student is admitted";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.gender == "") {
         this.alert_message = "Please Select Gender)";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.dob == "") {
         this.alert_message = "Please enter Student's Date of Birth (DOB)";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.father_name == "") {
         this.alert_message = "Please enter Father's name";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.father_mobile == "") {
         this.alert_message = "Please enter Father's mobile number (10 digits)";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.mother_name == "") {
         this.alert_message = "Please enter Mother's name";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.transport == "") {
         this.alert_message = "Please mention whether Bus user or Walker";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.address == "") {
         this.alert_message = "Please enter Address";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
 

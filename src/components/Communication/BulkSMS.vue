@@ -2,10 +2,10 @@
   <v-app>
     <v-content>
       <v-form enctype="multipart/form-data">
-        <v-container  fluid>
+        <v-container fluid>
           <h2 id="h2">Send Bulk SMS (Broadcast)</h2>
           <v-layout row wrap justify-center>
-            <v-flex xs6 sm6 md10>
+            <v-col cols="12" md="10">
               <h3 id="h3">Compose Message</h3>
               <p />
               <v-textarea
@@ -19,7 +19,7 @@
                 :solo="true"
                 counter="400"
               ></v-textarea>
-            </v-flex>
+            </v-col>
           </v-layout>
           <template>
             <div class="text-xs-center">
@@ -34,23 +34,22 @@
           </template>
           <v-layout row wrap>
             <v-container>
-              <v-flex xs12 md12>
+              <v-col cols="12" md="2">
                 <h3>Select Recepients</h3>
                 <div class="mr-4 ml-4 whiteback userGroupHeight">
                   <v-layout row wrap>
                     <v-checkbox
-                      light
                       label="All Classes"
                       v-on:change="select_all_classes"
                       @change="dismiss()"
                     ></v-checkbox>
                   </v-layout>
                 </div>
-              </v-flex>
-              <v-flex xs12 md12>
+              </v-col>
+              <v-col cols="12" md="12">
                 <div class="mr-4 ml-4 whiteback userGroupHeight">
                   <v-layout row wrap>
-                    <v-flex v-for="a_class in class_list" :key="a_class">
+                    <v-col v-for="a_class in class_list" :key="a_class" cols="12" md="1">
                       <v-checkbox
                         v-model="selected_classes"
                         :label="a_class"
@@ -59,14 +58,8 @@
                         v-on:focus="dismiss()"
                         @change="add_recepient; dismiss()"
                       ></v-checkbox>
-                    </v-flex>
-                  </v-layout>
-                </div>
-              </v-flex>
-              <v-flex xs12 md12>
-                <div class="mr-4 ml-4 whiteback userGroupHeight">
-                  <v-layout row wrap>
-                    <v-flex v-for="a_staff in staff" :key="a_staff" xs2>
+                    </v-col>
+                    <v-col v-for="a_staff in staff" :key="a_staff" md="1">
                       <v-checkbox
                         light
                         v-model="selected_staff"
@@ -74,47 +67,44 @@
                         :value="a_staff"
                         @change="dismiss()"
                       ></v-checkbox>
-                    </v-flex>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-file-input
+                        label="Optional - Attach file (Image jpeg or png, PDF)"
+                        ref="file_input"
+                        :name="uploadFieldName"
+                        @change="onFileChanged"
+                        accept="image/*, .pdf"
+                      />
+                    </v-col>
                   </v-layout>
                 </div>
-              </v-flex>
+              </v-col>
             </v-container>
           </v-layout>
-          <h3>Optional - Attach file (Allowed file types - Image jpeg or png, PDF)</h3>
-          <v-flex xs6 md7>
-            <v-layout xs4 row wrap justify-space-around>
-              <div class="mr-5 ml0 whiteback userGroupHeight">
-                <v-layout row-wrap>
-                  <input
-                    type="file"
-                    ref="file_input"
-                    :name="uploadFieldName"
-                    :disabled="isSaving"
-                    @change="onFileChanged"
-                    accept="image/*, .pdf"
-                    class="input-file"
-                  />
-                </v-layout>
-              </div>
-            </v-layout>
-          </v-flex>
+
           <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
-              <v-btn color="info" @click="validate()">
+              <v-btn color="green" @click="validate()">
                 Send Message
                 <span slot="loader" class="custom-loader">
                   <v-icon light>cached</v-icon>
                 </span>
               </v-btn>
-              <v-btn color="info" @click="cancel()">
+              <v-btn color="amber" @click="cancel()">
                 Cancel
                 <span slot="loader" class="custom-loader">
                   <v-icon light>cached</v-icon>
                 </span>
               </v-btn>
+              
             </div>
           </v-layout>
-          <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+          <v-layout xs4 row wrap justify-space-around>
+            <v-col cols="12" md="10">
+              <v-alert :value="showDismissibleAlert" :color="alert_color" :type="alert_type">{{ alert_message }}</v-alert>
+            </v-col>
+          </v-layout>
         </v-container>
       </v-form>
       <v-dialog v-model="confirm" persistent max-width="360">
@@ -198,12 +188,14 @@ export default {
       if (this.message == "") {
         this.showDismissibleAlert = true;
         this.alert_message = "Message is empty!";
+        this.alert_color = "red";
         this.good_to_send = false;
       }
       if (this.message.length > 400) {
         this.showDismissibleAlert = true;
         this.alert_message =
           "Message is too long. Please restrict to 400 characters max";
+        this.alert_color = "red";
         this.good_to_send = false;
       }
       if (this.final_recepients.length == 0) {
@@ -252,7 +244,7 @@ export default {
       self.selected_classes = [];
       self.selected_staff = [];
       self.$refs.file_input.value = null;
-      
+
       try {
         let res = await axios.post(url, formData);
         console.log(res);

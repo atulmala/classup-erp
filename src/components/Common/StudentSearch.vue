@@ -5,33 +5,33 @@
         <v-container>
           <h2>Student Search</h2>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="3">
               <v-text-field label="Reg/Adm/Sch Number" v-model="reg_no" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
 
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="3">
               <v-text-field label="First Name" v-model="first_name" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
 
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="3">
               <v-text-field label="Surname/Last Name" v-model="last_name" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
 
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
                 label="Class/Standard"
                 v-model="the_class"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
               <v-btn
                 :loading="loading"
                 :disabled="loading"
-                color="info"
+                color="green"
                 @click="loader = 'loading'"
                 v-on:click="search()"
               >
@@ -44,9 +44,9 @@
           </v-layout>
           <div class="text-xs-center">
             <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md6>
-            <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
-            </v-flex>
+              <v-col cols="12" md="6">
+                <v-alert :value="showDismissibleAlert" :color="alert_color" :type="alert_type">{{ alert_message }}</v-alert>
+              </v-col>
             </v-layout>
           </div>
         </v-container>
@@ -93,6 +93,7 @@ export default {
       alert_type: "",
       alert_message: "",
       showDismissibleAlert: false,
+      alert_color: "",
       headers: [
         {
           text: "Student Name",
@@ -134,11 +135,13 @@ export default {
       if (this.reg_no == "" && this.first_name == "") {
         this.alert_message = "Search criteria provided is NOT Enough.";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_search = false;
       }
       if (this.first_name != "" && this.reg_no == "" && this.the_class == "") {
         this.alert_message = "Please specify Class";
         this.showDismissibleAlert = true;
+        this.alert_color = "red"
         can_search = false;
       }
       if (can_search) {
