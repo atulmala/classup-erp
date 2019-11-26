@@ -1,161 +1,164 @@
 <template>
   <v-app>
-    <v-content class="ma-0 pa-0 ta-0">
+    <v-content class="ma-12 pa-0 ta-4">
       <h2>Fee Details</h2>
-      <v-layout row wrap>
-        <v-flex d-flex xs6 order-xs5 offset-sm3>
-          <v-layout column>
-            <v-flex d-flex xs6>
-              <h5>Student:</h5>
-              <h3>{{ student_name }}</h3>
-              <h5>Class:</h5>
-              <h3>{{ the_class }}</h3>
-              <h5>Reg/Adm/Sch No</h5>
-              <h3>{{ student_erp_id }}</h3>
-              <h5>Parent</h5>
-              <h3>{{ parent}}</h3>
-            </v-flex>
-          </v-layout>
-        </v-flex>
+      <v-layout rxs4 row wrap justify-center offset-sm3>
+        <v-col cols="8" md="2">
+          <h5>Student:</h5>
+          <h4>{{ student_name }}</h4>
+        </v-col>
+        <v-col cols="12" md="2">
+          <h5>Class:</h5>
+          <h4>{{ the_class }}</h4>
+        </v-col>
+        <v-col cols="12" md="2">
+          <h5>Reg/Adm/Sch No</h5>
+          <h4>{{ student_erp_id }}</h4>
+        </v-col>
+        <v-col cols="12" md="2">
+          <h5>Parent</h5>
+          <h4>{{ parent}}</h4>
+        </v-col>
       </v-layout>
-      <v-flex d-flex xs6 order-xs7 offset-sm3>
-        <v-data-table
-          :headers="headers"
-          :items="heads"
-          class="elevation-1"
-          hide-actions="true"
-          loading="true"
-        >
-          <template slot="items" slot-scope="props">
-            <tr @click="click(props.item)">
-              <td class="text-xs-left">{{ props.item.head }}</td>
-              <td class="text-xs-left">
-                <v-edit-dialog 
-                  :return-value.sync="props.item.amount" 
-                  @save="update_fee(props.item)"
-                  large 
-                  lazy 
-                  persistent
-                >
-                  <div>{{ props.item.amount }}</div>
-                  <template v-slot:input>
-                    <div class="mt-3 title">Update Amount</div>
-                  </template>
-                  <template v-slot:input>
-                    <v-text-field
-                      v-model="props.item.amount"
-                      :disabled="props.item.head !== 'Transportation Fee'"
-                      label="Edit"
-                      single-line
-                      counter
-                      autofocus
-                    ></v-text-field>
-                  </template>
-                </v-edit-dialog>
-              </td>
-              <td class="text-xs-left">
-                <v-edit-dialog
-                  :return-value.sync="props.item.discount_perc"
-                  @save="apply_discount(props.item)"
-                  large
-                  lazy
-                  persistent
-                >
-                  <div>{{ props.item.discount_perc }}</div>
-                  <template v-slot:input>
-                    <div class="mt-3 title">Enter Dicount %</div>
-                  </template>
-                  <template v-slot:input>
-                    <v-text-field
-                      v-model="props.item.discount_perc"
-                      label="Edit"
-                      single-line
-                      counter
-                      autofocus
-                    ></v-text-field>
-                  </template>
-                </v-edit-dialog>
-              </td>
-              <td class="text-xs-left">{{ props.item.discount_amt }}</td>
-              <td class="text-xs-left">{{ props.item.net_payable }}</td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-flex>
-
-      <v-flex d-flex xs7 order-xs10 offset-sm3>
-        <v-form>
-          <v-container fluid>
-            <v-layout row wrap>
-              <v-flex d-flex xs2 sm6 md2>
-                <v-text-field label="Due this Month/Qtr" v-model="due_this_term" disabled="true"></v-text-field>
-              </v-flex>
-              <v-flex d-flex xs2 sm6 md2>
-                <v-text-field label="Previous Due" v-model="previous_due" disabled="true"></v-text-field>
-              </v-flex>
-              <v-flex d-flex xs2 sm6 md2>
-                <v-text-field
-                  label="Paid Till Date"
-                  v-model="paid_till_date"
-                  disabled="true"
-                  v-on:focus="dismiss()"
-                ></v-text-field>
-              </v-flex>
-              <v-flex d-flex xs2 sm6 md2>
-                <v-text-field label="Delay" v-model="delay" disabled="true"></v-text-field>
-              </v-flex>
-              <v-flex d-flex xs2 sm6 md2>
-                <v-text-field label="Penalty" v-model="late_fee" v-on:focus="dismiss()"></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row wrap>
-              <v-flex xs2 sm6 md2>
-                <v-text-field
-                  label="Other/One time Charges"
-                  v-model="one_time"
-                  v-on:focus="dismiss()"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs2 sm6 md2>
-                <v-text-field label="Waivers" v-model="waiver" v-on:focus="dismiss()"></v-text-field>
-              </v-flex>
-              <v-flex xs2 sm6 md2>
-                <v-text-field label="Net Payable" v-model="net_payable" disabled="true"></v-text-field>
-              </v-flex>
-              <v-flex xs2 sm6 md2>
-                <v-text-field label="Actual Paid" v-model="actual_paid" v-on:focus="dismiss()"></v-text-field>
-              </v-flex>
-              <v-flex xs3 sm6 md2>
-                <v-text-field label="Remaining Balance" v-model="balance" disabled="true"></v-text-field>
-              </v-flex>
-            </v-layout>
-            <v-layout row wrap>
-              <v-flex xs4 sm4 md6>
-                <v-radio-group v-model="payment_mode" @click="dismiss()" row>
-                  <v-radio label="Cash" value="cash"></v-radio>
-                  <v-radio label="Cheque" value="cheque"></v-radio>
-                  <v-radio label="Card" value="card"></v-radio>
-                  <v-radio label="Net Banking" value="netbanking"></v-radio>
-                </v-radio-group>
-              </v-flex>
-
-              <v-flex xs3 sm3 md2>
-                <v-text-field label="Cheque No" v-model="cheque_no" v-on:focus="dismiss()"></v-text-field>
-              </v-flex>
-              <v-flex xs3 sm3 md2>
-                <v-text-field label="Bank" v-model="bank" v-on:focus="dismiss()"></v-text-field>
-              </v-flex>
-            </v-layout>
-
-            <v-layout row wrap>
-              <v-btn color="success" @click="fee_history">Download Payment History</v-btn>
-              <v-btn color="success" @click="validate_fee">Accept Fee</v-btn>
-            </v-layout>
-            <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
-          </v-container>
-        </v-form>
-      </v-flex>
-
+      <v-layout rxs4 row wrap justify-center offset-sm6>
+        <v-col cols="8" md="7">
+          <v-data-table
+            dark
+            :headers="headers"
+            :items="heads"
+            class="elevation-1"
+            hide-default-footer
+            loading="true"
+          >
+            <template v-slot:item.discount_amt="props">
+              <v-edit-dialog
+                :return-value.sync="props.item.discount_amt"
+                large
+                persistent
+                @save="apply_cash_discount(props.item)"
+              >
+                <div>{{ props.item.discount_amt }}</div>
+                <template v-slot:input>
+                  <div class="mt-4 title">Enter Discount Amount</div>
+                </template>
+                <template v-slot:input>
+                  <v-text-field
+                    v-model="props.item.discount_amt"
+                    :rules="[rules.number]"
+                    label="Discount Amount"
+                    single-line
+                    counter
+                    autofocus
+                  ></v-text-field>
+                </template>
+              </v-edit-dialog>
+            </template>
+            <template v-slot:item.discount_perc="props">
+              <v-edit-dialog
+                :return-value.sync="props.item.discount_perc"
+                large
+                persistent
+                @save="apply_perc_discount(props.item)"
+              >
+                <div>{{ props.item.discount_perc }}</div>
+                <template v-slot:input>
+                  <div class="mt-4 title">Enter Discount in %</div>
+                </template>
+                <template v-slot:input>
+                  <v-text-field
+                    v-model="props.item.discount_perc"
+                    :rules="[rules.number]"
+                    label="% Discount"
+                    single-line
+                    counter
+                    autofocus
+                  ></v-text-field>
+                </template>
+              </v-edit-dialog>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-layout>
+      <v-form>
+        <v-container fluid>
+          <v-layout row wrap justify-center>
+            <v-col cols="8" md="1">
+              <v-text-field label="Due this Month/Qtr" v-model="due_this_term" disabled></v-text-field>
+            </v-col>
+            <v-col cols="10" md="1">
+              <v-text-field label="Previous Due" v-model="previous_due" disabled></v-text-field>
+            </v-col>
+            <v-col cols="10" md="1">
+              <v-text-field
+                label="Paid Till Date"
+                v-model="paid_till_date"
+                disabled
+                v-on:focus="dismiss()"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="10" md="1">
+              <v-text-field label="Delay" v-model="delay" disabled></v-text-field>
+            </v-col>
+            <v-col cols="10" md="1">
+              <v-text-field label="Penalty" v-model="late_fee" v-on:focus="dismiss()"></v-text-field>
+            </v-col>
+          </v-layout>
+          <v-layout row wrap justify-center>
+            <v-col cols="8" md="1">
+              <v-text-field
+                label="Other/One time Charges"
+                v-model="one_time"
+                v-on:focus="dismiss()"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="8" md="1">
+              <v-text-field label="Waivers" v-model="waiver" v-on:focus="dismiss()"></v-text-field>
+            </v-col>
+            <v-col cols="8" md="1">
+              <v-text-field label="Net Payable" v-model="net_payable" disabled></v-text-field>
+            </v-col>
+            <v-col cols="8" md="1">
+              <v-text-field label="Actual Paid" v-model="actual_paid" v-on:focus="dismiss()"></v-text-field>
+            </v-col>
+            <v-col cols="8" md="1">
+              <v-text-field label="Remaining Balance" v-model="balance" disabled></v-text-field>
+            </v-col>
+          </v-layout>
+          <v-layout row wrap justify-center>
+            <v-col cols="8" md="2">
+              <v-radio-group v-model="payment_mode" @click="dismiss()" row>
+                <v-radio label="Cash" value="cash"></v-radio>
+                <v-radio label="Cheque" value="cheque"></v-radio>
+                <v-radio label="Card" value="card"></v-radio>
+                <v-radio label="Net Banking" value="netbanking"></v-radio>
+              </v-radio-group>
+            </v-col>
+            <v-col cols="8" md="1">
+              <v-text-field label="Cheque No" v-model="cheque_no" v-on:focus="dismiss()"></v-text-field>
+            </v-col>
+            <v-col cols="8" md="1">
+              <v-text-field label="Bank" v-model="bank" v-on:focus="dismiss()"></v-text-field>
+            </v-col>
+          </v-layout>
+          <v-layout row wrap justify-center>
+            <v-col cols="8" md="3">
+              <v-btn color="purple" @click="fee_history">Download Payment History</v-btn>
+            </v-col>
+            <v-col cols="8" md="2">
+              <v-btn color="green" @click="validate_fee">Accept Fee</v-btn>
+            </v-col>
+          </v-layout>
+          <v-layout row wrap justify-center>
+            <v-col cols="8" md="6">
+              <v-alert
+                :value="showDismissibleAlert"
+                :color="alert_color"
+                :type="alert_type"
+              >{{ alert_message }}</v-alert>
+            </v-col>
+          </v-layout>
+        </v-container>
+      </v-form>
       <v-dialog v-model="confirm" persistent max-width="360">
         <v-card>
           <v-card-title class="headline">{{ caption }}</v-card-title>
@@ -190,12 +193,12 @@ export default {
           text: "Head",
           align: "left",
           sortable: false,
-          value: "name"
+          value: "head"
         },
-        { text: "Amount", value: "reg_no" },
-        { text: "Discount (%)", value: 0.0 },
-        { text: "Dicsount (Amount)", value: 0.0 },
-        { text: "Net payable", value: 0.0 }
+        { text: "Amount", value: "amount" },
+        { text: "Discount (%)", value: "discount_perc" },
+        { text: "Dicsount (Amount)", value: "discount_amt" },
+        { text: "Net payable", value: "net_payable" }
       ],
       due_till_now: 0.0,
       transport_fee: 0.0,
@@ -212,10 +215,20 @@ export default {
       bank: "N/A",
       showDismissibleAlert: false,
       alert_type: "error",
+      alert_color: "",
       confirm: false,
       caption: "",
       allow_edit: false,
-      max25chars: v => v.length <= 30 || "Input too long!"
+
+      rules: {
+        max25chars: v => v.length <= 30 || "Input too long!",
+        required: value => !!value || "Required.",
+        counter: value => value.length <= 20 || "Max 20 characters",
+        number: value => {
+          const pattern = /^\d+$/;
+          return pattern.test(value) || "Enter only number";
+        }
+      }
     };
   },
   computed: {
@@ -287,6 +300,7 @@ export default {
             }
           }
         }
+        console.log("heads = ", self.heads);
         self.due_till_now = response.data["Due till now"];
         console.log(self.due_till_now);
         self.dues = response.data["Previous Outstanding"];
@@ -304,10 +318,30 @@ export default {
   },
   methods: {
     click() {},
-    apply_discount(item) {
-      console.log("inside apply_discount");
-      console.log("discount to be given = ", item.discount_perc);
+    apply_cash_discount(item) {
+      console.log(item);
+      console.log("inside apply_cash_discount");
+      console.log("discount to be given = ", item.discount_amt);
       const index = this.heads.indexOf(item);
+      var original_amt = this.heads[index]["amount"];
+      console.log("original amount = ", original_amt);
+      let discount = item.discount_amt
+      this.heads[index]["discount_amt"] = discount;
+      console.log("discount = ", discount);
+      let discounted_amt = original_amt - discount;
+      console.log("discounted amount = ", discounted_amt);
+      let discount_perc = (discount / original_amt) * 100.0
+      console.log ("% discount = ", discount_perc)
+      this.heads[index]["discount_perc"] = discount_perc.toFixed(0)
+      this.heads[index]["net_payable"] = discounted_amt;
+      this.discount_given += discount;
+    },
+    apply_perc_discount(item) {
+      console.log(item);
+      console.log("inside apply_perc_discount");
+      console.log("% discount to be given = ", item.discount_perc);
+      const index = this.heads.indexOf(item);
+      this.heads[index]["discount_perc"] = item.discount_perc
       var original_amt = this.heads[index]["amount"];
       console.log("original amount = ", original_amt);
       let discount = (original_amt * item.discount_perc) / 100.0;
@@ -316,23 +350,24 @@ export default {
       let discounted_amt = original_amt - discount;
       console.log("discounted amount = ", discounted_amt);
       this.heads[index]["net_payable"] = discounted_amt;
-      this.discount_given += discount
+      this.discount_given += discount;
     },
-    update_fee(item)  {
+    update_fee(item) {
       console.log("inside update_fee");
       const index = this.heads.indexOf(item);
-      this.heads[index]["net_payable"] = item.amount
-
+      this.heads[index]["net_payable"] = item.amount;
     },
     validate_fee() {
       if (this.actual_paid == 0.0) {
         this.alert_message = "Please enter actual fees paid";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.payment_mode == "") {
         this.alert_message = "Please select a Payment mode";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         return;
       }
       if (this.payment_mode == "cheque") {
@@ -341,12 +376,14 @@ export default {
           this.cheque_no = "";
           this.alert_message = "Please enter cheque number";
           this.showDismissibleAlert = true;
+          this.alert_color = "red";
           return;
         }
         if (this.bank == "N/A" || this.bank == "") {
           this.bank = "";
           this.alert_message = "Please enter Bank Name";
           this.showDismissibleAlert = true;
+          this.alert_color = "red";
           return;
         }
       }
@@ -388,8 +425,13 @@ export default {
       let self = this;
       let ip = this.$store.getters.get_server_ip;
       let school_id = this.$store.getters.get_school_id;
-      let reg_no = this.student_erp_id
-      let url = ip.concat("/fee_processing/fee_history_download/?school_id=", school_id, "&reg_no=", reg_no );
+      let reg_no = this.student_erp_id;
+      let url = ip.concat(
+        "/fee_processing/fee_history_download/?school_id=",
+        school_id,
+        "&reg_no=",
+        reg_no
+      );
       axios
         .get(url, {
           headers: {
@@ -403,7 +445,8 @@ export default {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
-          var file_name = self.$store.getters.get_student_name + "_fee_history.xlsx";
+          var file_name =
+            self.$store.getters.get_student_name + "_fee_history.xlsx";
           link.setAttribute("download", file_name); //or any other extension
           document.body.appendChild(link);
           link.click();

@@ -45,29 +45,43 @@
           <div class="text-xs-center">
             <v-layout xs4 row wrap justify-center>
               <v-col cols="12" md="6">
-                <v-alert :value="showDismissibleAlert" :color="alert_color" :type="alert_type">{{ alert_message }}</v-alert>
+                <v-alert
+                  :value="showDismissibleAlert"
+                  :color="alert_color"
+                  :type="alert_type"
+                >{{ alert_message }}</v-alert>
               </v-col>
             </v-layout>
           </div>
         </v-container>
       </v-form>
-      <v-flex d-flex xs8 order-xs5 offset-sm2>
-        <v-data-table
-          v-if="show_student_list"
-          :headers="headers"
-          :items="students"
-          class="elevation-1"
-        >
-          <template slot="items" slot-scope="props">
-            <tr @click="showAlert(props.item)">
-              <td class="text-xs-left">{{ props.item.name }}</td>
-              <td class="text-xs-left">{{ props.item.reg_no }}</td>
-              <td class="text-xs-left">{{ props.item.the_class }}</td>
-              <td class="text-xs-left">{{ props.item.parent }}</td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-flex>
+      <div class="text-xs-center" offset-sm4>
+        <v-col cols="10" md="2"></v-col>
+        <v-col cols="10" md="8">
+          <v-data-table
+            v-if="show_student_list"
+            :headers="headers"
+            :items="students"
+            class="elevation-1"
+          >
+            <template v-slot:body="{ items }">
+              <tbody>
+                <tr
+                  v-for="item in items"
+                  :key="item.name"
+                  @click="showAlert(item)"
+                  :class="{'selectedRow': item === selectedItem}"
+                >
+                  <td align="left">{{ item.name }}</td>
+                  <td align="left">{{ item.reg_no }}</td>
+                  <td align="left">{{ item.the_class }}</td>
+                  <td align="left">{{ item.parent }}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-data-table>
+        </v-col>
+      </div>
     </v-content>
   </v-app>
 </template>
@@ -135,13 +149,13 @@ export default {
       if (this.reg_no == "" && this.first_name == "") {
         this.alert_message = "Search criteria provided is NOT Enough.";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_search = false;
       }
       if (this.first_name != "" && this.reg_no == "" && this.the_class == "") {
         this.alert_message = "Please specify Class";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_search = false;
       }
       if (can_search) {
@@ -169,6 +183,7 @@ export default {
               self.alert_message =
                 "Student not found. Please change the search criteria and try again";
               self.showDismissibleAlert = true;
+              this.alert_color = "red";
               self.alert_type = "error";
             } else {
               self.show_search_criteria = false;
@@ -205,7 +220,7 @@ export default {
       this.showDismissibleAlert = false;
     },
     showAlert(a) {
-      if (event.target.classList.contains("btn__content")) return;
+      console.log("inside showAlert");
       let coming_from = this.$store.getters.get_coming_from;
       console.log(coming_from);
       if (coming_from == "fee_payment") {

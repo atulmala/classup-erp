@@ -101,7 +101,11 @@
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
             <v-col cols="12" md="6">
-              <v-alert :value="showDismissibleAlert" :color="alert_color" :type="alert_type">{{ alert_message }}</v-alert>
+              <v-alert
+                :value="showDismissibleAlert"
+                :color="alert_color"
+                :type="alert_type"
+              >{{ alert_message }}</v-alert>
             </v-col>
           </v-layout>
         </v-container>
@@ -229,13 +233,13 @@ export default {
         self.ip.concat("/academics/subject_list/", self.school_id, "/")
       );
     }
-    
+
     axios
       .all([
         get_exam_list(),
         get_class_list(),
         get_section_list(),
-        get_subject_list(),
+        get_subject_list()
       ])
       .then(
         axios.spread(function(exams, classes, sections, subjects) {
@@ -290,12 +294,11 @@ export default {
 
       this.exam_type = this.exam_types[i];
       if (this.exam_type == "term") {
-        let higher_classes = ["XI", "XII"]
-        if (higher_classes.indexOf(this.the_class) > -1)  {
+        let higher_classes = ["XI", "XII"];
+        if (higher_classes.indexOf(this.the_class) > -1) {
           this.max_marks = 100;
           this.passing_marks = 40;
-        }
-        else  {
+        } else {
           this.max_marks = 80;
           this.passing_marks = 30;
         }
@@ -310,43 +313,43 @@ export default {
       if (this.test_date == "") {
         this.alert_message = "Please select a date for this Test";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_schedule = false;
       }
       if (this.max_marks == "") {
         this.alert_message = "Please enter Maximum Marks for this Test";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_schedule = false;
       }
       if (this.passing_marks == "") {
         this.alert_message = "Please enter Passing Marks for this Test";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_schedule = false;
       }
       if (this.subject == "") {
         this.alert_message = "Please select a Subject";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_schedule = false;
       }
       if (this.section == "") {
         this.alert_message = "Please select a Section";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_schedule = false;
       }
       if (this.the_class == "") {
         this.alert_message = "Please select a Class";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_schedule = false;
       }
       if (this.exam == "") {
         this.alert_message = "Please select an Exam";
         this.showDismissibleAlert = true;
-        this.alert_color = "red"
+        this.alert_color = "red";
         can_schedule = false;
       }
       if (can_schedule) {

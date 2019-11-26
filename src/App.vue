@@ -4,6 +4,7 @@
       <v-app-bar
         app
         class="my-toolbar"
+        color="light-green"
         v-if="get_logged_status"
         :fixed="toolbar.fixed"
         :clipped-left="toolbar.clippedLeft"
@@ -12,7 +13,7 @@
         <v-toolbar-title>{{ get_title }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-chip color="indigo" large class="ma-2" text-color="white">
+          <v-chip color="indigo" large class="ma-1" text-color="white">
             <v-avatar>
               <v-icon>account_circle</v-icon>
             </v-avatar>
@@ -96,7 +97,7 @@
           <v-divider class="mx-4"></v-divider>
           <v-list-group prepend-icon value="true">
             <template v-slot:activator>
-              <v-list-item v-on="on">
+              <v-list-item>
                 <v-list-item-title>Fees Management</v-list-item-title>
               </v-list-item>
             </template>

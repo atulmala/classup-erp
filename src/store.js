@@ -5,8 +5,8 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    server_ip: 'http://localhost:8000',
-    // server_ip: 'https://www.classupclient.com',
+    // server_ip: 'http://localhost:8000',
+    server_ip: 'https://www.classupclient.com',
     logged_status: false,
     logged_user: 'unknown',
     user_name: 'unknown',
@@ -52,7 +52,7 @@ export const store = new Vuex.Store({
     SET_PARENT(state, parent) {
       state.parent = parent
     },
-    SET_ADM_FEE(state, status)  {
+    SET_ADM_FEE(state, status) {
       state.adm_fee = status
     },
     SET_COMING_STATUS(state, coming_from) {
@@ -90,7 +90,7 @@ export const store = new Vuex.Store({
     set_parent(context, parent) {
       context.commit('SET_PARENT', parent)
     },
-    set_adm_fee(context, status)  {
+    set_adm_fee(context, status) {
       context.commit('SET_ADM_FEE', status)
     },
     set_coming_status(context, coming_from) {
@@ -104,10 +104,10 @@ export const store = new Vuex.Store({
     get_logged_user(state) {
       return state.logged_user
     },
-    get_user_name(state)  {
+    get_user_name(state) {
       return state.user_name
     },
-    get_user_type(state)  {
+    get_user_type(state) {
       return state.user_type
     },
     get_school_id(state) {
@@ -125,7 +125,7 @@ export const store = new Vuex.Store({
     get_student_name(state) {
       return state.student_name
     },
-    get_student_class(state)  {
+    get_student_class(state) {
       return state.student_class
     },
     get_parent(state) {
@@ -134,7 +134,7 @@ export const store = new Vuex.Store({
     get_adm_fee(state) {
       return state.adm_fee
     },
-    get_coming_from(state)  {
+    get_coming_from(state) {
       return state.coming_from
     }
   }

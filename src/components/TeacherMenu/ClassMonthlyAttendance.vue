@@ -6,34 +6,35 @@
           <h1>{{ heading }}</h1>
           <h3>Select Class, Section, and Subject</h3>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
+                
                 label="Class/Standard"
                 v-model="the_class"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="section_list"
                 label="Section"
                 v-model="section"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="subject_list"
                 label="Subject"
                 v-model="subject"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
+            </v-col>
           </v-layout>
           <h3>Select Month & Year</h3>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md4>
+            <v-col cols="12" md="4">
               <v-date-picker
                 v-model="date"
                 type="month"
@@ -42,14 +43,14 @@
                 scrollable
                 actions
               ></v-date-picker>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
               <v-btn
                 :loading="loading"
                 :disabled="loading"
-                color="info"
+                color="green"
                 @click="loader = 'loading'"
                 v-on:click="download()"
               >
@@ -61,9 +62,9 @@
             </div>
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
-            <v-flex xs6 sm6 md4>
-              <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
-            </v-flex>
+            <v-col cols="12" md="6">
+              <v-alert :value="showDismissibleAlert" :color="alert_color" :type="alert_type">{{ alert_message }}</v-alert>
+            </v-col>
           </v-layout>
         </v-container>
       </v-form>
@@ -100,6 +101,7 @@ export default {
       alert_type: "",
       alert_message: "",
       showDismissibleAlert: false,
+      alert_color: "",
       waiting: false,
 
       headers: [
@@ -163,21 +165,25 @@ export default {
       if (this.section == "") {
         this.alert_message = "Please specify Section";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         can_search = false;
       }
       if (this.the_class == "") {
         this.alert_message = "Please specify Class";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         can_search = false;
       }
       if (this.subject == "") {
         this.alert_message = "Please specify Subject";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         can_search = false;
       }
       if (this.date == "") {
         this.alert_message = "Please specify Month";
         this.showDismissibleAlert = true;
+        this.alert_color = "red";
         can_search = false;
       }
 
@@ -197,15 +203,19 @@ export default {
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           },
           responseType: "arraybuffer"
-        }
+        };
         axios
-          .post(url, {
-            school_id: self.school_id,
-            the_class: self.the_class,
-            section: self.section,
-            subject: self.subject,
-            date: self.date
-          }, options)
+          .post(
+            url,
+            {
+              school_id: self.school_id,
+              the_class: self.the_class,
+              section: self.section,
+              subject: self.subject,
+              date: self.date
+            },
+            options
+          )
           .then(function(response) {
             self.waiting = false;
             self.loading = false;

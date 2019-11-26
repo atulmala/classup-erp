@@ -68,10 +68,15 @@
                         @change="dismiss()"
                       ></v-checkbox>
                     </v-col>
+                    <v-col  md="1">
+                      
+                    </v-col>
                     <v-col cols="12" md="6">
                       <v-file-input
                         label="Optional - Attach file (Image jpeg or png, PDF)"
                         ref="file_input"
+                        outlined
+                        color="deep-purple accent-4"
                         :name="uploadFieldName"
                         @change="onFileChanged"
                         accept="image/*, .pdf"

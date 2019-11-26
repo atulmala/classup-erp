@@ -6,7 +6,7 @@
           <h1>{{ heading }}</h1>
           <h3>Select Class & Section</h3>
           <v-layout xs4 row wrap justify-center>
-            <v-flex xs6 sm6 md2>
+            <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
                 label="Class/Standard"
@@ -14,8 +14,8 @@
                 v-on:focus="dismiss()"
                 v-on:change="get_student_list()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md1>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="section_list"
                 label="Section"
@@ -23,8 +23,8 @@
                 v-on:focus="dismiss()"
                 v-on:change="get_student_list()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md3>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="student_list"
                 label="Student"
@@ -32,21 +32,21 @@
                 v-on:focus="dismiss()"
                 :disabled="whole_class"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-checkbox
                 v-model="whole_class"
                 :label="`Whole Class: ${whole_class.toString()}`"
                 @change="dismiss(); student=''"
               ></v-checkbox>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
               <v-btn
                 :loading="loading"
                 :disabled="loading"
-                color="info"
+                color="green"
                 @click="loader = 'loading'"
                 v-on:click="download()"
               >
@@ -57,7 +57,15 @@
               </v-btn>
             </div>
           </v-layout>
-          <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+          <v-layout xs4 row wrap justify-space-around>
+            <v-col cols="12" md="6">
+              <v-alert
+                :value="showDismissibleAlert"
+                color="red"
+                :type="alert_type"
+              >{{ alert_message }}</v-alert>
+            </v-col>
+          </v-layout>
         </v-container>
       </v-form>
       <template>
@@ -65,23 +73,7 @@
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
         </div>
       </template>
-      <v-flex d-flex xs8 order-xs5 offset-sm2>
-        <!-- <v-data-table
-          v-if="show_student_list"
-          :headers="headers"
-          :items="students"
-          class="elevation-1"
-        >
-          <template slot="items" slot-scope="props">
-            <tr @click="showAlert(props.item)">
-              <td class="text-xs-left">{{ props.item.name }}</td>
-              <td class="text-xs-left">{{ props.item.reg_no }}</td>
-              <td class="text-xs-left">{{ props.item.the_class }}</td>
-              <td class="text-xs-left">{{ props.item.parent }}</td>
-            </tr>
-          </template>
-        </v-data-table>-->
-      </v-flex>
+      
     </v-content>
   </v-app>
 </template>
@@ -93,7 +85,7 @@ export default {
     return {
       coming_from: "",
       heading: "",
-      whole_class: false,
+      whole_class: true,
       show_search_criteria: true,
       loader: null,
       loading: false,

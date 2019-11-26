@@ -55,14 +55,14 @@
               >
                 <template v-slot:activator="{ on }">
                   <v-text-field
-                    v-model="date"
-                    label="Picker in menu"
+                    v-model="dob"
+                    label="Date of Birth"
                     prepend-icon="event"
                     readonly
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="date" no-title scrollable>
+                <v-date-picker v-model="dob" no-title scrollable>
                   <v-spacer></v-spacer>
                   <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
                   <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>

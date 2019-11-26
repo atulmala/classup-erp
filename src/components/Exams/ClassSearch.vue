@@ -3,33 +3,32 @@
     <v-content>
       <v-form v-if="show_search_criteria">
         <v-container fluid class="pa-md-4 mx-lg-auto">
-          <h1> Download Result Analysis Sheets</h1>
+          <h1>Download Result Analysis Sheets</h1>
           <h3>Select Class & Section</h3>
-          <v-layout xs4 row wrap justify-center="">
-           
-            <v-flex xs6 sm6 md2>
+          <v-layout xs4 row wrap justify-center>
+            <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
                 label="Class/Standard"
                 v-model="the_class"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
-            <v-flex xs6 sm6 md2>
+            </v-col>
+            <v-col cols="12" md="2">
               <v-select
                 :items="section_list"
                 label="Section"
                 v-model="section"
                 v-on:focus="dismiss()"
               ></v-select>
-            </v-flex>
+            </v-col>
           </v-layout>
-          <v-layout xs4 row wrap justify-space-around="">
+          <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
               <v-btn
                 :loading="loading"
                 :disabled="loading"
-                color="info"
+                color="green"
                 @click="loader = 'loading'"
                 v-on:click="search()"
               >
@@ -39,9 +38,16 @@
                 </span>
               </v-btn>
             </div>
-            
           </v-layout>
-          <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
+          <v-layout xs4 row wrap justify-space-around>
+            <v-col cols="12" md="6">
+              <v-alert
+                :value="showDismissibleAlert"
+                color="red"
+                :type="alert_type"
+              >{{ alert_message }}</v-alert>
+            </v-col>
+          </v-layout>
         </v-container>
       </v-form>
       <v-flex d-flex xs8 order-xs5 offset-sm2>
@@ -76,7 +82,7 @@ export default {
       the_class: "",
       class_list: [],
       section: "",
-      section_list:[],
+      section_list: [],
 
       alert_type: "",
       alert_message: "",
@@ -141,39 +147,38 @@ export default {
       }
       if (this.the_class == "") {
         this.alert_message = "Please specify Class";
-        this.showDismissibleAlert = true; 
+        this.showDismissibleAlert = true;
         can_search = false;
       }
       if (can_search) {
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
         let school_name = this.$store.getters.get_school_name;
-        let url = ip.concat(
-          "/exam/result_sheet/",
-        );
+        let url = ip.concat("/exam/result_sheet/");
         axios
           .get(url, {
             headers: {
-            "Content-Type":
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          },
-          responseType: "arraybuffer",
+              "Content-Type":
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            responseType: "arraybuffer",
             params: {
-              "school_id": school_id,
-              "the_class": this.the_class,
-              "section": this.section,
+              school_id: school_id,
+              the_class: this.the_class,
+              section: this.section
             }
           })
           .then(function(response) {
             console.log(response);
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement("a");
-          link.href = url;
-          let file_name = "Result_Sheet_" + self.the_class + "-" + self.section + ".xlsx"
-          link.setAttribute("download", file_name); //or any other extension
-          document.body.appendChild(link);
-          link.click();
-          confirm("Result sheet downloaded");
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            let file_name =
+              "Result_Sheet_" + self.the_class + "-" + self.section + ".xlsx";
+            link.setAttribute("download", file_name); //or any other extension
+            document.body.appendChild(link);
+            link.click();
+            confirm("Result sheet downloaded");
           })
           .catch(function(error) {
             console.log(error);
@@ -189,16 +194,13 @@ export default {
     showAlert(a) {
       if (event.target.classList.contains("btn__content")) return;
       let coming_from = this.$store.getters.get_coming_from;
-      console.log(coming_from)
-      
-      
+      console.log(coming_from);
     }
   }
 };
 </script>
 
 <style>
-
 .custom-loader {
   animation: loader 1s infinite;
   display: flex;

@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-content>
-      <v-flex d-flex xs8 order-xs offset-sm2>
+      <v-col cols="12" md="10" offset-sm4>
         <template>
           <v-data-table
             dark
@@ -44,7 +44,7 @@
             </template>
           </v-data-table>
         </template>
-      </v-flex>
+      </v-col>
     </v-content>
   </v-app>
 </template>
