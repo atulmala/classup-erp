@@ -9,7 +9,6 @@
             <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
-                
                 label="Class/Standard"
                 v-model="the_class"
                 v-on:focus="dismiss()"
@@ -38,6 +37,9 @@
               <v-date-picker
                 v-model="date"
                 type="month"
+                color="green lighten-1" 
+                header-color="primary"
+                :show-current="false"
                 @change="dismiss()"
                 no-title
                 scrollable

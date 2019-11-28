@@ -25,14 +25,16 @@
       <v-navigation-drawer
         app
         v-if="get_logged_status"
+        :width="325"
         :clipped="drawer.clipped"
         :fixed="drawer.fixed"
         :permanent="drawer.permanent"
         :mini-variant="drawer.mini"
         v-model="drawer.open"
       >
-        <v-list class="pt-0">
-          <v-list-item>
+      <div class="justify-left">
+        <v-list nav rounded >
+          <v-list-item > 
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
             </v-list-item-icon>
@@ -40,10 +42,12 @@
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true">
+          <v-list-group prepend-icon value="true" color="blue">
             <template v-slot:activator>
-              
-                <v-list-item-title>Communications</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>mdi-message</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Communications</v-list-item-title>
             </template>
             <v-list-item
               v-for="item in communication_items"
@@ -53,14 +57,17 @@
               <v-list-item-action>
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-action>
-              <v-list-item-content>
+              <v-list-item-content >
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true">
+          <v-list-group prepend-icon value="true" color="green">
             <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-</v-icon>
+              </v-list-item-icon>
               <v-list-item>
                 <v-list-item-title>Student Management</v-list-item-title>
               </v-list-item>
@@ -79,7 +86,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true">
+          <v-list-group prepend-icon value="true" color="magenta">
             <template v-slot:activator>
               <v-list-item>
                 <v-list-item-title>Exam & Results</v-list-item-title>
@@ -95,7 +102,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true">
+          <v-list-group prepend-icon value="true" color="teal">
             <template v-slot:activator>
               <v-list-item>
                 <v-list-item-title>Fees Management</v-list-item-title>
@@ -111,7 +118,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true">
+          <v-list-group prepend-icon value="true" color="yellow">
             <template v-slot:activator>
               <v-list-item>
                 <v-list-item-title>Teacher's Corner</v-list-item-title>
@@ -127,6 +134,7 @@
             </v-list-item>
           </v-list-group>
         </v-list>
+      </div>
       </v-navigation-drawer>
       <template>
         <div class="text-xs-center">
@@ -174,6 +182,7 @@ export default {
       },
       communication_items: [
         {
+          icon: "mdi-bullhorn",
           title: "Send Bulk Message",
           action: this.bulk_message
         },
@@ -188,6 +197,7 @@ export default {
       ],
       student_management_items: [
         {
+          icon: "mdi-account-plus",
           title: "Add Student",
           action: this.add_student
         },
@@ -226,6 +236,7 @@ export default {
       ],
       teacher_menu: [
         {
+          icon: "mdi-download",
           title: "Download Monthly Attendance",
           action: this.class_monthly_attendance
         },
