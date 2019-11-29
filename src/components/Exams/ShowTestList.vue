@@ -23,7 +23,7 @@
                     <v-btn
                       color="primary"
                       dark
-                      class="mb-2"
+                      class="ma-2"
                       @click="get_test_details"
                       @v-on="on"
                     >Schedule Test</v-btn>
@@ -97,6 +97,7 @@
                                   prepend-icon="event"
                                   readonly
                                   v-on="on"
+                                  @click="dismiss()"
                                 ></v-text-field>
                               </template>
                               <v-date-picker
@@ -123,27 +124,27 @@
                           </v-col>
                         </v-row>
                         <v-row>
-                          <v-col cols="12" md="4">
+                          <v-col cols="12" md="6">
                             <v-checkbox
                               v-model="test_details.grade_based"
-                              value="test_details.grade_based"
                               :label="`Grade Based?`"
+                              value="grade_based"
                               @change="set_grade_based()"
                             ></v-checkbox>
                           </v-col>
-                          <v-col cols="12" md="4">
+                          <v-col cols="12" md="3">
                             <v-text-field
                               label="Max Marks"
                               v-model="test_details.max_marks"
-                              :disabled="test_details.exam_type == 'term' || test_details.grade_based"
+                              :disabled="test_details.exam_type == 'term' || test_details.grade_based == 'grade_based'"
                               v-on:focus="dismiss()"
                             ></v-text-field>
                           </v-col>
-                          <v-col cols="12" md="4">
+                          <v-col cols="12" md="3">
                             <v-text-field
                               label="Pass Marks"
                               v-model="test_details.passing_marks"
-                              :disabled="test_details.exam_type == 'term' || test_details.grade_based"
+                              :disabled="test_details.exam_type == 'term' || test_details.grade_based == 'grade_based'"
                               v-on:focus="dismiss()"
                             ></v-text-field>
                           </v-col>
@@ -170,8 +171,8 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="orange" text @click="close">Cancel</v-btn>
-                      <v-btn color="green" text @click="validate">Schedule</v-btn>
+                      <v-btn color="orange" @click="close">Cancel</v-btn>
+                      <v-btn color="green" @click="validate">Schedule</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -185,7 +186,8 @@
                         color="green darken-1"
                         text
                         @click="test_details.confirm_date = false; confirm = true; 
-            caption='Confirm Test Scheduling'; alert_message = 'Are you sure you want to schedule this Test?'"
+                        caption='Confirm Test Scheduling'; 
+                        alert_message = 'Are you sure you want to schedule this Test?'"
                       >Yes, Date is Correct</v-btn>
                       <v-btn
                         color="amber darken-1"
@@ -202,7 +204,7 @@
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn color="green darken-1" text @click="schecule_test()">OK</v-btn>
-                      <v-btn color="green darken-1" text @click="confirm = false">Cancel</v-btn>
+                      <v-btn color="green darken-1" text @click="confirm = false; alert_color = ''">Cancel</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -249,17 +251,24 @@ export default {
       loader: null,
       loading: true,
       tests: [],
-      test_id: "",
-      date_conducted: "",
-      the_class: "",
-      section: "",
-      subject: "",
-      exam: "",
-      max_marks: "",
-      grade_based: "",
-      test_type: "",
-      is_completed: "",
-
+      headers: [
+        {
+          text: "Date",
+          align: "left",
+          sortable: false,
+          value: "date_conducted"
+        },
+        { text: "Subject", value: "subject" },
+        { text: "Class", value: "the_class" },
+        { text: "Exam", value: "exam" },
+        { text: "Type", value: "test_type" },
+        { text: "Max Marks", value: "max_marks" },
+        { text: "Status", value: "is_completed" },
+        { text: "Actions", value: "action", sortable: false }
+      ],
+      
+      formTitle: "Schedule a new Test",
+      dialog: false,
       test_details: {
         the_class: "",
         exam: "",
@@ -291,38 +300,13 @@ export default {
         syllabus: "",
         date: ""
       },
+      confirm: false,
       alert_type: "",
       alert_message: "",
       alert_color: "",
       showDismissibleAlert: false,
       caption: "",
       waiting: false,
-      headers: [
-        {
-          text: "Date",
-          align: "left",
-          sortable: false,
-          value: "date_conducted"
-        },
-        { text: "Subject", value: "subject" },
-        { text: "Class", value: "the_class" },
-        { text: "Exam", value: "exam" },
-        { text: "Type", value: "test_type" },
-        { text: "Max Marks", value: "max_marks" },
-        { text: "Status", value: "is_completed" },
-        { text: "Actions", value: "action", sortable: false }
-      ],
-
-      formTitle: "Schedule a new Test",
-      new_test: {
-        date_conducted: "",
-        subject: "",
-        the_class: "",
-        max_marks: "",
-        exam: ""
-      },
-
-      dialog: false
     };
   },
   mounted: function() {
@@ -456,7 +440,7 @@ export default {
       self.waiting = false;
     },
     set_grade_based: function(event) {
-      console.log(event);
+      console.log(this.test_details.grade_based)
       if (this.test_details.grade_based) {
         this.test_details.max_marks = this.test_details.passing_marks = "N/A";
       } else {
@@ -476,35 +460,24 @@ export default {
       this.test_details.end_date = this.test_details.end_dates[i];
 
       this.test_details.start_class = this.test_details.start_classes[i];
-      console.log(this.test_details.start_class);
       let start_class_index = this.test_details.class_list.indexOf(
         this.test_details.start_class
       );
-      console.log(start_class_index);
       this.test_details.end_class = this.test_details.end_classes[i];
-      console.log(this.test_details.end_class);
       let end_class_index = this.test_details.class_list.indexOf(
         this.test_details.end_class
       );
-      console.log(end_class_index);
-      this.test_details.allowed_classes = this.test_details.class_list.slice(0, end_class_index + 1)
-      console.log(this.test_details.allowed_classes);
-      // this.test_details.allowed_classes.splice(
-      //   end_class_index + 1,
-      //   this.test_details.allowed_classes.length - (end_class_index + 1)
-      // );
-      
-      this.test_details.allowed_classes.splice(
+      this.test_details.allowed_classes = this.test_details.class_list.slice(
         0,
-         (start_class_index)
+        end_class_index + 1
       );
-      console.log(this.test_details.allowed_classes);
-      console.log(this.test_details.class_list)
+
+      this.test_details.allowed_classes.splice(0, start_class_index);
       this.test_details.exam_type = this.test_details.exam_types[i];
 
       if (this.test_details.exam_type == "term") {
         let higher_classes = ["XI", "XII"];
-        if (higher_classes.indexOf(this.the_class) > -1) {
+        if (higher_classes.indexOf(this.test_details.the_class) > -1) {
           this.test_details.max_marks = 100;
           this.test_details.passing_marks = 40;
         } else {
@@ -586,7 +559,6 @@ export default {
     },
     schecule_test() {
       let self = this;
-      console.log(self.test_details.test_date);
       this.confirm = false;
       this.waiting = true;
       this.loading = true;
@@ -605,22 +577,59 @@ export default {
         .post(url, {
           school_id: school_id,
           teacher: teacher,
-          exam_id: self.exam_id,
-          the_class: self.the_class,
-          section: self.section,
-          subject: self.subject,
-          date: self.test_date,
-          grade_based: self.grade_based,
-          max_marks: self.max_marks,
-          passing_marks: self.passing_marks,
-          syllabus: self.syllabus
+          exam_id: self.test_details.exam_id,
+          the_class: self.test_details.the_class,
+          section: self.test_details.section,
+          subject: self.test_details.subject,
+          date: self.test_details.test_date,
+          grade_based: self.test_details.grade_based,
+          max_marks: self.test_details.max_marks,
+          passing_marks: self.test_details.passing_marks,
+          syllabus: self.test_details.syllabus
         })
         .then(function(response) {
           self.waiting = false;
           self.loading = false;
+          self.dialog = false;
           console.log(response);
 
           confirm(response.data["outcome"]);
+          if (response.data["outcome"] == "Test successfully created") {
+            console.log ("trying to insert this test into the data table")
+            let test = {};
+            test["id"] = response.data["id"];
+            test["date_conducted"] = self.test_details.test_date;
+            test["the_class"] = self.test_details.the_class + " - " + self.test_details.section;
+            test["section"] = self.test_details.section;
+            test["subject"] = self.test_details.subject;
+            test["exam"] = self.test_details.exam;
+            test["test_type"] = response.data["type"];
+
+            let grade_based = self.test_details.grade_based;
+            if (grade_based == "grade_based") {
+              test["max_marks"] = "Grade Based";
+              test["grade_based"] = "Yes";
+            } else {
+              test["max_marks"] = self.test_details.max_marks + ".00";
+              test["grade_based"] = "No";
+            }
+
+            test["is_completed"] = "Pending";
+            console.log ("test = ", test)
+            self.tests.splice(0, 0, test);
+            self.tests.push(test);
+          }
+
+          // neutraliz thd test_details structure so that Schedule Test dialog doesn't show pre-populated
+          self.test_details.exam = "";
+          self.test_details.the_class = "";
+          self.test_details.section = "";
+          self.test_details.test_date = "";
+          self.test_details.subject = "";
+          self.test_details.max_marks = "";
+          self.test_details.passing_marks = "";
+          self.test_details.grade_based = "";
+          self.test_details.syllabus = "";
         })
         .catch(function(error) {
           console.log(error);
@@ -658,6 +667,15 @@ export default {
       }
     },
     close() {
+      this.test_details.exam = "";
+      this.test_details.the_class = "";
+      this.test_details.section = "";
+      this.test_details.test_date = "";
+      this.test_details.subject = "";
+      this.test_details.max_marks = "";
+      this.test_details.passing_marks = "";
+      this.test_details.grade_based = "";
+      this.test_details.syllabus = "";
       this.dialog = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);

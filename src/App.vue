@@ -32,13 +32,11 @@
         :mini-variant="drawer.mini"
         v-model="drawer.open"
       >
-      <div class="justify-left">
         <v-list nav rounded >
           <v-list-item > 
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
             </v-list-item-icon>
-
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
           <v-divider class="mx-4"></v-divider>
@@ -134,7 +132,6 @@
             </v-list-item>
           </v-list-group>
         </v-list>
-      </div>
       </v-navigation-drawer>
       <template>
         <div class="text-xs-center">
