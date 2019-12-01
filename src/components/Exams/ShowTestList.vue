@@ -1,244 +1,242 @@
 <template>
-  <v-app>
-    <v-content>
-      <v-col cols="12" md="10" offset-sm4>
-        <template>
-          <v-data-table
-            dark
-            loading
-            loading-text="Fetching tests... Please wait"
-            :headers="headers"
-            :items="tests"
-            item-key="id"
-            :items-per-page="10"
-            class="elevation-1"
-          >
-            <template v-slot:top>
-              <v-toolbar flat color="blue">
-                <v-toolbar-title>Test List</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>Click on a subject to enter marks
-                <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px">
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      color="primary"
-                      dark
-                      class="ma-2"
-                      @click="get_test_details"
-                      @v-on="on"
-                    >Schedule Test</v-btn>
+  <v-content>
+    <v-col cols="12" md="10" offset-sm4>
+      <template>
+        <v-data-table
+          dark
+          loading
+          loading-text="Fetching tests... Please wait"
+          :headers="headers"
+          :items="tests"
+          item-key="id"
+          :items-per-page="10"
+          class="elevation-1"
+        >
+          <template v-slot:top>
+            <v-toolbar flat color="blue">
+              <v-toolbar-title>Test List</v-toolbar-title>
+              <v-divider class="mx-4" inset vertical></v-divider>Click on a subject to enter marks
+              <v-spacer></v-spacer>
+              <v-dialog v-model="dialog" max-width="500px">
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="ma-2"
+                    @click="get_test_details"
+                    @v-on="on"
+                  >Schedule Test</v-btn>
+                </template>
+                <v-card>
+                  <template>
+                    <div class="text-xs-center">
+                      <v-progress-circular
+                        v-if="waiting"
+                        :size="70"
+                        :width="7"
+                        color="purple"
+                        indeterminate
+                      ></v-progress-circular>
+                    </div>
                   </template>
-                  <v-card>
-                    <template>
-                      <div class="text-xs-center">
-                        <v-progress-circular
-                          v-if="waiting"
-                          :size="70"
-                          :width="7"
-                          color="purple"
-                          indeterminate
-                        ></v-progress-circular>
-                      </div>
-                    </template>
-                    <v-card-title>
-                      <span class="headline">{{ formTitle }}</span>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              :items="test_details.exam_list"
-                              label="Exam"
-                              v-model="test_details.exam"
-                              @change="exam_selected"
-                              v-on:focus="dismiss()"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="3">
-                            <v-select
-                              :items="test_details.allowed_classes"
-                              label="Class"
-                              v-model="test_details.the_class"
-                              @change="exam_selected"
-                              v-on:focus="dismiss()"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="3">
-                            <v-select
-                              :items="test_details.section_list"
-                              label="Section"
-                              v-model="test_details.section"
-                              v-on:focus="dismiss()"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              :items="test_details.subject_list"
-                              label="Subject"
-                              v-model="test_details.subject"
-                              v-on:focus="dismiss()"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-menu
-                              ref="menu"
-                              v-model="test_details.menu"
-                              :close-on-content-click="false"
-                              :return-value.sync="test_details.test_date"
-                              transition="scale-transition"
-                              offset-y
-                              min-width="290px"
-                            >
-                              <template v-slot:activator="{ on }">
-                                <v-text-field
-                                  v-model="test_details.test_date"
-                                  label="Date of Test"
-                                  prepend-icon="event"
-                                  readonly
-                                  v-on="on"
-                                  @click="dismiss()"
-                                ></v-text-field>
-                              </template>
-                              <v-date-picker
+                  <v-card-title>
+                    <span class="headline">{{ formTitle }}</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-select
+                            :items="test_details.exam_list"
+                            label="Exam"
+                            v-model="test_details.exam"
+                            @change="exam_selected"
+                            v-on:focus="dismiss()"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="3">
+                          <v-select
+                            :items="test_details.allowed_classes"
+                            label="Class"
+                            v-model="test_details.the_class"
+                            @change="exam_selected"
+                            v-on:focus="dismiss()"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="3">
+                          <v-select
+                            :items="test_details.section_list"
+                            label="Section"
+                            v-model="test_details.section"
+                            v-on:focus="dismiss()"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-select
+                            :items="test_details.subject_list"
+                            label="Subject"
+                            v-model="test_details.subject"
+                            v-on:focus="dismiss()"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-menu
+                            ref="menu"
+                            v-model="test_details.menu"
+                            :close-on-content-click="false"
+                            :return-value.sync="test_details.test_date"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="290px"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-text-field
                                 v-model="test_details.test_date"
-                                no-title
-                                color="green lighten-1"
-                                :min="test_details.start_date"
-                                :max="test_details.end_date"
-                                scrollable
-                              >
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                  text
-                                  color="primary"
-                                  @click="test_details.menu = false"
-                                >Cancel</v-btn>
-                                <v-btn
-                                  text
-                                  color="primary"
-                                  @click="$refs.menu.save(test_details.test_date)"
-                                >OK</v-btn>
-                              </v-date-picker>
-                            </v-menu>
-                          </v-col>
-                        </v-row>
-                        <v-row>
-                          <v-col cols="12" md="6">
-                            <v-checkbox
-                              v-model="test_details.grade_based"
-                              :label="`Grade Based?`"
-                              value="grade_based"
-                              @change="set_grade_based()"
-                            ></v-checkbox>
-                          </v-col>
-                          <v-col cols="12" md="3">
-                            <v-text-field
-                              label="Max Marks"
-                              v-model="test_details.max_marks"
-                              :disabled="test_details.exam_type == 'term' || test_details.grade_based == 'grade_based'"
-                              v-on:focus="dismiss()"
-                            ></v-text-field>
-                          </v-col>
-                          <v-col cols="12" md="3">
-                            <v-text-field
-                              label="Pass Marks"
-                              v-model="test_details.passing_marks"
-                              :disabled="test_details.exam_type == 'term' || test_details.grade_based == 'grade_based'"
-                              v-on:focus="dismiss()"
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
-                        <v-row>
-                          <v-col cols="12" md="12">
-                            <v-text-field
-                              label="Syllabus (optional)"
-                              v-model="test_details.syllabus"
-                              v-on:focus="dismiss()"
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
-                        <v-layout xs4 row wrap justify-space-around>
-                          <v-col cols="12" md="10">
-                            <v-alert
-                              :value="showDismissibleAlert"
-                              :color="alert_color"
-                              :type="alert_type"
-                            >{{ alert_message }}</v-alert>
-                          </v-col>
-                        </v-layout>
-                      </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="orange" @click="close">Cancel</v-btn>
-                      <v-btn color="green" @click="validate">Schedule</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-                <v-dialog v-model="test_details.confirm_date" persistent max-width="440">
-                  <v-card>
-                    <v-card-title class="headline">{{ caption }}</v-card-title>
-                    <v-card-text>{{ alert_message }}</v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="green darken-1"
-                        text
-                        @click="test_details.confirm_date = false; confirm = true; 
+                                label="Date of Test"
+                                prepend-icon="event"
+                                readonly
+                                v-on="on"
+                                @click="dismiss()"
+                              ></v-text-field>
+                            </template>
+                            <v-date-picker
+                              v-model="test_details.test_date"
+                              no-title
+                              color="green lighten-1"
+                              :min="test_details.start_date"
+                              :max="test_details.end_date"
+                              scrollable
+                            >
+                              <v-spacer></v-spacer>
+                              <v-btn text color="primary" @click="test_details.menu = false">Cancel</v-btn>
+                              <v-btn
+                                text
+                                color="primary"
+                                @click="$refs.menu.save(test_details.test_date)"
+                              >OK</v-btn>
+                            </v-date-picker>
+                          </v-menu>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12" md="6">
+                          <v-checkbox
+                            v-model="test_details.grade_based"
+                            :label="`Grade Based?`"
+                            value="grade_based"
+                            @change="set_grade_based()"
+                          ></v-checkbox>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                          <v-text-field
+                            label="Max Marks"
+                            v-model="test_details.max_marks"
+                            :disabled="test_details.exam_type == 'term' || test_details.grade_based == 'grade_based'"
+                            v-on:focus="dismiss()"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                          <v-text-field
+                            label="Pass Marks"
+                            v-model="test_details.passing_marks"
+                            :disabled="test_details.exam_type == 'term' || test_details.grade_based == 'grade_based'"
+                            v-on:focus="dismiss()"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12" md="12">
+                          <v-text-field
+                            label="Syllabus (optional)"
+                            v-model="test_details.syllabus"
+                            v-on:focus="dismiss()"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-layout xs4 row wrap justify-space-around>
+                        <v-col cols="12" md="10">
+                          <v-alert
+                            :value="showDismissibleAlert"
+                            :color="alert_color"
+                            :type="alert_type"
+                          >{{ alert_message }}</v-alert>
+                        </v-col>
+                      </v-layout>
+                    </v-container>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="orange" @click="close">Cancel</v-btn>
+                    <v-btn color="green" @click="validate">Schedule</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-dialog v-model="test_details.confirm_date" persistent max-width="440">
+                <v-card>
+                  <v-card-title class="headline">{{ caption }}</v-card-title>
+                  <v-card-text>{{ alert_message }}</v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="green darken-1"
+                      text
+                      @click="test_details.confirm_date = false; confirm = true; 
                         caption='Confirm Test Scheduling'; 
                         alert_message = 'Are you sure you want to schedule this Test?'"
-                      >Yes, Date is Correct</v-btn>
-                      <v-btn
-                        color="amber darken-1"
-                        text
-                        @click="test_details.confirm_date = false"
-                      >Change Date</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-                <v-dialog v-model="confirm" persistent max-width="440">
-                  <v-card>
-                    <v-card-title class="headline">{{ caption }}</v-card-title>
-                    <v-card-text>{{ alert_message }}</v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="green darken-1" text @click="schecule_test()">OK</v-btn>
-                      <v-btn color="green darken-1" text @click="confirm = false; alert_color = ''">Cancel</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-toolbar>
-            </template>
-            <template v-slot:item.max_marks="{ item }">
-              <v-chip small color="teal" dark>{{ item.max_marks }}</v-chip>
-            </template>
-            <template v-slot:item.is_completed="{ item }">
-              <v-chip outlined :color="status_color(item.is_completed)">{{ item.is_completed }}</v-chip>
-            </template>
-            <template v-slot:item.action="{ item }">
-              <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
-              <v-icon small @click="deleteItem(item)">delete</v-icon>
-            </template>
-            <template v-slot:expanded-item="{ item }">
-              <v-card flat>
-                <v-card-subtitle
-                  class="headline mb-0"
-                >Exam {{ item.exam }} Marks Entry - Subject: {{ item.subject }} Class: {{ item.the_class }}</v-card-subtitle>
-                <v-card-text></v-card-text>
-                <v-card-actions>
-                  <v-btn text>Save</v-btn>
-                  <v-btn text>Submit</v-btn>
-                </v-card-actions>
-              </v-card>
-            </template>
-          </v-data-table>
-        </template>
-      </v-col>
-    </v-content>
-  </v-app>
+                    >Yes, Date is Correct</v-btn>
+                    <v-btn
+                      color="amber darken-1"
+                      text
+                      @click="test_details.confirm_date = false"
+                    >Change Date</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-dialog v-model="confirm" persistent max-width="440">
+                <v-card>
+                  <v-card-title class="headline">{{ caption }}</v-card-title>
+                  <v-card-text>{{ alert_message }}</v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="green darken-1" text @click="schecule_test()">OK</v-btn>
+                    <v-btn
+                      color="green darken-1"
+                      text
+                      @click="confirm = false; alert_color = ''"
+                    >Cancel</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-toolbar>
+          </template>
+          <template v-slot:item.max_marks="{ item }">
+            <v-chip small color="teal" dark>{{ item.max_marks }}</v-chip>
+          </template>
+          <template v-slot:item.is_completed="{ item }">
+            <v-chip outlined :color="status_color(item.is_completed)">{{ item.is_completed }}</v-chip>
+          </template>
+          <template v-slot:item.action="{ item }">
+            <v-icon small class="mr-2" @click="edit_item(item)">edit</v-icon>
+            <v-icon small @click="deleteItem(item)">delete</v-icon>
+          </template>
+          <template v-slot:expanded-item="{ item }">
+            <v-card flat>
+              <v-card-subtitle
+                class="headline mb-0"
+              >Exam {{ item.exam }} Marks Entry - Subject: {{ item.subject }} Class: {{ item.the_class }}</v-card-subtitle>
+              <v-card-text></v-card-text>
+              <v-card-actions>
+                <v-btn text>Save</v-btn>
+                <v-btn text>Submit</v-btn>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-data-table>
+      </template>
+    </v-col>
+  </v-content>
 </template>
-
+      
 <script>
 import axios from "axios";
 export default {
@@ -266,7 +264,7 @@ export default {
         { text: "Status", value: "is_completed" },
         { text: "Actions", value: "action", sortable: false }
       ],
-      
+
       formTitle: "Schedule a new Test",
       dialog: false,
       test_details: {
@@ -306,7 +304,7 @@ export default {
       alert_color: "",
       showDismissibleAlert: false,
       caption: "",
-      waiting: false,
+      waiting: false
     };
   },
   mounted: function() {
@@ -440,7 +438,7 @@ export default {
       self.waiting = false;
     },
     set_grade_based: function(event) {
-      console.log(this.test_details.grade_based)
+      console.log(this.test_details.grade_based);
       if (this.test_details.grade_based) {
         this.test_details.max_marks = this.test_details.passing_marks = "N/A";
       } else {
@@ -595,11 +593,12 @@ export default {
 
           confirm(response.data["outcome"]);
           if (response.data["outcome"] == "Test successfully created") {
-            console.log ("trying to insert this test into the data table")
+            console.log("trying to insert this test into the data table");
             let test = {};
             test["id"] = response.data["id"];
             test["date_conducted"] = self.test_details.test_date;
-            test["the_class"] = self.test_details.the_class + " - " + self.test_details.section;
+            test["the_class"] =
+              self.test_details.the_class + " - " + self.test_details.section;
             test["section"] = self.test_details.section;
             test["subject"] = self.test_details.subject;
             test["exam"] = self.test_details.exam;
@@ -615,7 +614,7 @@ export default {
             }
 
             test["is_completed"] = "Pending";
-            console.log ("test = ", test)
+            console.log("test = ", test);
             self.tests.splice(0, 0, test);
             self.tests.push(test);
           }
@@ -681,6 +680,15 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       }, 300);
+    },
+    edit_item(item)  {
+      console.log("inside edited item", item)
+      this.$store.dispatch("set_class", item.the_class)
+      this.$store.dispatch("set_section", item.section)
+      this.$store.dispatch("set_subject", item.subject)
+      this.$store.dispatch("set_exam", item.exam)
+      this.$store.dispatch("set_test", item.id)
+      this.$router.replace('/marks_entry')
     }
   }
 };

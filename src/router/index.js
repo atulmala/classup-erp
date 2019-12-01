@@ -13,6 +13,7 @@ import BulkSMS from '../components/Communication/BulkSMS'
 import ClassMonthlyAttendance from '../components/TeacherMenu/ClassMonthlyAttendance'
 import ScheduleTest from '../components/Exams/ScheduleTest'
 import ShowTestList from '../components/Exams/ShowTestList'
+import MarksEntry from '../components/Exams/MarksEntry'
 
 Vue.use(Router)
 
@@ -87,6 +88,11 @@ export default new Router({
       path: '/show_test_list',
       name: 'show_test_list',
       component: ShowTestList
+    },
+    {
+      path: '/marks_entry',
+      name: 'marks_entry',
+      component: MarksEntry
     }
   ]
 })

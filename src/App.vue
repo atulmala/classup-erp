@@ -32,7 +32,7 @@
         :mini-variant="drawer.mini"
         v-model="drawer.open"
       >
-        <v-list nav rounded >
+        <v-list class="text-left" nav rounded >
           <v-list-item > 
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
@@ -133,6 +133,7 @@
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
+        <v-container fluid>
       <template>
         <div class="text-xs-center">
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
@@ -146,6 +147,7 @@
         <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
       </v-footer>
       <router-view />
+        </v-container>
     </div>
   </v-app>
 </template>

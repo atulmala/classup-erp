@@ -1,5 +1,4 @@
 <template>
-  <v-app>
     <v-content>
       <v-form>
         <v-container fluid>
@@ -170,7 +169,6 @@
         </v-card>
       </v-dialog>
     </v-content>
-  </v-app>
 </template>
 
 <script>

@@ -18,8 +18,14 @@ export const store = new Vuex.Store({
     parent: 'unknown',
     school_name: 'ClassUp',
     coming_from: 'unknown',
-    // server_ip: 'https://www.classupclient.com',
-    adm_fee: false
+    adm_fee: false,
+
+    // 01/12/2019 - for marks entry component
+    the_class: 'unknown',
+    section: 'unknown',
+    subject: 'unknown',
+    exam: 'unknown',
+    test: 'unknown'
   },
   mutations: {
     SET_LOGGED_STATUS(state, status) {
@@ -57,6 +63,21 @@ export const store = new Vuex.Store({
     },
     SET_COMING_STATUS(state, coming_from) {
       state.coming_from = coming_from
+    },
+    SET_CLASS(state, the_class) {
+      state.the_class = the_class
+    },
+    SET_SECTION(state, section) {
+      state.section = section
+    },
+    SET_SUBJECT(state, subject) {
+      state.subject = subject
+    },
+    SET_EXAM(state, exam) {
+      state.exam = exam
+    },
+    SET_TEST(state, test)  {
+      state.test = test
     }
   },
   actions: {
@@ -95,6 +116,21 @@ export const store = new Vuex.Store({
     },
     set_coming_status(context, coming_from) {
       context.commit('SET_COMING_STATUS', coming_from)
+    },
+    set_class(context, the_class) {
+      context.commit('SET_CLASS', the_class)
+    },
+    set_section(context, section) {
+      context.commit('SET_SECTION', section)
+    },
+    set_subject(context, subject) {
+      context.commit('SET_SUBJECT', subject)
+    },
+    set_exam(context, exam) {
+      context.commit('SET_EXAM', exam)
+    },
+    set_test(context, test) {
+      context.commit('SET_TEST', test)
     }
   },
   getters: {
@@ -136,6 +172,21 @@ export const store = new Vuex.Store({
     },
     get_coming_from(state) {
       return state.coming_from
+    },
+    get_class(state)  {
+      return state.the_class
+    },
+    get_section(state)  {
+      return state.section
+    },
+    get_subject(state)  {
+      return state.subject
+    },
+    get_exam(state) {
+      return state.exam
+    },
+    get_test(state) {
+      return state.test
     }
   }
 });
