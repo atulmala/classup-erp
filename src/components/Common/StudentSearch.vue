@@ -80,6 +80,7 @@
               </tbody>
             </template>
           </v-data-table>
+          
         </v-col>
       </div>
     </v-content>

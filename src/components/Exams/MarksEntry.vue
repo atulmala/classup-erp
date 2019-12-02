@@ -17,41 +17,114 @@
         </v-col>
       </v-layout>
       <v-layout row wrap justify-space-around>
-        <v-simple-table>
+        <v-simple-table fixed-header height="450px" dense>
           <template v-slot:default>
             <thead>
               <tr>
                 <th class="text-left">S No</th>
                 <th class="text-left">Student</th>
-                <th class="text-left">Main Marks</th>
+                <th class="text-left">{{ main_marks }}</th>
                 <th class="text-left">Practical</th>
                 <th class="text-left">PA (UT Average)</th>
                 <th class="text-left">Portfolio</th>
-                <th class="text-left">Notebook Submission</th>
+                <th class="text-left">Subject Enrichment</th>
                 <th class="text-left">Multi Asses</th>
                 <th class="text-left">Absent?</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="item in marks_list" :key="item.id">
-                <td>{{ item.s_no }}</td>
-                <td class="text-left">{{ item.student }}</td>
-                <td>
-                  <v-text-field v-model="item.marks_obtained" :value=item.marks_obtained></v-text-field>
-                  
+                <td width="5%">{{ item.s_no }}</td>
+                <td width="15%" class="text-left">{{ item.student }}</td>
+                <td width="10%">
+                  <v-text-field
+                    class="pa-0 ma-0"
+                    v-model="item.marks_obtained"
+                    :value="item.marks_obtained"
+                    :disabled="item.disabled"
+                  ></v-text-field>
                 </td>
-                <td>{{ item.prac_marks }}</td>
-                <td>{{ item.periodic_test_marks }}</td>
-                <td>{{ item.multi_asses_marks }}</td>
-                <td>{{ item.notebook_marks }}</td>
-                <td>{{ item.sub_enrich_marks }}</td>
+                <td width="10%">
+                  <v-text-field
+                    class="pa-0 ma-0"
+                    v-model="item.prac_marks"
+                    :value="item.prac_marks"
+                    :disabled="disable_prac"
+                  ></v-text-field>
+                </td>
+                <td width="10%">
+                  <v-text-field
+                    class="pa-0 ma-0"
+                    v-model="item.periodic_test_marks"
+                    :value="item.periodic_test_marks"
+                    :disabled="disable_pa"
+                  ></v-text-field>
+                </td>
+                <td width="10%">
+                  <v-text-field
+                    class="pa-0 ma-0"
+                    v-model="item.notebook_marks"
+                    :value="item.notebook_marks"
+                    :disabled="disable_notebook"
+                  ></v-text-field>
+                </td>
+                <td width="10%">
+                  <v-text-field
+                    class="pa-0 ma-0"
+                    v-model="item.sub_enrich_marks"
+                    :value="item.sub_enrich_marks"
+                    :disabled="disable_sub_enrich"
+                  ></v-text-field>
+                </td>
+                <td width="10%">
+                  <v-text-field
+                    class="pa-0 ma-0"
+                    v-model="item.multi_asses_marks"
+                    :value="item.multi_asses_marks"
+                    :disabled="disable_multi"
+                  ></v-text-field>
+                </td>
                 <td>
-                  <v-checkbox label="Absent" value="absent"></v-checkbox>
+                  <v-checkbox
+                    class="pa-0"
+                    label="Absent"
+                    :value="item.absent"
+                    v-model="item.absent"
+                    @change="mark_absence(item)"
+                  ></v-checkbox>
                 </td>
               </tr>
             </tbody>
           </template>
         </v-simple-table>
+      </v-layout>
+      <v-layout row wrap justify-center>
+        <v-col cols="12" md="4">
+          <v-btn
+            :loading="loading"
+            :disabled="loading"
+            color="green"
+            @click="loader = 'loading'"
+            v-on:click="save_marks()"
+          >
+            Save
+            <span slot="loader" class="custom-loader">
+              <v-icon light>cached</v-icon>
+            </span>
+          </v-btn>
+          <v-btn
+            :loading="loading"
+            :disabled="loading"
+            color="green"
+            @click="loader = 'loading'"
+            v-on:click="save_marks()"
+          >
+            Submit
+            <span slot="loader" class="custom-loader">
+              <v-icon light>cached</v-icon>
+            </span>
+          </v-btn>
+        </v-col>
       </v-layout>
       <v-layout xs4 row wrap justify-space-around>
         <v-col cols="12" md="6">
@@ -85,6 +158,12 @@ export default {
       exam: "",
       test_id: "",
       marks_list: [],
+      main_marks: "Marks",
+      disable_prac: false,
+      disable_pa: false,
+      disable_notebook: false,
+      disable_multi: false,
+      disable_sub_enrich: false,
 
       showDismissibleAlert: false,
       confirm: false,
@@ -119,41 +198,74 @@ export default {
           for (var i = 0; i < response.data.length; i++) {
             var marks = {};
             marks["s_no"] = i + 1;
+            marks["absent"] = false;
+            marks["id"] = response.data[i]["id"];
             marks["student"] = response.data[i]["student"];
 
+            marks["marks_obtained"] = response.data[i]["marks_obtained"];
             if (response.data[i]["marks_obtained"] == "-5000.00")
               marks["marks_obtained"] = "";
-            else marks["marks_obtained"] = response.data[i]["marks_obtained"];
+            if (response.data[i]["marks_obtained"] == "-1000.00") {
+              marks["marks_obtained"] = "ABS";
+              marks["absent"] = true;
+            }
 
             marks["grade"] = response.data[i]["grade"];
-            if (response.data[i]["periodic_test_marks"] == -5000)
-              marks["periodic_test_marks"] = "N/A";
-            else
-              marks["periodic_test_marks"] =
-                response.data[i]["periodic_test_marks"];
 
-            if (response.data[i]["multi_assess_marks"] == -5000)
-              marks["multi_asses_marks"] = "N/A";
-            else
-              marks["multi_asses_marks"] =
-                response.data[i]["multi_asses_marks"];
+            marks["periodic_test_marks"] =
+              response.data[i]["periodic_test_marks"];
+            if (response.data[i]["periodic_test_marks"] == -5000) {
+              marks["periodic_test_marks"] = "";
+            }
+            if (response.data[i]["periodic_test_marks"] == "N/A") {
+              self.disable_pa = true;
+            }
 
-            if (response.data[i]["notebook_marks"] == 5000.0)
-              marks["notebook_marks"] = "N/A";
-            else marks["notebook_marks"] = response.data[i]["notebook_marks"];
+            marks["multi_asses_marks"] = response.data[i]["multi_asses_marks"];
+            if (response.data[i]["multi_asses_marks"] == -5000) {
+              marks["multi_asses_marks"] = "";
+            }
+            if (response.data[i]["multi_asses_marks"] == "N/A") {
+              self.disable_multi = true;
+            }
 
-            if (response.data[i]["sub_enrich_marks"] === -5000)
-              marks["sub_enrich_marks"] = "N/A";
-            else
-              marks["sub_enrich_marks"] = response.data[i]["sub_enrich_marks"];
+            marks["notebook_marks"] = response.data[i]["notebook_marks"];
+            if (response.data[i]["notebook_marks"] == -5000) {
+              marks["notebook_marks"] = "";
+            }
+            if (response.data[i]["notebook_marks"] == "N/A") {
+              self.disable_notebook = true;
+            }
 
-            if ((response.data[i]["prac_marks"] = null))
+            marks["sub_enrich_marks"] = response.data[i]["sub_enrich_marks"];
+            if (response.data[i]["sub_enrich_marks"] == -5000) {
+              marks["sub_enrich_marks"] = "";
+            }
+            if (response.data[i]["sub_enrich_marks"] == "N/A") {
+              self.disable_sub_enrich = true;
+            }
+
+            marks["prac_marks"] = response.data[i]["prac_marks"];
+            if (response.data[i]["prac_marks"] == null) {
               marks["prac_marks"] = "N/A";
-            else marks["prac_marks"] = response.data[i]["prac_marks"];
+              self.disable_prac = true;
+            } 
+            if (response.data[i]["prac_marks"] == -5000) {
+              marks["prac_marks"] = "";
+              marks["periodic_test_marks"] = "N/A";
+              marks["notebook_marks"] = "N/A";
+              marks["sub_enrich_marks"] = "N/A";
+              marks["multi_asses_marks"] = "N/A";
+              self.disable_pa = true;
+              self.disable_multi = true;
+              self.disable_notebook = true;
+              self.disable_sub_enrich = true;
+
+            } 
+
             self.marks_list.push(marks);
           }
 
-          console.log(self.marks_list);
           self.loading = false;
         }
       })
@@ -161,6 +273,29 @@ export default {
         // handle error
         console.log(error);
       });
+  },
+  methods: {
+    mark_absence: function(item)  {
+      if (item.absent)
+        this.marks_list[item.s_no - 1]["marks_obtained"] = "ABS"
+      else
+        this.marks_list[item.s_no - 1]["marks_obtained"] = ""
+    },
+    save_marks: function()  {
+      let params = {};
+      for (var i = 0; i < this.marks_list.length; i++)  {
+        let params1 = {}
+        params1["marks"] = this.marks_list[i]["marks_obtained"]
+        params1["pa"] = this.marks_list[i]["periodic_test_marks"]
+        params1["notebook"] = this.marks_list[i]["notebook_marks"]
+        params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"]
+        params1["prac_marks"] = this.marks_list[i]["prac_marks"]
+
+        
+        params[this.marks_list[i].id] = params1
+      }
+      console.log(params)
+    }
   }
 };
 </script>
