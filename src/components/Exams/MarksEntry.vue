@@ -1,19 +1,19 @@
 <template>
-  <v-content>
+  <v-content style="margin: 0px 0px 0px;">
     <template>
-      <h2>Marks Entry</h2>
+      <h2 class="pa-0 ma-0">Marks Entry</h2>
       <v-layout rxs4 row wrap>
+        <v-col cols="8" md="4">
+          <h5>Exam</h5>
+          <h4>{{ exam }}</h4>
+        </v-col>
         <v-col cols="8" md="4">
           <h5>Class:</h5>
           <h4>{{ the_class }}</h4>
         </v-col>
-        <v-col cols="12" md="4">
+        <v-col cols="8" md="4">
           <h5>Subject:</h5>
           <h4>{{ subject }}</h4>
-        </v-col>
-        <v-col cols="12" md="4">
-          <h5>Exam</h5>
-          <h4>{{ exam }}</h4>
         </v-col>
       </v-layout>
       <v-layout row wrap justify-space-around>
@@ -24,11 +24,11 @@
                 <th class="text-left">S No</th>
                 <th class="text-left">Student</th>
                 <th class="text-left">{{ main_marks }}</th>
-                <th class="text-left">Practical</th>
-                <th class="text-left">PA (UT Average)</th>
-                <th class="text-left">Portfolio</th>
-                <th class="text-left">Subject Enrichment</th>
-                <th class="text-left">Multi Asses</th>
+                <th v-if="higher_class" class="text-left">Practical</th>
+                <th v-if="!higher_class" class="text-left">PA (UT Average)</th>
+                <th v-if="!higher_class" class="text-left">Portfolio</th>
+                <th v-if="!higher_class" class="text-left">Subject Enrichment</th>
+                <th v-if="!higher_class" class="text-left">Multi Asses</th>
                 <th class="text-left">Absent?</th>
               </tr>
             </thead>
@@ -44,7 +44,7 @@
                     :disabled="item.disabled"
                   ></v-text-field>
                 </td>
-                <td width="10%">
+                <td v-if="higher_class" width="10%">
                   <v-text-field
                     class="pa-0 ma-0"
                     v-model="item.prac_marks"
@@ -52,7 +52,7 @@
                     :disabled="disable_prac"
                   ></v-text-field>
                 </td>
-                <td width="10%">
+                <td v-if="!higher_class" width="10%">
                   <v-text-field
                     class="pa-0 ma-0"
                     v-model="item.periodic_test_marks"
@@ -60,7 +60,7 @@
                     :disabled="disable_pa"
                   ></v-text-field>
                 </td>
-                <td width="10%">
+                <td v-if="!higher_class" width="10%">
                   <v-text-field
                     class="pa-0 ma-0"
                     v-model="item.notebook_marks"
@@ -68,7 +68,7 @@
                     :disabled="disable_notebook"
                   ></v-text-field>
                 </td>
-                <td width="10%">
+                <td v-if="!higher_class" width="10%">
                   <v-text-field
                     class="pa-0 ma-0"
                     v-model="item.sub_enrich_marks"
@@ -76,7 +76,7 @@
                     :disabled="disable_sub_enrich"
                   ></v-text-field>
                 </td>
-                <td width="10%">
+                <td v-if="!higher_class" width="10%">
                   <v-text-field
                     class="pa-0 ma-0"
                     v-model="item.multi_asses_marks"
@@ -164,6 +164,7 @@ export default {
       disable_notebook: false,
       disable_multi: false,
       disable_sub_enrich: false,
+      higher_class: false,
 
       showDismissibleAlert: false,
       confirm: false,
@@ -179,6 +180,10 @@ export default {
     self.subject = store.get_subject;
     self.exam = store.get_exam;
     self.test_id = store.get_test;
+
+    let only_class = self.the_class.slice(0, -4);
+    if (only_class == "XI" || only_class == "XII") self.higher_class = true;
+    console.log("higher_class = ", only_class);
 
     self.ip = store.get_server_ip;
     let url = self.ip.concat("/exam/get_test_marks_list");
@@ -249,7 +254,7 @@ export default {
             if (response.data[i]["prac_marks"] == null) {
               marks["prac_marks"] = "N/A";
               self.disable_prac = true;
-            } 
+            }
             if (response.data[i]["prac_marks"] == -5000) {
               marks["prac_marks"] = "";
               marks["periodic_test_marks"] = "N/A";
@@ -260,12 +265,10 @@ export default {
               self.disable_multi = true;
               self.disable_notebook = true;
               self.disable_sub_enrich = true;
-
-            } 
+            }
 
             self.marks_list.push(marks);
           }
-
           self.loading = false;
         }
       })
@@ -275,26 +278,60 @@ export default {
       });
   },
   methods: {
-    mark_absence: function(item)  {
-      if (item.absent)
-        this.marks_list[item.s_no - 1]["marks_obtained"] = "ABS"
-      else
-        this.marks_list[item.s_no - 1]["marks_obtained"] = ""
+    mark_absence: function(item) {
+      if (item.absent) this.marks_list[item.s_no - 1]["marks_obtained"] = "ABS";
+      else this.marks_list[item.s_no - 1]["marks_obtained"] = "";
     },
-    save_marks: function()  {
+    save_marks: function() {
       let params = {};
-      for (var i = 0; i < this.marks_list.length; i++)  {
-        let params1 = {}
-        params1["marks"] = this.marks_list[i]["marks_obtained"]
-        params1["pa"] = this.marks_list[i]["periodic_test_marks"]
-        params1["notebook"] = this.marks_list[i]["notebook_marks"]
-        params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"]
-        params1["prac_marks"] = this.marks_list[i]["prac_marks"]
+      for (var i = 0; i < this.marks_list.length; i++) {
+        let params1 = {};
 
-        
-        params[this.marks_list[i].id] = params1
+        params1["marks"] = this.marks_list[i]["marks_obtained"];
+        if (this.marks_list[i]["marks_obtained"] == "")
+          params1["marks"] = "-5000.00";
+        if (this.marks_list[i]["marks_obtained"] == "ABS")
+          params1["marks"] = "-1000.0";
+
+        if (this.marks_list[i]["periodic_test_marks"] == "")
+          params1["pa"] = "-5000.0";
+        else params1["pa"] = this.marks_list[i]["periodic_test_marks"];
+
+        if (this.marks_list[i]["notebook_marks"] == "")
+          params1["notebook"] = "-5000.0";
+        else params1["notebook"] = this.marks_list[i]["notebook_marks"];
+
+        if (this.marks_list[i]["multi_asses_marks"] == "")
+          params1["multi_assess"] = "-5000.0";
+        else params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"];
+
+        if (this.marks_list[i]["sub_enrich_marks"] == "")
+          params1["subject_enrich"] = "-5000.0";
+        else params1["subject_enrich"] = this.marks_list[i]["sub_enrich_marks"];
+
+        if (this.marks_list[i]["prac_marks"] == "")
+          params1["prac_marks"] = "-5000.0";
+        else params1["prac_marks"] = this.marks_list[i]["prac_marks"];
+
+        params[this.marks_list[i]["id"]] = params1;
       }
-      console.log(params)
+
+      let ip = this.$store.getters.get_server_ip;
+      let url = ip.concat("/academics/save_marks/");
+
+      axios
+        .post(url, {
+          params
+        })
+        .then(function(response) {})
+        .catch(function(error) {
+          console.log(error);
+        })
+        .then(function() {
+          // always executed
+        });
+
+      console.log(params);
     }
   }
 };
