@@ -1,8 +1,8 @@
 <template>
   <v-content style="margin: 0px 0px 0px;">
     <template>
-      <h2 class="pa-0 ma-0">Marks Entry</h2>
-      <v-layout rxs4 row wrap>
+      <h2>Marks Entry</h2>
+      <v-layout xs4 row wrap>
         <v-col cols="8" md="4">
           <h5>Exam</h5>
           <h4>{{ exam }}</h4>
@@ -35,7 +35,7 @@
             <tbody>
               <tr v-for="item in marks_list" :key="item.id">
                 <td width="5%">{{ item.s_no }}</td>
-                <td width="15%" class="text-left">{{ item.student }}</td>
+                <td width="20%" class="text-left">{{ item.student }}</td>
                 <td width="10%">
                   <v-text-field
                     class="pa-0 ma-0"

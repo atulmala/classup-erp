@@ -73,10 +73,12 @@
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-file-input
+                      show-size
                         label="Optional - Attach file (Image jpeg or png, PDF)"
                         ref="file_input"
                         outlined
                         color="deep-purple accent-4"
+                        v-model="selectedFile" 
                         :name="uploadFieldName"
                         @change="onFileChanged"
                         accept="image/*, .pdf"
@@ -118,8 +120,8 @@
           <v-card-text>{{ alert_message }}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat="flat" @click="send_message()">OK</v-btn>
-            <v-btn color="green darken-1" flat="flat" @click="confirm = false">Cancel</v-btn>
+            <v-btn color="green darken-1" text @click="send_message()">OK</v-btn>
+            <v-btn color="green darken-1" text @click="confirm = false">Cancel</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -146,6 +148,7 @@ export default {
       alert_message: "",
       showDismissibleAlert: false,
       alert_type: "error",
+      alert_color: "",
       confirm: false,
       caption: "",
       loader: "",
@@ -182,8 +185,8 @@ export default {
       //   console.log(this.recepients);
     },
     onFileChanged(event) {
-      const file = event.target.files[0];
-      this.selectedFile = file;
+      // const file = event.target.files[0];
+      // this.selectedFile = file;
       this.image_included = true;
     },
     validate() {
