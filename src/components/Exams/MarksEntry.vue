@@ -117,7 +117,7 @@
             :disabled="loading"
             color="green"
             @click="loader = 'loading'"
-            v-on:click="save_marks()"
+            v-on:click="submit_marks()"
           >
             Submit
             <span slot="loader" class="custom-loader">
@@ -157,6 +157,8 @@ export default {
       subject: "",
       exam: "",
       test_id: "",
+      grade_based: false,
+      test_type: "",
       marks_list: [],
       main_marks: "Marks",
       disable_prac: false,
@@ -180,6 +182,9 @@ export default {
     self.subject = store.get_subject;
     self.exam = store.get_exam;
     self.test_id = store.get_test;
+    self.grade_based = store.get_grade_based;
+    self.test_type = store.get_test_type;
+    console.log("test_type = ", self.test_type);
 
     let only_class = self.the_class.slice(0, -4);
     if (only_class == "XI" || only_class == "XII") self.higher_class = true;
@@ -282,38 +287,96 @@ export default {
       if (item.absent) this.marks_list[item.s_no - 1]["marks_obtained"] = "ABS";
       else this.marks_list[item.s_no - 1]["marks_obtained"] = "";
     },
+    submit_marks: function() {
+      for (var i = 0; i < this.marks_list.length; i++) {
+        if (this.marks_list[i]["marks_obtained"] == "") {
+          console.log(this.marks_list[i]);
+          this.showDismissibleAlert = true;
+          this.alert_message =
+            "Please enter marks or mark as Absent for " +
+            this.marks_list[i]["student"];
+          this.alert_color = "red";
+          return;
+        }
+      }
+
+      if (this.test_type == "term") {
+        for (var i = 0; i < this.marks_list.length; i++) {
+          if (this.marks_list[i]["periodic_test_marks"] == "") {
+            this.showDismissibleAlert = true;
+            this.alert_message =
+              "Please enter PA (UT Average) marks for " +
+              this.marks_list[i]["student"];
+            this.alert_color = "red";
+            return;
+          }
+          if (this.marks_list[i]["notebook_marks"] == "") {
+            this.showDismissibleAlert = true;
+            this.alert_message =
+              "Please enter Portfolio marks for " +
+              this.marks_list[i]["student"];
+            this.alert_color = "red";
+            return;
+          }
+          if (this.marks_list[i]["sub_enrich_marks"] == "") {
+            this.showDismissibleAlert = true;
+            this.alert_message =
+              "Please enter Sub Enrichment marks for " +
+              this.marks_list[i]["student"];
+            this.alert_color = "red";
+            return;
+          }
+          if (this.marks_list[i]["multi_asses_marks"] == "") {
+            this.showDismissibleAlert = true;
+            this.alert_message =
+              "Please enter Multiple Assessment marks for " +
+              this.marks_list[i]["student"];
+            this.alert_color = "red";
+            return;
+          }
+        }
+      }
+    },
     save_marks: function() {
       let params = {};
       for (var i = 0; i < this.marks_list.length; i++) {
         let params1 = {};
 
-        params1["marks"] = this.marks_list[i]["marks_obtained"];
-        if (this.marks_list[i]["marks_obtained"] == "")
-          params1["marks"] = "-5000.00";
-        if (this.marks_list[i]["marks_obtained"] == "ABS")
-          params1["marks"] = "-1000.0";
+        if (self.grade_based == "No") {
+          params1["marks"] = this.marks_list[i]["marks_obtained"];
+          if (this.marks_list[i]["marks_obtained"] == "")
+            params1["marks"] = "-5000.00";
+          if (this.marks_list[i]["marks_obtained"] == "ABS")
+            params1["marks"] = "-1000.0";
 
-        if (this.marks_list[i]["periodic_test_marks"] == "")
-          params1["pa"] = "-5000.0";
-        else params1["pa"] = this.marks_list[i]["periodic_test_marks"];
+          if (this.marks_list[i]["periodic_test_marks"] == "")
+            params1["pa"] = "-5000.0";
+          else params1["pa"] = this.marks_list[i]["periodic_test_marks"];
 
-        if (this.marks_list[i]["notebook_marks"] == "")
-          params1["notebook"] = "-5000.0";
-        else params1["notebook"] = this.marks_list[i]["notebook_marks"];
+          if (this.marks_list[i]["notebook_marks"] == "")
+            params1["notebook"] = "-5000.0";
+          else params1["notebook"] = this.marks_list[i]["notebook_marks"];
 
-        if (this.marks_list[i]["multi_asses_marks"] == "")
-          params1["multi_assess"] = "-5000.0";
-        else params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"];
+          if (this.marks_list[i]["multi_asses_marks"] == "")
+            params1["multi_assess"] = "-5000.0";
+          else
+            params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"];
 
-        if (this.marks_list[i]["sub_enrich_marks"] == "")
-          params1["subject_enrich"] = "-5000.0";
-        else params1["subject_enrich"] = this.marks_list[i]["sub_enrich_marks"];
+          if (this.marks_list[i]["sub_enrich_marks"] == "")
+            params1["subject_enrich"] = "-5000.0";
+          else
+            params1["subject_enrich"] = this.marks_list[i]["sub_enrich_marks"];
 
-        if (this.marks_list[i]["prac_marks"] == "")
-          params1["prac_marks"] = "-5000.0";
-        else params1["prac_marks"] = this.marks_list[i]["prac_marks"];
+          if (this.marks_list[i]["prac_marks"] == "")
+            params1["prac_marks"] = "-5000.0";
+          else params1["prac_marks"] = this.marks_list[i]["prac_marks"];
 
-        params[this.marks_list[i]["id"]] = params1;
+          params[this.marks_list[i]["id"]] = params1;
+        } else {
+          params[this.marks_list[i]["id"]] = this.marks_list[i][
+            "marks_obtained"
+          ];
+        }
       }
 
       let ip = this.$store.getters.get_server_ip;

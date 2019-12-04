@@ -339,6 +339,7 @@ export default {
             test["subject"] = response.data[i]["subject"];
             test["exam"] = response.data[i]["exam"];
             test["test_type"] = response.data[i]["test_type"];
+            test["grade_based"] = response.data[i]["grade_based"];
 
             let grade_based = response.data[i]["grade_based"];
             if (grade_based == true) {
@@ -682,13 +683,15 @@ export default {
       }, 300);
     },
     edit_item(item)  {
-      console.log("inside edited item", item)
-      this.$store.dispatch("set_class", item.the_class)
-      this.$store.dispatch("set_section", item.section)
-      this.$store.dispatch("set_subject", item.subject)
-      this.$store.dispatch("set_exam", item.exam)
-      this.$store.dispatch("set_test", item.id)
-      this.$router.replace('/marks_entry')
+      console.log("inside edited item", item);
+      this.$store.dispatch("set_class", item.the_class);
+      this.$store.dispatch("set_section", item.section);
+      this.$store.dispatch("set_subject", item.subject);
+      this.$store.dispatch("set_exam", item.exam);
+      this.$store.dispatch("set_test", item.id);
+      this.$store.dispatch("set_grade_based", item.grade_based);
+      this.$store.dispatch("set_test_type", item.test_type);
+      this.$router.replace('/marks_entry');
     }
   }
 };

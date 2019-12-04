@@ -182,11 +182,9 @@ export default {
   },
   methods: {
     add_recepient(e) {
-      //   console.log(this.recepients);
     },
     onFileChanged(event) {
-      // const file = event.target.files[0];
-      // this.selectedFile = file;
+      
       this.image_included = true;
     },
     validate() {

@@ -5,8 +5,8 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    // server_ip: 'http://localhost:8000',
-    server_ip: 'https://www.classupclient.com',
+    server_ip: 'http://localhost:8000',
+    // server_ip: 'https://www.classupclient.com',
     logged_status: false,
     logged_user: 'unknown',
     user_name: 'unknown',
@@ -25,7 +25,9 @@ export const store = new Vuex.Store({
     section: 'unknown',
     subject: 'unknown',
     exam: 'unknown',
-    test: 'unknown'
+    test: 'unknown',
+    grade_based: 'unknown',
+    test_type: 'unknown'
   },
   mutations: {
     SET_LOGGED_STATUS(state, status) {
@@ -78,6 +80,12 @@ export const store = new Vuex.Store({
     },
     SET_TEST(state, test)  {
       state.test = test
+    },
+    SET_GRADE_BASED(state, grade_based) {
+      state.test_type = grade_based
+    },
+    SET_TEST_TYPE(state, test_type)  {
+      state.test_type = test_type
     }
   },
   actions: {
@@ -131,6 +139,12 @@ export const store = new Vuex.Store({
     },
     set_test(context, test) {
       context.commit('SET_TEST', test)
+    },
+    set_grade_based(context, grade_based) {
+      context.commit('SET_GRADE_BASED', grade_based)
+    },
+    set_test_type(context, test_type) {
+      context.commit('SET_TEST_TYPE', test_type)
     }
   },
   getters: {
@@ -187,6 +201,12 @@ export const store = new Vuex.Store({
     },
     get_test(state) {
       return state.test
+    },
+    get_grade_based(state)  {
+      return state.grade_based
+    },
+    get_test_type(state)  {
+      return state.test_type
     }
   }
 });
