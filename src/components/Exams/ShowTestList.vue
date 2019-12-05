@@ -691,6 +691,7 @@ export default {
       this.$store.dispatch("set_test", item.id);
       this.$store.dispatch("set_grade_based", item.grade_based);
       this.$store.dispatch("set_test_type", item.test_type);
+      this.$store.dispatch("set_max_marks", item.max_marks);
       this.$router.replace('/marks_entry');
     }
   }

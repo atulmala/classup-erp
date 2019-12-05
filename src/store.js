@@ -27,65 +27,69 @@ export const store = new Vuex.Store({
     exam: 'unknown',
     test: 'unknown',
     grade_based: 'unknown',
-    test_type: 'unknown'
+    test_type: 'unknown',
+    max_marks: 'unknown'
   },
   mutations: {
     SET_LOGGED_STATUS(state, status) {
       state.logged_status = status;
     },
     SET_USER(state, user) {
-      state.logged_user = user
+      state.logged_user = user;
     },
     SET_USER_NAME(state, user_name) {
-      state.user_name = user_name
+      state.user_name = user_name;
     },
     SET_USER_TYPE(state, user_type) {
-      state.user_type = user_type
+      state.user_type = user_type;
     },
     SET_ID(state, id) {
-      state.school_id = id
+      state.school_id = id;
     },
     SET_SCHOOL_NAME(state, school_name) {
-      state.school_name = school_name
+      state.school_name = school_name;
     },
     SET_STUDENT_ID(state, id) {
-      state.student_id = id
+      state.student_id = id;
     },
     SET_STUDENT_NAME(state, name) {
-      state.student_name = name
+      state.student_name = name;
     },
     SET_STUDENT_CLASS(state, the_class) {
-      state.student_class = the_class
+      state.student_class = the_class;
     },
     SET_PARENT(state, parent) {
-      state.parent = parent
+      state.parent = parent;
     },
     SET_ADM_FEE(state, status) {
-      state.adm_fee = status
+      state.adm_fee = status;
     },
     SET_COMING_STATUS(state, coming_from) {
-      state.coming_from = coming_from
+      state.coming_from = coming_from;
     },
     SET_CLASS(state, the_class) {
-      state.the_class = the_class
+      state.the_class = the_class;
     },
     SET_SECTION(state, section) {
-      state.section = section
+      state.section = section;
     },
     SET_SUBJECT(state, subject) {
-      state.subject = subject
+      state.subject = subject;
     },
     SET_EXAM(state, exam) {
-      state.exam = exam
+      state.exam = exam;
     },
-    SET_TEST(state, test)  {
-      state.test = test
+    SET_TEST(state, test) {
+      state.test = test;
     },
     SET_GRADE_BASED(state, grade_based) {
-      state.test_type = grade_based
+      state.test_type = grade_based;
     },
-    SET_TEST_TYPE(state, test_type)  {
-      state.test_type = test_type
+    SET_TEST_TYPE(state, test_type) {
+      state.test_type = test_type;
+    },
+    SET_MAX_MARKS(state, max_marks) {
+      state.max_marks = max_marks;
     }
   },
   actions: {
@@ -145,6 +149,9 @@ export const store = new Vuex.Store({
     },
     set_test_type(context, test_type) {
       context.commit('SET_TEST_TYPE', test_type)
+    },
+    set_max_marks(context, max_marks) {
+      context.commit('SET_MAX_MARKS', max_marks);
     }
   },
   getters: {
@@ -187,13 +194,13 @@ export const store = new Vuex.Store({
     get_coming_from(state) {
       return state.coming_from
     },
-    get_class(state)  {
+    get_class(state) {
       return state.the_class
     },
-    get_section(state)  {
+    get_section(state) {
       return state.section
     },
-    get_subject(state)  {
+    get_subject(state) {
       return state.subject
     },
     get_exam(state) {
@@ -202,11 +209,14 @@ export const store = new Vuex.Store({
     get_test(state) {
       return state.test
     },
-    get_grade_based(state)  {
-      return state.grade_based
+    get_grade_based(state) {
+      return state.grade_based;
     },
-    get_test_type(state)  {
-      return state.test_type
+    get_test_type(state) {
+      return state.test_type;
+    },
+    get_max_marks(state)  {
+      return state.max_marks;
     }
   }
 });

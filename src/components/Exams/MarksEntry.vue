@@ -3,17 +3,30 @@
     <template>
       <h2>Marks Entry</h2>
       <v-layout xs4 row wrap>
-        <v-col cols="8" md="4">
+        <v-col cols="8" md="2">
           <h5>Exam</h5>
           <h4>{{ exam }}</h4>
         </v-col>
-        <v-col cols="8" md="4">
+        <v-col cols="8" md="2">
           <h5>Class:</h5>
           <h4>{{ the_class }}</h4>
         </v-col>
-        <v-col cols="8" md="4">
+        <v-col cols="8" md="2">
           <h5>Subject:</h5>
           <h4>{{ subject }}</h4>
+        </v-col>
+        <v-col cols="8" md="2">
+          <h5>Max Marks:</h5>
+          <h4>{{ max_marks }}</h4>
+        </v-col>
+      </v-layout>
+      <v-layout xs4 row wrap justify-space-around>
+        <v-col cols="12" md="6">
+          <v-alert
+            :value="showDismissibleAlert"
+            :color="alert_color"
+            :type="alert_type"
+          >{{ alert_message }}</v-alert>
         </v-col>
       </v-layout>
       <v-layout row wrap justify-space-around>
@@ -42,6 +55,7 @@
                     v-model="item.marks_obtained"
                     :value="item.marks_obtained"
                     :disabled="item.disabled"
+                    v-on:focus="dismiss()"
                   ></v-text-field>
                 </td>
                 <td v-if="higher_class" width="10%">
@@ -50,6 +64,7 @@
                     v-model="item.prac_marks"
                     :value="item.prac_marks"
                     :disabled="disable_prac"
+                    v-on:focus="dismiss()"
                   ></v-text-field>
                 </td>
                 <td v-if="!higher_class" width="10%">
@@ -58,6 +73,7 @@
                     v-model="item.periodic_test_marks"
                     :value="item.periodic_test_marks"
                     :disabled="disable_pa"
+                    v-on:focus="dismiss()"
                   ></v-text-field>
                 </td>
                 <td v-if="!higher_class" width="10%">
@@ -66,6 +82,7 @@
                     v-model="item.notebook_marks"
                     :value="item.notebook_marks"
                     :disabled="disable_notebook"
+                    v-on:focus="dismiss()"
                   ></v-text-field>
                 </td>
                 <td v-if="!higher_class" width="10%">
@@ -74,6 +91,7 @@
                     v-model="item.sub_enrich_marks"
                     :value="item.sub_enrich_marks"
                     :disabled="disable_sub_enrich"
+                    v-on:focus="dismiss()"
                   ></v-text-field>
                 </td>
                 <td v-if="!higher_class" width="10%">
@@ -82,6 +100,7 @@
                     v-model="item.multi_asses_marks"
                     :value="item.multi_asses_marks"
                     :disabled="disable_multi"
+                    v-on:focus="dismiss()"
                   ></v-text-field>
                 </td>
                 <td>
@@ -126,15 +145,7 @@
           </v-btn>
         </v-col>
       </v-layout>
-      <v-layout xs4 row wrap justify-space-around>
-        <v-col cols="12" md="6">
-          <v-alert
-            :value="showDismissibleAlert"
-            :color="alert_color"
-            :type="alert_type"
-          >{{ alert_message }}</v-alert>
-        </v-col>
-      </v-layout>
+      
       <template>
         <div class="text-xs-center">
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
@@ -159,6 +170,7 @@ export default {
       test_id: "",
       grade_based: false,
       test_type: "",
+      max_marks: "",
       marks_list: [],
       main_marks: "Marks",
       disable_prac: false,
@@ -184,6 +196,7 @@ export default {
     self.test_id = store.get_test;
     self.grade_based = store.get_grade_based;
     self.test_type = store.get_test_type;
+    self.max_marks = store.get_max_marks;
     console.log("test_type = ", self.test_type);
 
     let only_class = self.the_class.slice(0, -4);
@@ -283,9 +296,20 @@ export default {
       });
   },
   methods: {
+    dismiss() {
+      this.showDismissibleAlert = false;
+    },
     mark_absence: function(item) {
+      this.showDismissibleAlert = false;
       if (item.absent) this.marks_list[item.s_no - 1]["marks_obtained"] = "ABS";
       else this.marks_list[item.s_no - 1]["marks_obtained"] = "";
+    },
+    compare_with_max(item)  {
+      if (item.marks_obtained > this.max_marks) {
+        this.showDismissibleAlert = true;
+        this.alert_message = "Marks entered for " + item.student + " are higher than Marks " + this.max_marks;
+        this.alert_color = "amber";
+      }
     },
     submit_marks: function() {
       for (var i = 0; i < this.marks_list.length; i++) {
@@ -334,8 +358,63 @@ export default {
             this.alert_color = "red";
             return;
           }
+
+          // all marks entered properly, can submit now
+          if (self.grade_based == "No") {
+          params1["marks"] = this.marks_list[i]["marks_obtained"];
+          if (this.marks_list[i]["marks_obtained"] == "")
+            params1["marks"] = "-5000.00";
+          if (this.marks_list[i]["marks_obtained"] == "ABS")
+            params1["marks"] = "-1000.0";
+
+          if (this.marks_list[i]["periodic_test_marks"] == "")
+            params1["pa"] = "-5000.0";
+          else params1["pa"] = this.marks_list[i]["periodic_test_marks"];
+
+          if (this.marks_list[i]["notebook_marks"] == "")
+            params1["notebook"] = "-5000.0";
+          else params1["notebook"] = this.marks_list[i]["notebook_marks"];
+
+          if (this.marks_list[i]["multi_asses_marks"] == "")
+            params1["multi_assess"] = "-5000.0";
+          else
+            params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"];
+
+          if (this.marks_list[i]["sub_enrich_marks"] == "")
+            params1["subject_enrich"] = "-5000.0";
+          else
+            params1["subject_enrich"] = this.marks_list[i]["sub_enrich_marks"];
+
+          if (this.marks_list[i]["prac_marks"] == "")
+            params1["prac_marks"] = "-5000.0";
+          else params1["prac_marks"] = this.marks_list[i]["prac_marks"];
+
+          params[this.marks_list[i]["id"]] = params1;
+        } else {
+          params[this.marks_list[i]["id"]] = this.marks_list[i][
+            "marks_obtained"
+          ];
         }
       }
+
+      let ip = this.$store.getters.get_server_ip;
+      let url = ip.concat("/academics/save_marks/");
+
+      axios
+        .post(url, {
+          params
+        })
+        .then(function(response) {})
+        .catch(function(error) {
+          console.log(error);
+        })
+        .then(function() {
+          // always executed
+        });
+
+      console.log(params);
+        }
+      
     },
     save_marks: function() {
       let params = {};
