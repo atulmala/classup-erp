@@ -3,8 +3,19 @@
     <v-content class="ma-0">
       <v-form>
         <v-container class="ma-0 pa-0">
+          <div class="text-xs-center">
+            <v-layout xs4 row wrap justify-center>
+              <v-col cols="12" md="6">
+                <v-alert
+                  :value="showDismissibleAlert"
+                  :color="alert_color"
+                  :type="alert_type"
+                >{{ alert_message }}</v-alert>
+              </v-col>
+            </v-layout>
+          </div>
           <h2>Select Class, Section, Subject, and Date</h2>
-          <v-layout>
+          <v-layout justify-center>
             <v-col cols="12" md="2">
               <v-select
                 :items="class_list"
@@ -16,7 +27,7 @@
             <v-col cols="12" md="2">
               <v-select
                 :items="section_list"
-                label="Class/Standard"
+                label="Section"
                 v-model="section"
                 v-on:focus="dismiss()"
               ></v-select>
@@ -42,22 +53,17 @@
                 <template v-slot:activator="{ on }">
                   <v-text-field
                     v-model="date"
-                    label="Date of Test"
+                    label="Date"
                     prepend-icon="event"
                     readonly
                     v-on="on"
                     @click="dismiss()"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="datee"
-                  no-title
-                  color="green lighten-1"
-                  scrollable
-                >
+                <v-date-picker v-model="date" no-title color="green lighten-1" scrollable>
                   <v-spacer></v-spacer>
-                  <!-- <v-btn text color="primary" @click="test_details.menu = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="$refs.menu.save(test_details.test_date)">OK</v-btn> -->
+                  <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
                 </v-date-picker>
               </v-menu>
             </v-col>
@@ -69,26 +75,15 @@
                 :disabled="loading"
                 color="green"
                 @click="loader = 'loading'"
-                v-on:click="search()"
+                v-on:click="get_students()"
               >
-                Search
+                Take Attendance
                 <span slot="loader" class="custom-loader">
                   <v-icon light>cached</v-icon>
                 </span>
               </v-btn>
             </div>
           </v-layout>
-          <div class="text-xs-center">
-            <v-layout xs4 row wrap justify-center>
-              <v-col cols="12" md="6">
-                <v-alert
-                  :value="showDismissibleAlert"
-                  :color="alert_color"
-                  :type="alert_type"
-                >{{ alert_message }}</v-alert>
-              </v-col>
-            </v-layout>
-          </div>
         </v-container>
       </v-form>
       <div class="text-xs-center" offset-sm4>
@@ -124,23 +119,22 @@
 
 <script>
 import axios from "axios";
-import FeePayment from "@/components/Fee/FeePayment";
 export default {
-  name: "StudentSearch",
+  name: "StudentAttendance",
   data() {
     return {
-      
       loader: null,
       loading: false,
       reg_no: "",
-      
+
       the_class: "",
       class_list: [],
       section: "",
       section_list: [],
-      subject: "",
+      subject: "Main",
       subject_list: [],
-      date: "",
+      date: new Date().toISOString().substr(0, 10),
+
       menu: "",
 
       students: [],
@@ -149,6 +143,7 @@ export default {
       showDismissibleAlert: false,
       alert_color: "",
       headers: [
+        { text: "S No", value: "s_no" },
         {
           text: "Student Name",
           align: "left",
@@ -166,24 +161,37 @@ export default {
     let school_id = this.$store.getters.get_school_id;
     let ip = this.$store.getters.get_server_ip;
     let url = ip.concat("/academics/class_list/", school_id, "/");
-    axios
-      .get(url)
-      .then(function(response) {
-        // handle success
-        self.class_list = response.data;
-        for (var i = 0; i < response.data.length; i++) {
-          self.class_list[i] = response.data[i]["standard"];
+
+    function get_class_list() {
+      return axios.get(ip.concat("/academics/class_list/", school_id, "/"));
+    }
+    function get_section_list() {
+      return axios.get(ip.concat("/academics/section_list/", school_id, "/"));
+    }
+    function get_subject_list() {
+      return axios.get(ip.concat("/academics/subject_list/", school_id, "/"));
+    }
+    axios.all([get_class_list(), get_section_list(), get_subject_list()]).then(
+      axios.spread(function(classes, sections, subjects) {
+        self.class_list = classes.data;
+        self.section_list = sections.data;
+        self.subject_list = subjects.data;
+
+        for (var i = 0; i < classes.data.length; i++) {
+          self.class_list[i] = classes.data[i]["standard"];
         }
-        console.log(self.class_list);
+        for (var i = 0; i < sections.data.length; i++) {
+          self.section_list[i] = sections.data[i]["section"];
+        }
+        for (var i = 0; i < subjects.data.length; i++) {
+          self.subject_list[i] = subjects.data[i]["subject_name"];
+        }
       })
-      .catch(function(error) {
-        // handle error
-        console.log(error);
-      });
+    );
   },
 
   methods: {
-    search() {
+    get_students() {
       let self = this;
       var can_search = true;
       if (this.reg_no == "" && this.first_name == "") {
@@ -192,60 +200,103 @@ export default {
         this.alert_color = "red";
         can_search = false;
       }
-      if (this.first_name != "" && this.reg_no == "" && this.the_class == "") {
+      if (this.the_class == "") {
         this.alert_message = "Please specify Class";
         this.showDismissibleAlert = true;
         this.alert_color = "red";
         can_search = false;
       }
+      if (this.section == "") {
+        this.alert_message = "Please specify Section";
+        this.showDismissibleAlert = true;
+        this.alert_color = "red";
+        can_search = false;
+      }
       if (can_search) {
+        console.log("date = ", this.date);
+        let splitDate = this.date.split("-");
+
+        let year = splitDate[0];
+        let month = splitDate[1];
+        let day = splitDate[2];
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
-        let url = ip.concat(
-          "/student/list/",
+        let url2 = ip.concat(
+          "/student/list",
           school_id,
           "/",
-          "in_params",
+          this.the_class,
           "/",
-          "in_params"
+          this.section,
+          "/"
         );
         axios
-          .get(url, {
-            params: {
-              reg_no: this.reg_no,
-              first_name: this.first_name,
-              last_name: this.last_name,
-              the_class: this.the_class
-            }
-          })
+          .get(url2, {})
           .then(function(response) {
-            if (response.data.length == 0) {
-              self.alert_message =
-                "Student not found. Please change the search criteria and try again";
-              self.showDismissibleAlert = true;
-              this.alert_color = "red";
-              self.alert_type = "error";
-            } else {
-              self.show_search_criteria = false;
-              for (var i = 0; i < response.data.length; i++) {
-                var student = {};
-                student["reg_no"] = response.data[i]["student_erp_id"];
-                student["name"] =
-                  response.data[i]["fist_name"] +
-                  " " +
-                  response.data[i]["last_name"];
-                student["the_class"] =
-                  response.data[i]["current_class"] +
-                  "-" +
-                  response.data[i]["current_section"];
-                student["parent"] = response.data[i]["parent"];
-                student["adm_fee"] = response.data[i]["adm_fee"];
-                console.log(student);
-                self.students.push(student);
-              }
-              console.log(self.students);
-              self.show_student_list = true;
+            for (var i = 0; i < response.data.length; i++) {
+              var student = {};
+              student["reg_no"] = response.data[i]["student_erp_id"];
+              student["name"] =
+                response.data[i]["fist_name"] +
+                " " +
+                response.data[i]["last_name"];
+              student["the_class"] =
+                response.data[i]["current_class"] +
+                "-" +
+                response.data[i]["current_section"];
+              student["parent"] = response.data[i]["parent"];
+              student["adm_fee"] = response.data[i]["adm_fee"];
+              console.log(student);
+              self.students.push(student);
             }
+            console.log(self.students);
+            self.show_student_list = true;
+          })
+          .catch(function(error) {
+            console.log(error);
+          })
+          .then(function() {
+            // always executed
+          });
+          
+        let url = ip.concat(
+          "/attendance/retrieve/",
+          school_id,
+          "/",
+          this.the_class,
+          "/",
+          this.section,
+          "/",
+          this.subject_list,
+          "/",
+          day,
+          "/",
+          month,
+          "/",
+          year,
+          "/"
+        );
+        axios
+          .get(url, {})
+          .then(function(response) {
+            for (var i = 0; i < response.data.length; i++) {
+              var student = {};
+              student["reg_no"] = response.data[i]["student_erp_id"];
+              student["name"] =
+                response.data[i]["fist_name"] +
+                " " +
+                response.data[i]["last_name"];
+              student["the_class"] =
+                response.data[i]["current_class"] +
+                "-" +
+                response.data[i]["current_section"];
+              student["parent"] = response.data[i]["parent"];
+              student["adm_fee"] = response.data[i]["adm_fee"];
+              console.log(student);
+              self.students.push(student);
+            }
+            console.log(self.students);
+            self.show_student_list = true;
           })
           .catch(function(error) {
             console.log(error);

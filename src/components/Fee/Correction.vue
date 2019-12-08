@@ -48,7 +48,7 @@
         </v-layout>
       </v-content>
     </v-container>
-    <v-flex d-flex xs7 order-xs10 offset-sm3>
+    <v-layout justify-center>
       <v-form v-if="show_payment_details">
         <h3>Please Correct</h3>
           <v-layout row wrap>
@@ -75,7 +75,7 @@
           </v-layout>
           <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
       </v-form>
-    </v-flex>
+    </v-layout>
   </v-app>
 </template>
 
