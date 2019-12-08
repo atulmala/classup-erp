@@ -4,70 +4,76 @@
       <v-content>
         <h2 v-if="show_payment_history">Fee Payment History</h2>
         <v-layout justify-center v-if="show_payment_history">
-          <v-flex d-flex xs6>
-            <v-layout column>
-              <v-flex d-flex xs6>
-                <h5>Student:</h5>
-                <h3>{{ student_name }}</h3>
-                <h5>Class:</h5>
-                <h3>{{ the_class }}</h3>
-                <h5>Reg/Adm/Sch No</h5>
-                <h3>{{ reg_no }}</h3>
-                <h5>Parent</h5>
-                <h3>{{ parent}}</h3>
-              </v-flex>
-            </v-layout>
-          </v-flex>
+          <v-col cols="8" md="2">
+            <h5>Student:</h5>
+            <h3>{{ student_name }}</h3>
+          </v-col>
+          <v-col cols="8" md="2">
+            <h5>Class:</h5>
+            <h3>{{ the_class }}</h3>
+          </v-col>
+          <v-col cols="8" md="2">
+            <h5>Reg/Adm/Sch No</h5>
+            <h3>{{ reg_no }}</h3>
+          </v-col>
+          <v-col cols="8" md="2">
+            <h5>Parent</h5>
+            <h3>{{ parent}}</h3>
+          </v-col>
         </v-layout>
         <v-layout justify-center>
-          <v-flex d-flex xs6>
+          <v-col cols="10" md="8">
             <v-data-table
               v-if="show_payment_history"
               :headers="headers"
               :items="payment_history"
               class="elevation-1"
             >
-              <template slot="items" slot-scope="props">
-                <tr @click="showAlert(props.item)">
-                  <td class="text-xs-left">{{ props.item.date }}</td>
-                  <td class="text-xs-left">{{ props.item.receipt_number }}</td>
-                  <td class="text-xs-left">{{ props.item.amount }}</td>
-                  <td class="text-xs-left">{{ props.item.parent }}</td>
+              <template v-slot:body="{ items }">
+              <tbody>
+                <tr
+                  v-for="item in items"
+                  :key="item.name"
+                  @click="showAlert(item)"
+                  :class="{'selectedRow': item === selectedItem}"
+                >
+                  <td class="text-xs-left">{{ item.date }}</td>
+                  <td class="text-xs-left">{{ item.receipt_number }}</td>
+                  <td class="text-xs-left">{{ item.amount_paid }}</td>
                 </tr>
+              </tbody>
               </template>
             </v-data-table>
-          </v-flex>
+          </v-col>
         </v-layout>
       </v-content>
     </v-container>
     <v-flex d-flex xs7 order-xs10 offset-sm3>
       <v-form v-if="show_payment_details">
         <h3>Please Correct</h3>
-        <v-container fluid>
           <v-layout row wrap>
-            <v-flex d-flex xs2 sm6 md2>
-              <v-text-field label="Penalty" v-model="penalty" ></v-text-field>
-            </v-flex>
-            <v-flex d-flex xs2 sm6 md2>
-              <v-text-field label="Other/One Time" v-model="one_time" ></v-text-field>
-            </v-flex>
-            <v-flex d-flex xs2 sm6 md2>
-              <v-text-field
-                label="Discount"
-                v-model="discount"
-                v-on:focus="dismiss()"
-              ></v-text-field>
-            </v-flex>
-            <v-flex d-flex xs2 sm6 md2>
+             <v-col cols="8" md="2">
+              <v-text-field label="Penalty" v-model="penalty"></v-text-field>
+            </v-col>
+             <v-col cols="8" md="2">
+              <v-text-field label="Other/One Time" v-model="one_time"></v-text-field>
+            </v-col>
+             <v-col cols="8" md="2">
+              <v-text-field label="Discount" v-model="discount" v-on:focus="dismiss()"></v-text-field>
+            </v-col>
+             <v-col cols="8" md="2">
               <v-text-field label="Amount Paid" v-model="amount_paid" v-on:focus="dismiss()"></v-text-field>
-            </v-flex>
+            </v-col>
           </v-layout>
           <v-layout row wrap>
-            <v-btn color="success" @click="correction">Update Payment</v-btn>
-            <v-btn color="success" @click="validate_fee">Cancel</v-btn>
+            <v-col cols="8" md="3">
+            <v-btn color="green"  @click="correction">Update Payment</v-btn>
+            </v-col>
+            <v-col cols="8" md="3">
+            <v-btn color="orange"  @click="validate_fee">Cancel</v-btn>
+            </v-col>
           </v-layout>
           <v-alert :value="showDismissibleAlert" :type="alert_type">{{ alert_message }}</v-alert>
-        </v-container>
       </v-form>
     </v-flex>
   </v-app>
@@ -137,19 +143,20 @@ export default {
           self.showDismissibleAlert = true;
           self.alert_type = "error";
         } else {
-          self.show_payment_history =  true;
-          self.show_payment_details =  false;
+          console.log(response);
+          self.show_payment_history = true;
+          self.show_payment_details = false;
           for (var i = 0; i < response.data.length; i++) {
             var a_payment = {};
             a_payment["date"] = response.data[i]["date"];
             a_payment["receipt_number"] = response.data[i]["receipt_number"];
-            a_payment["amount"] = response.data[i]["amount"];
-            a_payment["fine"] = response.data[i]["fine"]
-            a_payment["one_time"] = response.data[i]["one_time"]
-            a_payment["discount"] = response.data[i]["discount"]
+            a_payment["amount_paid"] = response.data[i]["amount"];
+            a_payment["fine"] = response.data[i]["fine"];
+            a_payment["one_time"] = response.data[i]["one_time"];
+            a_payment["discount"] = response.data[i]["discount"];
             self.payment_history.push(a_payment);
           }
-          console.log(self.payment_history)
+          console.log(self.payment_history);
         }
         // handle success
       })
@@ -234,6 +241,7 @@ export default {
       this.showDismissibleAlert = false;
     },
     showAlert(a) {
+      console.log("inside showAlert")
       if (event.target.classList.contains("btn__content")) return;
 
       let response = confirm(
@@ -242,51 +250,50 @@ export default {
           " (date: " +
           a.date +
           ", amount: " +
-          a.amount +
+          a.amount_paid +
           ")?"
       );
       if (response) {
         this.show_payment_history = false;
         this.show_payment_details = true;
-        console.log(a.amount)
-        this.receipt_corrected = a.receipt_number
+        this.receipt_corrected = a.receipt_number;
         this.penalty = a.fine;
         this.one_time = a.one_time;
         this.discount = a.discount;
-        this.amount_paid = a.amount;
+        this.amount_paid = a.amount_paid;
       }
     },
-    correction()  {
-      let response = confirm('Are you sure you want to apply this correction?');
+    correction() {
+      let self = this;
+      let response = confirm("Are you sure you want to apply this correction?");
       if (response) {
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
         let url = ip.concat("/fee_processing/correct_fee/", school_id, "/");
 
         axios
-        .post(url, {
-          receipt_corrected: this.receipt_corrected,
-          penalty: this.penalty,
-          due_this_term: this.due_this_term,
-          one_time: this.one_time,
-          fine: this.late_fee,
-          one_time: this.one_time,
-          discount: this.discount,
-          amount_paid: this.amount_paid
-        })
-        .then(function(response) {
-          console.log(response);
-          
-          confirm("Fees successfully corrected");
-          self.$router.replace("/student_search");
-        })
-        .catch(function(error) {
-          console.log(error);
-        })
-        .then(function() {
-          // always executed
-        });
-        
+          .post(url, {
+            receipt_corrected: this.receipt_corrected,
+            penalty: this.penalty,
+            due_this_term: this.due_this_term,
+            one_time: this.one_time,
+            fine: this.late_fee,
+            one_time: this.one_time,
+            discount: this.discount,
+            amount_paid: this.amount_paid
+          })
+          .then(function(response) {
+            console.log(response);
+
+            confirm("Fees successfully corrected");
+            self.$router.replace("/student_search");
+          })
+          .catch(function(error) {
+            console.log(error);
+          })
+          .then(function() {
+            // always executed
+          });
       }
     }
   }

@@ -474,6 +474,7 @@ export default {
           heads: this.heads,
           due_this_term: this.due_this_term,
           previous_due: this.previous_due,
+          paid_till_date: this.paid_till_date,
           fine: this.late_fee,
           one_time: this.one_time,
           discount: this.discount_given,

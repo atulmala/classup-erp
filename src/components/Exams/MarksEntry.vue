@@ -398,7 +398,7 @@ export default {
       }
 
       let ip = this.$store.getters.get_server_ip;
-      let url = ip.concat("/academics/save_marks/");
+      let url = ip.concat("/academics/submit_marks/");
 
       axios
         .post(url, {

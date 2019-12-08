@@ -14,6 +14,7 @@ import ClassMonthlyAttendance from '../components/TeacherMenu/ClassMonthlyAttend
 import ScheduleTest from '../components/Exams/ScheduleTest'
 import ShowTestList from '../components/Exams/ShowTestList'
 import MarksEntry from '../components/Exams/MarksEntry'
+import StudentAttendance from '../components/Attendance/StudentAttendance'
 
 Vue.use(Router)
 
@@ -93,6 +94,11 @@ export default new Router({
       path: '/marks_entry',
       name: 'marks_entry',
       component: MarksEntry
+    },
+    {
+      path: '/student_attendance',
+      name: 'student_attendance',
+      component: StudentAttendance
     }
   ]
 })

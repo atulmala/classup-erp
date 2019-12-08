@@ -235,6 +235,10 @@ export default {
       ],
       teacher_menu: [
         {
+          title: "Conduct Attendance",
+          action: this.student_attendance
+        },
+        {
           icon: "mdi-download",
           title: "Download Monthly Attendance",
           action: this.class_monthly_attendance
@@ -283,6 +287,10 @@ export default {
     schedule_test() {
       this.$store.dispatch("set_coming_status", "schedule_test");
       this.$router.replace("/schedule_test");
+    },
+    student_attendance () {
+      this.$store.dispatch("set_coming_status", "class_attendance");
+      this.$router.replace("/student_attendance");
     },
     test_marks_entry() {
       this.$store.dispatch("set_coming_status", "show_test_list");
