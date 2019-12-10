@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-content class="ma-0">
-      <v-form>
+      <v-form v-if="!show_student_list">
         <v-container class="ma-0 pa-0">
           <div class="text-xs-center">
             <v-layout xs4 row wrap justify-center>
@@ -75,7 +75,7 @@
                 :disabled="loading"
                 color="green"
                 @click="loader = 'loading'"
-                v-on:click="get_students()"
+                v-on:click="get_attendance_list()"
               >
                 Take Attendance
                 <span slot="loader" class="custom-loader">
@@ -86,29 +86,45 @@
           </v-layout>
         </v-container>
       </v-form>
-      <div class="text-xs-center" offset-sm4>
-        <v-col cols="10" md="2"></v-col>
+      <div class="text-xs-center">
         <v-col cols="10" md="8">
           <v-data-table
+            dark
+            loading
+            loading-text="Fetching student list for this class... Please wait"
             v-if="show_student_list"
             :headers="headers"
             :items="students"
             class="elevation-1"
           >
-            <template v-slot:body="{ items }">
-              <tbody>
-                <tr
-                  v-for="item in items"
-                  :key="item.name"
-                  @click="showAlert(item)"
-                  :class="{'selectedRow': item === selectedItem}"
-                >
-                  <td align="left">{{ item.name }}</td>
-                  <td align="left">{{ item.reg_no }}</td>
-                  <td align="left">{{ item.the_class }}</td>
-                  <td align="left">{{ item.parent }}</td>
-                </tr>
-              </tbody>
+            <template v-slot:top>
+              <v-toolbar flat color="teal">
+                <v-toolbar-title>{{ the_class }} - {{ section }}</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-toolbar-title>{{ subject }}</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-toolbar-title>{{ ddmmyyyy }}</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-toolbar-title>Total: {{ total }}</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-toolbar-title>Present: {{ present }}</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-toolbar-title>Absent: {{ absent }}</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-spacer></v-spacer>
+                <v-dialog v-model="dialog" max-width="500px">
+                  <template v-slot:activator="{ on }">
+                    <v-btn color="purple" dark class="mb-0" v-on="on">Submit</v-btn>
+                  </template>
+                </v-dialog>
+              </v-toolbar>
+            </template>
+            <template v-slot:item.action="{ item }">
+              <v-icon x-large class="mr-2 material-icons" :color="item.presence_color" @click="mark_absence(item)">{{ item.toggle }}</v-icon>
+            </template>
+
+            <template v-slot:item.presence="{ item }">
+              <v-chip :color="status_color(item.presence)" @click="mark_absence(item)">{{ item.presence }}</v-chip>
             </template>
           </v-data-table>
         </v-col>
@@ -123,6 +139,54 @@ export default {
   name: "StudentAttendance",
   data() {
     return {
+      get_student_list: function() {
+        console.log("inside get_student_list()");
+        let self = this;
+        let school_id = this.$store.getters.get_school_id;
+        let ip = this.$store.getters.get_server_ip;
+        return axios.get(
+          ip.concat(
+            "/student/list/",
+            school_id,
+            "/",
+            this.the_class,
+            "/",
+            this.section,
+            "/"
+          )
+        );
+      },
+      get_absentees_list: function() {
+        console.log("inside get_absentee_list()");
+        let school_id = this.$store.getters.get_school_id;
+        let ip = this.$store.getters.get_server_ip;
+        console.log("date = ", this.date);
+        let splitDate = this.date.split("-");
+
+        let year = splitDate[0];
+        let month = splitDate[1];
+        let day = splitDate[2];
+        this.ddmmyyyy = day + "-" + month + "-" + year;
+        return axios.get(
+          ip.concat(
+            "/attendance/retrieve/",
+            school_id,
+            "/",
+            this.the_class,
+            "/",
+            this.section,
+            "/",
+            this.subject,
+            "/",
+            day,
+            "/",
+            month,
+            "/",
+            year,
+            "/"
+          )
+        );
+      },
       loader: null,
       loading: false,
       reg_no: "",
@@ -134,10 +198,16 @@ export default {
       subject: "Main",
       subject_list: [],
       date: new Date().toISOString().substr(0, 10),
-
+      ddmmyyyy: "",
       menu: "",
 
       students: [],
+      absentee_list: [],
+      total: "",
+      present: "",
+      absent: "",
+      dialog: "",
+      show_student_list: false,
       alert_type: "",
       alert_message: "",
       showDismissibleAlert: false,
@@ -150,12 +220,12 @@ export default {
           sortable: false,
           value: "name"
         },
-        { text: "Reg/Adm/Sch Number", value: "reg_no" },
-        { text: "Class", value: "the_class" },
-        { text: "Parent", value: "parent" }
+        { text: "Present/Absent", value: "presence" },
+        { text: 'Mark', value: 'action', sortable: false },
       ]
     };
   },
+
   mounted: function() {
     let self = this;
     let school_id = this.$store.getters.get_school_id;
@@ -191,7 +261,7 @@ export default {
   },
 
   methods: {
-    get_students() {
+    get_attendance_list() {
       let self = this;
       var can_search = true;
       if (this.reg_no == "" && this.first_name == "") {
@@ -213,99 +283,69 @@ export default {
         can_search = false;
       }
       if (can_search) {
-        console.log("date = ", this.date);
-        let splitDate = this.date.split("-");
+        console.log("retrieving student list and absentees list for the class");
+        axios.all([this.get_student_list(), this.get_absentees_list()]).then(
+          axios.spread(function(students, absentees) {
+            self.absent = absentees.data.length;
+            for (var i = 0; i < absentees.data.length; i++) {
+              self.absentee_list.push(absentees.data[i]["student"]);
+            }
 
-        let year = splitDate[0];
-        let month = splitDate[1];
-        let day = splitDate[2];
-        let ip = this.$store.getters.get_server_ip;
-        let school_id = this.$store.getters.get_school_id;
-        let url2 = ip.concat(
-          "/student/list",
-          school_id,
-          "/",
-          this.the_class,
-          "/",
-          this.section,
-          "/"
-        );
-        axios
-          .get(url2, {})
-          .then(function(response) {
-            for (var i = 0; i < response.data.length; i++) {
-              var student = {};
-              student["reg_no"] = response.data[i]["student_erp_id"];
+            self.total = students.data.length;
+            self.present = self.total - self.absent;
+            for (var i = 0; i < students.data.length; i++) {
+              let student = {};
+              student["s_no"] = i + 1;
+              student["id"] = students.data[i]["id"];
+              if (self.absentee_list.indexOf(student["id"]) > 0) {
+                student["presence"] = "absent";
+                student["toggle"] = "toggle_off"
+                student["presence_color"] = "orange darken-2"
+              } else {
+                student["presence"] = "present";
+                student["toggle"] = "toggle_on"
+                student["presence_color"] = "green darken-2"
+              }
               student["name"] =
-                response.data[i]["fist_name"] +
+                students.data[i]["fist_name"] +
                 " " +
-                response.data[i]["last_name"];
-              student["the_class"] =
-                response.data[i]["current_class"] +
-                "-" +
-                response.data[i]["current_section"];
-              student["parent"] = response.data[i]["parent"];
-              student["adm_fee"] = response.data[i]["adm_fee"];
-              console.log(student);
+                students.data[i]["last_name"];
               self.students.push(student);
             }
-            console.log(self.students);
             self.show_student_list = true;
           })
-          .catch(function(error) {
-            console.log(error);
-          })
-          .then(function() {
-            // always executed
-          });
-          
-        let url = ip.concat(
-          "/attendance/retrieve/",
-          school_id,
-          "/",
-          this.the_class,
-          "/",
-          this.section,
-          "/",
-          this.subject_list,
-          "/",
-          day,
-          "/",
-          month,
-          "/",
-          year,
-          "/"
         );
-        axios
-          .get(url, {})
-          .then(function(response) {
-            for (var i = 0; i < response.data.length; i++) {
-              var student = {};
-              student["reg_no"] = response.data[i]["student_erp_id"];
-              student["name"] =
-                response.data[i]["fist_name"] +
-                " " +
-                response.data[i]["last_name"];
-              student["the_class"] =
-                response.data[i]["current_class"] +
-                "-" +
-                response.data[i]["current_section"];
-              student["parent"] = response.data[i]["parent"];
-              student["adm_fee"] = response.data[i]["adm_fee"];
-              console.log(student);
-              self.students.push(student);
-            }
-            console.log(self.students);
-            self.show_student_list = true;
-          })
-          .catch(function(error) {
-            console.log(error);
-          })
-          .then(function() {
-            // always executed
-          });
       }
-      console.log(this.reg_no);
+    },
+
+    status_color(status) {
+      if (status == "absent") return "red";
+      if (status == "present") return "green";
+    },
+    mark_absence(item) {
+      console.log("inside marks_absence(item)");
+      let position = this.absentee_list.indexOf(item.id);
+      console.log("position = ", position)
+      if (position > -1) {
+        // this student was in the absentee list. will have to be marked as present
+        this.absentee_list.splice(position, 1);
+        console.log(this.absentee_list);
+        item.presence = "present"
+        this.present += 1;
+        this.absent -= 1;
+        console.log("present = ", self.present)
+        item.toggle = "toggle_on"
+        item.presence_color = "green darken-2"
+      }
+      else  {
+        this.absentee_list.push(item.id)
+        console.log(this.absentee_list);
+        item.presence = "absent"
+        this.present -= 1;
+        this.absent += 1;
+        item.toggle = "toggle_off"
+        item.presence_color = "orange darken-2"
+      }
     },
     dismiss() {
       this.showDismissibleAlert = false;
