@@ -86,11 +86,18 @@
           </v-layout>
         </v-container>
       </v-form>
+      <template>
+        <div class="text-xs-center">
+          <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+        </div>
+      </template>
       <div class="text-xs-center">
-        <v-col cols="10" md="8">
+        <v-col cols="10" md="10">
           <v-data-table
+            dense
             dark
             loading
+            fixed-header
             loading-text="Fetching student list for this class... Please wait"
             v-if="show_student_list"
             :headers="headers"
@@ -99,6 +106,8 @@
           >
             <template v-slot:top>
               <v-toolbar flat color="teal">
+                <v-toolbar-title>Attendance</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
                 <v-toolbar-title>{{ the_class }} - {{ section }}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-toolbar-title>{{ subject }}</v-toolbar-title>
@@ -114,17 +123,31 @@
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="purple" dark class="mb-0" v-on="on">Submit</v-btn>
+                    <v-btn
+                      color="purple"
+                      dark
+                      class="mb-0"
+                      v-on="on"
+                      @click="process_attendance"
+                    >Submit</v-btn>
                   </template>
                 </v-dialog>
               </v-toolbar>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-icon x-large class="mr-2 material-icons" :color="item.presence_color" @click="mark_absence(item)">{{ item.toggle }}</v-icon>
+              <v-icon
+                x-large
+                class="mr-2 material-icons"
+                :color="item.presence_color"
+                @click="mark_absence(item)"
+              >{{ item.toggle }}</v-icon>
             </template>
 
             <template v-slot:item.presence="{ item }">
-              <v-chip :color="status_color(item.presence)" @click="mark_absence(item)">{{ item.presence }}</v-chip>
+              <v-chip
+                :color="status_color(item.presence)"
+                @click="mark_absence(item)"
+              >{{ item.presence }}</v-chip>
             </template>
           </v-data-table>
         </v-col>
@@ -164,8 +187,11 @@ export default {
         let splitDate = this.date.split("-");
 
         let year = splitDate[0];
+        this.yyyy = year;
         let month = splitDate[1];
+        this.mm = month;
         let day = splitDate[2];
+        this.dd = day;
         this.ddmmyyyy = day + "-" + month + "-" + year;
         return axios.get(
           ip.concat(
@@ -198,16 +224,21 @@ export default {
       subject: "Main",
       subject_list: [],
       date: new Date().toISOString().substr(0, 10),
+      dd: "",
+      mm: "",
+      yyyy: "",
       ddmmyyyy: "",
       menu: "",
 
       students: [],
       absentee_list: [],
+      correction_list: [],
       total: "",
       present: "",
       absent: "",
       dialog: "",
       show_student_list: false,
+      waiting: false,
       alert_type: "",
       alert_message: "",
       showDismissibleAlert: false,
@@ -221,7 +252,7 @@ export default {
           value: "name"
         },
         { text: "Present/Absent", value: "presence" },
-        { text: 'Mark', value: 'action', sortable: false },
+        { text: "Mark", value: "action", sortable: false }
       ]
     };
   },
@@ -283,6 +314,7 @@ export default {
         can_search = false;
       }
       if (can_search) {
+        self.waiting = true;
         console.log("retrieving student list and absentees list for the class");
         axios.all([this.get_student_list(), this.get_absentees_list()]).then(
           axios.spread(function(students, absentees) {
@@ -290,6 +322,7 @@ export default {
             for (var i = 0; i < absentees.data.length; i++) {
               self.absentee_list.push(absentees.data[i]["student"]);
             }
+            console.log("absentee_list = ", self.absentee_list);
 
             self.total = students.data.length;
             self.present = self.total - self.absent;
@@ -297,14 +330,14 @@ export default {
               let student = {};
               student["s_no"] = i + 1;
               student["id"] = students.data[i]["id"];
-              if (self.absentee_list.indexOf(student["id"]) > 0) {
+              if (self.absentee_list.indexOf(student["id"]) > -1) {
                 student["presence"] = "absent";
-                student["toggle"] = "toggle_off"
-                student["presence_color"] = "orange darken-2"
+                student["toggle"] = "toggle_off";
+                student["presence_color"] = "orange darken-2";
               } else {
                 student["presence"] = "present";
-                student["toggle"] = "toggle_on"
-                student["presence_color"] = "green darken-2"
+                student["toggle"] = "toggle_on";
+                student["presence_color"] = "green darken-2";
               }
               student["name"] =
                 students.data[i]["fist_name"] +
@@ -313,6 +346,7 @@ export default {
               self.students.push(student);
             }
             self.show_student_list = true;
+            self.waiting = false;
           })
         );
       }
@@ -324,88 +358,142 @@ export default {
     },
     mark_absence(item) {
       console.log("inside marks_absence(item)");
+      console.log("absentee_list = ", this.absentee_list);
+      console.log("correction_list = ", this.correction_list);
+
       let position = this.absentee_list.indexOf(item.id);
-      console.log("position = ", position)
       if (position > -1) {
         // this student was in the absentee list. will have to be marked as present
         this.absentee_list.splice(position, 1);
-        console.log(this.absentee_list);
-        item.presence = "present"
+        console.log("absentee_list now = ", this.absentee_list);
+        this.correction_list.push(item.id);
+        console.log("correction_list now = ", this.correction_list);
+        item.presence = "present";
         this.present += 1;
         this.absent -= 1;
-        console.log("present = ", self.present)
-        item.toggle = "toggle_on"
-        item.presence_color = "green darken-2"
-      }
-      else  {
-        this.absentee_list.push(item.id)
-        console.log(this.absentee_list);
-        item.presence = "absent"
+        console.log("present = ", this.presence);
+        item.toggle = "toggle_on";
+        item.presence_color = "green darken-2";
+      } else {
+        this.absentee_list.push(item.id);
+        console.log("absentee_list now = ", this.absentee_list);
+        let idx = this.correction_list.indexOf(item.id);
+        if (idx > -1) {
+          this.correction_list.splice(idx, 1);
+          console.log("correction_list now = ", this.correction_list);
+        }
+        item.presence = "absent";
         this.present -= 1;
         this.absent += 1;
-        item.toggle = "toggle_off"
-        item.presence_color = "orange darken-2"
+        item.toggle = "toggle_off";
+        item.presence_color = "orange darken-2";
       }
     },
     dismiss() {
       this.showDismissibleAlert = false;
     },
-    showAlert(a) {
-      console.log("inside showAlert");
-      let coming_from = this.$store.getters.get_coming_from;
-      console.log(coming_from);
-      if (coming_from == "fee_payment") {
-        let response = confirm(
-          "Are you sure you want to process the fees for " +
-            a.name +
-            " (" +
-            a.reg_no +
-            ")?"
-        );
-        if (response) {
-          this.$store.dispatch("set_student_id", a.reg_no);
-          this.$store.dispatch("set_student_name", a.name);
-          this.$store.dispatch("set_parent", a.parent);
-          this.$router.replace("/fee_payment");
-        }
-      }
+    process_attendance() {
+      let self = this;
+      let response = confirm(
+        "Are you sure you want to Submit this Attendance?"
+      );
+      if (response) {
+        this.waiting = true;
+        let school_id = self.$store.getters.get_school_id;
+        let ip = self.$store.getters.get_server_ip;
+        let teacher = self.$store.getters.get_logged_user;
 
-      if (coming_from == "correction") {
-        let response = confirm(
-          "Are you sure you want to do correction for " +
-            a.name +
-            " (" +
-            a.reg_no +
-            ")?"
-        );
-        if (response) {
-          this.$store.dispatch("set_student_id", a.reg_no);
-          this.$store.dispatch("set_student_name", a.name);
-          var the_class = a.current_class;
-          console.log(the_class);
-          let section = a.current_section;
-          console.log(section);
-          this.$store.dispatch("set_student_class", a.the_class);
-          this.$store.dispatch("set_parent", a.parent);
-          this.$router.replace("/correction");
+        function attendance_taken() {
+          let url = ip.concat(
+            "/attendance/attendance_taken/",
+            school_id,
+            "/",
+            self.the_class,
+            "/",
+            self.section,
+            "/",
+            self.subject,
+            "/",
+            self.dd,
+            "/",
+            self.mm,
+            "/",
+            self.yyyy,
+            "/",
+            teacher,
+            "/"
+          );
+          console.log("url =", url)
+          return axios.post(url);
         }
-      }
 
-      if (coming_from == "update_student") {
-        let response = confirm(
-          "Are you sure you want to do update for " +
-            a.name +
-            " (" +
-            a.reg_no +
-            ")?"
-        );
-        if (response) {
-          this.$store.dispatch("set_student_id", a.reg_no);
-          this.$store.dispatch("set_student_name", a.name);
-          this.$store.dispatch("set_student_class", a.the_class);
-          this.$store.dispatch("set_parent", a.parent);
-          this.$router.replace("/update_student");
+        function submit_attendance() {
+          let absentees = {};
+          for (var i = 0; i < self.absentee_list.length; i++) {
+            absentees[self.absentee_list[i]] = self.absentee_list[i];
+          }
+          console.log("absentees = ", absentees);
+
+          let url = ip.concat(
+            "/attendance/update1/",
+            school_id,
+            "/",
+            self.the_class,
+            "/",
+            self.section,
+            "/",
+            self.subject,
+            "/",
+            self.dd,
+            "/",
+            self.mm,
+            "/",
+            self.yyyy,
+            "/",
+            teacher,
+            "/"
+          );
+          console.log("url =", url)
+          return axios.post(url, absentees);
         }
+
+        function submit_correction()  {
+          let corrections = {};
+          for (var i = 0; i < self.correction_list.length; i++) {
+            corrections[self.correction_list[i]] = self.correction_list[i];
+          }
+          console.log("corrections = ", corrections);
+          let url = ip.concat(
+            "/attendance/delete2/",
+            school_id,
+            "/",
+            self.the_class,
+            "/",
+            self.section,
+            "/",
+            self.subject,
+            "/",
+            self.dd,
+            "/",
+            self.mm,
+            "/",
+            self.yyyy,
+            "/"
+          );
+          console.log("url =", url)
+          return axios.post(url, corrections);
+        }
+
+        axios
+          .all([attendance_taken(), submit_attendance(), submit_correction()])
+          .then(
+            axios.spread(function(res1, res2, res3) {
+              self.waiting = false;
+              confirm ("Attendance submitted to server")
+              
+              
+            })
+          );
       }
     }
   }

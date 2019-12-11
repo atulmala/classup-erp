@@ -244,6 +244,7 @@ export default {
           action: this.class_monthly_attendance
         },
         {
+          icon: "access-time",
           title: "Schedule Test",
           action: this.schedule_test
         },
