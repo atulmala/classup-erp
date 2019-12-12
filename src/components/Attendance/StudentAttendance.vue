@@ -490,8 +490,7 @@ export default {
             axios.spread(function(res1, res2, res3) {
               self.waiting = false;
               confirm ("Attendance submitted to server")
-              
-              
+              self.show_student_list = false;
             })
           );
       }

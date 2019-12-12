@@ -64,7 +64,7 @@
           <v-list-group prepend-icon value="true" color="green">
             <template v-slot:activator>
               <v-list-item-icon>
-                <v-icon>mdi-</v-icon>
+                <v-icon>mdi-school</v-icon>
               </v-list-item-icon>
               <v-list-item>
                 <v-list-item-title>Student Management</v-list-item-title>
@@ -84,8 +84,11 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="magenta">
+          <v-list-group prepend-icon value="true" color="purple">
             <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-ab-testing</v-icon>
+              </v-list-item-icon>
               <v-list-item>
                 <v-list-item-title>Exam & Results</v-list-item-title>
               </v-list-item>
@@ -102,6 +105,9 @@
           <v-divider class="mx-4"></v-divider>
           <v-list-group prepend-icon value="true" color="teal">
             <template v-slot:activator>
+              <v-list-item-icon>
+              <v-icon>mdi-currency-inr</v-icon>
+            </v-list-item-icon>
               <v-list-item>
                 <v-list-item-title>Fees Management</v-list-item-title>
               </v-list-item>
@@ -116,8 +122,11 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="yellow">
+          <v-list-group prepend-icon value="true" color="blue">
             <template v-slot:activator>
+              <v-list-item-icon>
+              <v-icon>mdi-teach</v-icon>
+            </v-list-item-icon>
               <v-list-item>
                 <v-list-item-title>Teacher's Corner</v-list-item-title>
               </v-list-item>
@@ -186,10 +195,12 @@ export default {
           action: this.bulk_message
         },
         {
+          icon: "mdi-cloud-download",
           title: "Download Monthly Communication Report",
           action: this.monthly_communication
         },
         {
+          icon: "mdi-cloud-download-outline",
           title: "Download Parent Communication Report",
           action: this.parent_communication
         }
@@ -201,40 +212,48 @@ export default {
           action: this.add_student
         },
         {
+          icon: "mdi-account-convert",
           title: "Update Student",
           action: this.update_student
         }
       ],
       exam_items: [
         {
+          icon: "mdi-table-large",
           title: "Result Analysis Sheets",
           action: this.class_search
         },
         {
+          icon: "mdi-cloud-print",
           title: "Download Mark Sheets",
           action: this.mark_sheet
         },
         {
+          icon: "mdi-chart-line",
           title: "Download Performance Sheets",
           action: this.performance_analysis
         }
       ],
       fee_items: [
         {
+          icon: "mdi-transfer-right",
           title: "Take Fee",
           action: this.student_search
         },
         {
+          icon: "mdi-cancel",
           title: "Cancel Fee",
           action: this.correction
         },
         {
+          icon: "mdi-file-remove",
           title: "Defaulter Report",
           action: this.defaulter_report
         }
       ],
       teacher_menu: [
         {
+          icon: "mdi-alpha-p-circle-outline",
           title: "Conduct Attendance",
           action: this.student_attendance
         },
@@ -244,11 +263,18 @@ export default {
           action: this.class_monthly_attendance
         },
         {
-          icon: "access-time",
+          icon: "mdi-message-alert-outline",
+          title: "Communicate with Parents",
+          action: this.communicate_with_parents
+
+        },
+        {
+          icon: "mdi-timetable",
           title: "Schedule Test",
           action: this.schedule_test
         },
         {
+          icon: "mdi-marker",
           title: "Test Marks Entry",
           action: this.test_marks_entry
         }
