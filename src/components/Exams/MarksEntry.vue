@@ -1,23 +1,47 @@
 <template>
   <v-content style="margin: 0px 0px 0px;">
     <template>
-      <h2>Marks Entry</h2>
-      <v-layout xs4 row wrap>
-        <v-col cols="8" md="2">
-          <h5>Exam</h5>
-          <h4>{{ exam }}</h4>
-        </v-col>
-        <v-col cols="8" md="2">
-          <h5>Class:</h5>
-          <h4>{{ the_class }}</h4>
-        </v-col>
-        <v-col cols="8" md="2">
-          <h5>Subject:</h5>
-          <h4>{{ subject }}</h4>
-        </v-col>
-        <v-col cols="8" md="2">
-          <h5>Max Marks:</h5>
-          <h4>{{ max_marks }}</h4>
+      <v-layout xs4 row wrap justify-space-around>
+        <v-col cols="12" md="12">
+          <v-toolbar  color="#FEDBD0" elevation="5">
+            <v-toolbar-title>Marks Entry</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-toolbar-title>Exam: {{ exam }}</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-toolbar-title>Subject: {{ subject }}</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-toolbar-title>Max Marks: {{ max_marks }}</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-chip
+            :loading="loading"
+            :disabled="loading"
+            text-color="white"
+            color="#442C2E"
+            @click="loader = 'loading'"
+            v-on:click="save_marks()"
+          >
+              Save
+            <span slot="loader" class="custom-loader">
+              <v-icon light>cached</v-icon>
+            </span>
+          </v-chip>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-chip
+            :loading="loading"
+            :disabled="loading"
+            color="#4E0D3A"
+            text-color="white"
+            @click="loader = 'loading'"
+            v-on:click="submit_marks()"
+          >
+            Submit
+            <span slot="loader" class="custom-loader">
+              <v-icon light>cached</v-icon>
+            </span>
+          </v-chip>
+            <v-spacer></v-spacer>
+          </v-toolbar>
         </v-col>
       </v-layout>
       <v-layout xs4 row wrap justify-space-around>
@@ -117,35 +141,6 @@
           </template>
         </v-simple-table>
       </v-layout>
-      <v-layout row wrap justify-center>
-        <v-col cols="12" md="4">
-          <v-btn
-            :loading="loading"
-            :disabled="loading"
-            color="green"
-            @click="loader = 'loading'"
-            v-on:click="save_marks()"
-          >
-            Save
-            <span slot="loader" class="custom-loader">
-              <v-icon light>cached</v-icon>
-            </span>
-          </v-btn>
-          <v-btn
-            :loading="loading"
-            :disabled="loading"
-            color="green"
-            @click="loader = 'loading'"
-            v-on:click="submit_marks()"
-          >
-            Submit
-            <span slot="loader" class="custom-loader">
-              <v-icon light>cached</v-icon>
-            </span>
-          </v-btn>
-        </v-col>
-      </v-layout>
-      
       <template>
         <div class="text-xs-center">
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
@@ -304,10 +299,14 @@ export default {
       if (item.absent) this.marks_list[item.s_no - 1]["marks_obtained"] = "ABS";
       else this.marks_list[item.s_no - 1]["marks_obtained"] = "";
     },
-    compare_with_max(item)  {
+    compare_with_max(item) {
       if (item.marks_obtained > this.max_marks) {
         this.showDismissibleAlert = true;
-        this.alert_message = "Marks entered for " + item.student + " are higher than Marks " + this.max_marks;
+        this.alert_message =
+          "Marks entered for " +
+          item.student +
+          " are higher than Marks " +
+          this.max_marks;
         this.alert_color = "amber";
       }
     },
@@ -361,60 +360,61 @@ export default {
 
           // all marks entered properly, can submit now
           if (self.grade_based == "No") {
-          params1["marks"] = this.marks_list[i]["marks_obtained"];
-          if (this.marks_list[i]["marks_obtained"] == "")
-            params1["marks"] = "-5000.00";
-          if (this.marks_list[i]["marks_obtained"] == "ABS")
-            params1["marks"] = "-1000.0";
+            params1["marks"] = this.marks_list[i]["marks_obtained"];
+            if (this.marks_list[i]["marks_obtained"] == "")
+              params1["marks"] = "-5000.00";
+            if (this.marks_list[i]["marks_obtained"] == "ABS")
+              params1["marks"] = "-1000.0";
 
-          if (this.marks_list[i]["periodic_test_marks"] == "")
-            params1["pa"] = "-5000.0";
-          else params1["pa"] = this.marks_list[i]["periodic_test_marks"];
+            if (this.marks_list[i]["periodic_test_marks"] == "")
+              params1["pa"] = "-5000.0";
+            else params1["pa"] = this.marks_list[i]["periodic_test_marks"];
 
-          if (this.marks_list[i]["notebook_marks"] == "")
-            params1["notebook"] = "-5000.0";
-          else params1["notebook"] = this.marks_list[i]["notebook_marks"];
+            if (this.marks_list[i]["notebook_marks"] == "")
+              params1["notebook"] = "-5000.0";
+            else params1["notebook"] = this.marks_list[i]["notebook_marks"];
 
-          if (this.marks_list[i]["multi_asses_marks"] == "")
-            params1["multi_assess"] = "-5000.0";
-          else
-            params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"];
+            if (this.marks_list[i]["multi_asses_marks"] == "")
+              params1["multi_assess"] = "-5000.0";
+            else
+              params1["multi_assess"] = this.marks_list[i]["multi_asses_marks"];
 
-          if (this.marks_list[i]["sub_enrich_marks"] == "")
-            params1["subject_enrich"] = "-5000.0";
-          else
-            params1["subject_enrich"] = this.marks_list[i]["sub_enrich_marks"];
+            if (this.marks_list[i]["sub_enrich_marks"] == "")
+              params1["subject_enrich"] = "-5000.0";
+            else
+              params1["subject_enrich"] = this.marks_list[i][
+                "sub_enrich_marks"
+              ];
 
-          if (this.marks_list[i]["prac_marks"] == "")
-            params1["prac_marks"] = "-5000.0";
-          else params1["prac_marks"] = this.marks_list[i]["prac_marks"];
+            if (this.marks_list[i]["prac_marks"] == "")
+              params1["prac_marks"] = "-5000.0";
+            else params1["prac_marks"] = this.marks_list[i]["prac_marks"];
 
-          params[this.marks_list[i]["id"]] = params1;
-        } else {
-          params[this.marks_list[i]["id"]] = this.marks_list[i][
-            "marks_obtained"
-          ];
+            params[this.marks_list[i]["id"]] = params1;
+          } else {
+            params[this.marks_list[i]["id"]] = this.marks_list[i][
+              "marks_obtained"
+            ];
+          }
         }
+
+        let ip = this.$store.getters.get_server_ip;
+        let url = ip.concat("/academics/submit_marks/");
+
+        axios
+          .post(url, {
+            params
+          })
+          .then(function(response) {})
+          .catch(function(error) {
+            console.log(error);
+          })
+          .then(function() {
+            // always executed
+          });
+
+        console.log(params);
       }
-
-      let ip = this.$store.getters.get_server_ip;
-      let url = ip.concat("/academics/submit_marks/");
-
-      axios
-        .post(url, {
-          params
-        })
-        .then(function(response) {})
-        .catch(function(error) {
-          console.log(error);
-        })
-        .then(function() {
-          // always executed
-        });
-
-      console.log(params);
-        }
-      
     },
     save_marks: function() {
       let params = {};

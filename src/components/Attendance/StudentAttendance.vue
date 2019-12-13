@@ -423,7 +423,7 @@ export default {
             teacher,
             "/"
           );
-          console.log("url =", url)
+          console.log("url =", url);
           return axios.post(url);
         }
 
@@ -453,11 +453,11 @@ export default {
             teacher,
             "/"
           );
-          console.log("url =", url)
+          console.log("url =", url);
           return axios.post(url, absentees);
         }
 
-        function submit_correction()  {
+        function submit_correction() {
           let corrections = {};
           for (var i = 0; i < self.correction_list.length; i++) {
             corrections[self.correction_list[i]] = self.correction_list[i];
@@ -480,7 +480,7 @@ export default {
             self.yyyy,
             "/"
           );
-          console.log("url =", url)
+          console.log("url =", url);
           return axios.post(url, corrections);
         }
 
@@ -489,7 +489,7 @@ export default {
           .then(
             axios.spread(function(res1, res2, res3) {
               self.waiting = false;
-              confirm ("Attendance submitted to server")
+              confirm("Attendance submitted to server");
               self.show_student_list = false;
             })
           );

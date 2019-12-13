@@ -184,7 +184,6 @@ export default {
     add_recepient(e) {
     },
     onFileChanged(event) {
-      
       this.image_included = true;
     },
     validate() {

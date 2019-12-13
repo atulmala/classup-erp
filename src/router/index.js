@@ -15,6 +15,7 @@ import ScheduleTest from '../components/Exams/ScheduleTest'
 import ShowTestList from '../components/Exams/ShowTestList'
 import MarksEntry from '../components/Exams/MarksEntry'
 import StudentAttendance from '../components/Attendance/StudentAttendance'
+import SendMessageToParents from '../components/TeacherMenu/SendMessageToParents'
 
 Vue.use(Router)
 
@@ -99,6 +100,11 @@ export default new Router({
       path: '/student_attendance',
       name: 'student_attendance',
       component: StudentAttendance
+    },
+    {
+      path: '/send_message_to_parents',
+      name: 'send_message_to_parents',
+      component: SendMessageToParents
     }
   ]
 })

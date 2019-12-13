@@ -33,13 +33,14 @@
         v-model="drawer.open"
       >
         <v-list class="text-left" nav rounded >
-          <v-list-item > 
+          
+          <v-list-item color="purple"> 
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
-          <v-divider class="mx-4"></v-divider>
+          <v-divider dark class="mx-4"></v-divider>
           <v-list-group prepend-icon value="true" color="blue">
             <template v-slot:activator>
               <v-list-item-icon>
@@ -212,7 +213,7 @@ export default {
           action: this.add_student
         },
         {
-          icon: "mdi-account-convert",
+          icon: "mdi-account-edit",
           title: "Update Student",
           action: this.update_student
         }
@@ -266,7 +267,6 @@ export default {
           icon: "mdi-message-alert-outline",
           title: "Communicate with Parents",
           action: this.communicate_with_parents
-
         },
         {
           icon: "mdi-timetable",
@@ -318,6 +318,10 @@ export default {
     student_attendance () {
       this.$store.dispatch("set_coming_status", "class_attendance");
       this.$router.replace("/student_attendance");
+    },
+    communicate_with_parents()  {
+      this.$store.dispatch("set_coming_status", "send_message_to_parents");
+      this.$router.replace("/send_message_to_parents");
     },
     test_marks_entry() {
       this.$store.dispatch("set_coming_status", "show_test_list");
