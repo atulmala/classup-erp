@@ -2,7 +2,7 @@
   <v-app>
     <v-content>
       <v-form class="mt-0">
-        <v-container fluid class="pa-md-4 mx-lg-auto">
+        <v-container fluid class="pa-md-4 mt-0 mx-lg-auto">
           <v-layout row wrap justify-center>
             <v-col cols="12" md="6">
               <v-alert
@@ -28,27 +28,27 @@
                 class="elevation-1"
               >
                 <template v-slot:top>
-                  <v-toolbar flat color="#BF360C">
-                      <v-col cols="12" md="2">
-                    <v-select
-                      class="mt-7"
-                      :items="class_list"
-                      label="Class"
-                      v-model="the_class"
-                      v-on:focus="dismiss()"
-                      v-on:change="get_student_list()"
-                    ></v-select>
-                      </v-col>
+                  <v-toolbar flat color="#FF8A65">
+                    <v-col cols="12" md="3">
+                      <v-select
+                        class="mt-7"
+                        :items="class_list"
+                        label="Class"
+                        v-model="the_class"
+                        v-on:focus="dismiss()"
+                        v-on:change="get_student_list()"
+                      ></v-select>
+                    </v-col>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-col cols="12" md="2">
-                    <v-select
-                      class="mt-7"
-                      :items="section_list"
-                      label="Sec"
-                      v-model="section"
-                      v-on:focus="dismiss()"
-                      v-on:change="get_student_list()"
-                    ></v-select>
+                      <v-select
+                        class="mt-7"
+                        :items="section_list"
+                        label="Sec"
+                        v-model="section"
+                        v-on:focus="dismiss()"
+                        v-on:change="get_student_list()"
+                      ></v-select>
                     </v-col>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-checkbox
@@ -115,6 +115,17 @@
           </v-layout>
         </v-container>
       </v-form>
+      <v-dialog v-model="confirm" persistent max-width="430">
+        <v-card>
+          <v-card-title class="headline">{{ caption }}</v-card-title>
+          <v-card-text>{{ alert_message }}</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="send_message()">OK</v-btn>
+            <v-btn color="green darken-1" text @click="confirm = false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <template>
         <v-layout row wrap justify-center></v-layout>
       </template>
@@ -132,11 +143,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      coming_from: "",
-      heading: "",
-      whole_class: "",
-      loader: null,
-      loading: false,
+      whole_class: false,
       the_class: "",
       class_list: [],
       section: "",
@@ -162,6 +169,10 @@ export default {
       ],
       selected: [],
 
+      loader: null,
+      loading: false,
+      confirm: "",
+      caption: "",
       alert_type: "",
       alert_message: "",
       alert_color: "",
@@ -334,20 +345,62 @@ export default {
         this.good_to_send = false;
       }
       if (this.good_to_send) {
-        this.caption = "Please Confirm sending Bulk Messages";
+        this.caption = "Please Confirm sending Messages";
         this.alert_message =
           "Are you sure you want to send this message to selected Recepients? ";
         this.confirm = true;
       }
     },
+    async send_message() {
+      let self = this;
+      self.waiting = true;
+      this.confirm = false;
 
+      let ip = this.$store.getters.get_server_ip;
+      let school_id = this.$store.getters.get_school_id;
+      let user = this.$store.getters.get_logged_user;
+      let url = ip.concat("/operations/send_message/", school_id, "/");
+
+      let formData = new FormData();
+
+      formData.set("coming_from", "TeacherCommunication");
+      formData.set("teacher", user);
+      formData.set("message", this.message);
+      formData.set("whole_class", this.whole_class);
+      
+      formData.set("class", this.the_class);
+      formData.set("section", this.section);
+      formData.set("image_included", this.image_included);
+      let recepient_list = [];
+          for (var i = 0; i < self.recepients.length; i++) {
+            recepient_list.push(self.recepients[i]["id"]);
+          }
+          console.log("recepient_list = ", recepient_list);
+      formData.set("recepients", recepient_list);
+
+      if (this.image_included == true) {
+        formData.append("file", this.selectedFile);
+        formData.set("image_name", this.selectedFile.name);
+      }
+
+      confirm("Messages Sent. \nWill be delivered in about an hour's time.\n");
+      self.waiting = false;
+      self.message = "";
+      self.the_class = "";
+      self.section = "";
+      self.student_list = [];
+      self.recepients = [];
+      self.$refs.file_input.value = null;
+
+      try {
+        let res = axios.post(url, formData);
+        console.log(res);
+      } catch (error) {
+        console.error(error);
+      }
+    },
     dismiss() {
       this.showDismissibleAlert = false;
-    },
-    showAlert(a) {
-      if (event.target.classList.contains("btn__content")) return;
-      let coming_from = this.$store.getters.get_coming_from;
-      console.log(coming_from);
     }
   }
 };
