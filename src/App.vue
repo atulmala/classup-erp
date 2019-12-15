@@ -220,18 +220,18 @@ export default {
       ],
       exam_items: [
         {
-          icon: "mdi-table-large",
+          icon: "mdi-chart-histogram",
           title: "Result Analysis Sheets",
           action: this.class_search
         },
         {
           icon: "mdi-cloud-print",
-          title: "Download Mark Sheets",
+          title: "Mark Sheets",
           action: this.mark_sheet
         },
         {
           icon: "mdi-chart-line",
-          title: "Download Performance Sheets",
+          title: "Performance Sheets",
           action: this.performance_analysis
         }
       ],
@@ -267,6 +267,11 @@ export default {
           icon: "mdi-message-alert-outline",
           title: "Communicate with Parents",
           action: this.communicate_with_parents
+        },
+        {
+          icon: "mdi-message-text-clock",
+          title: "Message History",
+          action: this.teacher_message_history
         },
         {
           icon: "mdi-timetable",
@@ -310,6 +315,18 @@ export default {
       this.$store.dispatch("set_school_name", "ClassUp");
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
+    },
+    teacher_message_history() {
+      this.$store.dispatch("set_coming_status", "teacher_message_history");
+      this.$router.replace("/teacher_message_history");
+    },
+    parent_communication()  {
+      this.$store.dispatch("set_coming_status", "parent_communication");
+      this.$router.replace("/parent_communication");
+    },
+    monthly_communication() {
+      this.$store.dispatch("set_coming_status", "monthly_communication");
+      this.$router.replace("/monthly_communication");
     },
     schedule_test() {
       this.$store.dispatch("set_coming_status", "schedule_test");

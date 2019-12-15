@@ -4,32 +4,6 @@ import Vuex from 'Vuex'
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-  state: {
-    // server_ip: 'http://localhost:8000',
-    server_ip: 'https://www.classupclient.com',
-    logged_status: false,
-    logged_user: 'unknown',
-    user_name: 'unknown',
-    user_type: 'unknown',
-    school_id: 0,
-    student_id: 'unknown',
-    student_name: 'unknown',
-    student_class: 'unknown',
-    parent: 'unknown',
-    school_name: 'ClassUp',
-    coming_from: 'unknown',
-    adm_fee: false,
-
-    // 01/12/2019 - for marks entry component
-    the_class: 'unknown',
-    section: 'unknown',
-    subject: 'unknown',
-    exam: 'unknown',
-    test: 'unknown',
-    grade_based: 'unknown',
-    test_type: 'unknown',
-    max_marks: 'unknown'
-  },
   mutations: {
     SET_LOGGED_STATUS(state, status) {
       state.logged_status = status;
@@ -217,6 +191,92 @@ export const store = new Vuex.Store({
     },
     get_max_marks(state)  {
       return state.max_marks;
+    },
+    get_colors(state) {
+      return state.colors;
     }
+  },
+  state: {
+    server_ip: 'http://localhost:8000',
+    // server_ip: 'https://www.classupclient.com',
+    logged_status: false,
+    logged_user: 'unknown',
+    user_name: 'unknown',
+    user_type: 'unknown',
+    school_id: 0,
+    student_id: 'unknown',
+    student_name: 'unknown',
+    student_class: 'unknown',
+    parent: 'unknown',
+    school_name: 'ClassUp',
+    coming_from: 'unknown',
+    adm_fee: false,
+
+    // 01/12/2019 - for marks entry component
+    the_class: 'unknown',
+    section: 'unknown',
+    subject: 'unknown',
+    exam: 'unknown',
+    test: 'unknown',
+    grade_based: 'unknown',
+    test_type: 'unknown',
+    max_marks: 'unknown',
+
+    colors: [
+      '#F44336',
+      '#BBDEFB',
+      '#9C27B0',
+      '#03A9F4',
+      '#00BCD4',
+      '#CDDC39',
+      '#CDDC39',
+      '#BF360C',
+      '#81C784',
+      '#FFCC80',
+      '#FF6D00',
+      '#FFECB3',
+      '#1B5E20',
+      '#827717',
+      '#3D5AFE',
+      '#9575CD',
+      '#880E4F',
+      '#EF5350',
+      '#F44336',
+      '#BBDEFB',
+      '#9C27B0',
+      '#03A9F4',
+      '#00BCD4',
+      '#CDDC39',
+      '#CDDC39',
+      '#BF360C',
+      '#81C784',
+      '#FFCC80',
+      '#FF6D00',
+      '#FFECB3',
+      '#1B5E20',
+      '#827717',
+      '#3D5AFE',
+      '#9575CD',
+      '#880E4F',
+      '#EF5350',
+      '#F44336',
+      '#BBDEFB',
+      '#9C27B0',
+      '#03A9F4',
+      '#00BCD4',
+      '#CDDC39',
+      '#CDDC39',
+      '#BF360C',
+      '#81C784',
+      '#FFCC80',
+      '#FF6D00',
+      '#FFECB3',
+      '#1B5E20',
+      '#827717',
+      '#3D5AFE',
+      '#9575CD',
+      '#880E4F',
+      '#EF5350'
+    ]
   }
 });

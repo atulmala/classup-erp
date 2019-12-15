@@ -16,6 +16,9 @@ import ShowTestList from '../components/Exams/ShowTestList'
 import MarksEntry from '../components/Exams/MarksEntry'
 import StudentAttendance from '../components/Attendance/StudentAttendance'
 import SendMessageToParents from '../components/TeacherMenu/SendMessageToParents'
+import TeacherMessageHistory from '../components/TeacherMenu/TeacherMessageHistory'
+import MonthlyCommunicationReport from '../components/Communication/MonthlyCommunicationReport'
+import ParentCommunicationReport from '../components/Communication/ParentCommunicationReport'
 
 Vue.use(Router)
 
@@ -105,6 +108,21 @@ export default new Router({
       path: '/send_message_to_parents',
       name: 'send_message_to_parents',
       component: SendMessageToParents
+    },
+    {
+      path: '/teacher_message_history',
+      name: 'teacher_message_history',
+      component: TeacherMessageHistory
+    },
+    {
+      path: '/monthly_communication',
+      name: 'monthly_communication',
+      component: MonthlyCommunicationReport
+    },
+    {
+      path: '/parent_communication',
+      name: 'parent_communication',
+      component: ParentCommunicationReport
     }
   ]
 })

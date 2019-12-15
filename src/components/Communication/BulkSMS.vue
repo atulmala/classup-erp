@@ -1,120 +1,105 @@
 <template>
   <v-app>
     <v-content>
-      <v-form enctype="multipart/form-data">
-        <v-container fluid>
-          <h2 id="h2">Send Bulk SMS (Broadcast)</h2>
+      <v-form class="mt-0">
+        <v-container fluid class="pa-md-4 mt-0 mx-lg-auto">
           <v-layout row wrap justify-center>
-            <v-col cols="12" md="10">
-              <h3 id="h3">Compose Message</h3>
-              <p />
-              <v-textarea
-                v-model="message"
-                label="Message"
-                filled
-                v-on:focus="dismiss()"
-                :rules="rules"
-                :auto-grow="true"
-                :no-resize="false"
-                :solo="true"
-                counter="400"
-              ></v-textarea>
+            <v-col cols="12" md="6">
+              <v-snackbar
+                v-model="showDismissibleAlert"
+                :color="alert_color"
+                :left="x === 'left'"
+                multi-line
+                :right="x === 'right'"
+                bottom
+                :vertical="mode === 'vertical'"
+              >
+                {{ alert_message }}
+                <v-btn dark text @click="snackbar = false">Close</v-btn>
+              </v-snackbar>
             </v-col>
           </v-layout>
-          <template>
-            <div class="text-xs-center">
-              <v-progress-circular
-                v-if="waiting"
-                :size="70"
-                :width="7"
-                color="purple"
-                indeterminate
-              ></v-progress-circular>
-            </div>
-          </template>
           <v-layout row wrap>
-            <v-container>
-              <v-col cols="12" md="2">
-                <h3>Select Recepients</h3>
-                <div class="mr-4 ml-4 whiteback userGroupHeight">
-                  <v-layout row wrap>
+            <v-col cols="12" md="5">
+              <v-data-table
+                dense
+                dark
+                loading
+                loading-text="Fetching classes... Please wait"
+                v-model="selected_classes"
+                :headers="headers"
+                :items="class_list"
+                item-key="standard"
+                show-select
+                @item-selected="class_selected"
+                class="elevation-1"
+              >
+                <template v-slot:top>
+                  <v-toolbar flat color="#FF8A65">
                     <v-checkbox
-                      label="All Classes"
-                      v-on:change="select_all_classes"
-                      @change="dismiss()"
+                      class="mt-7"
+                      v-model="whole_school"
+                      :value="whole_school"
+                      label="Whole School"
+                      @change="select_all"
                     ></v-checkbox>
-                  </v-layout>
-                </div>
-              </v-col>
-              <v-col cols="12" md="12">
-                <div class="mr-4 ml-4 whiteback userGroupHeight">
-                  <v-layout row wrap>
-                    <v-col v-for="a_class in class_list" :key="a_class" cols="12" md="1">
-                      <v-checkbox
-                        v-model="selected_classes"
-                        :label="a_class"
-                        :value="a_class"
-                        :disabled="!all_classes"
-                        v-on:focus="dismiss()"
-                        @change="add_recepient; dismiss()"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col v-for="a_staff in staff" :key="a_staff" md="1">
-                      <v-checkbox
-                        light
-                        v-model="selected_staff"
-                        :label="a_staff"
-                        :value="a_staff"
-                        @change="dismiss()"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col  md="1">
-                      
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-file-input
-                      show-size
-                        label="Optional - Attach file (Image jpeg or png, PDF)"
-                        ref="file_input"
-                        outlined
-                        color="deep-purple accent-4"
-                        v-model="selectedFile" 
-                        :name="uploadFieldName"
-                        @change="onFileChanged"
-                        accept="image/*, .pdf"
-                      />
-                    </v-col>
-                  </v-layout>
-                </div>
-              </v-col>
-            </v-container>
-          </v-layout>
-
-          <v-layout xs4 row wrap justify-space-around>
-            <div class="text-xs-center">
-              <v-btn color="green" @click="validate()">
-                Send Message
-                <span slot="loader" class="custom-loader">
-                  <v-icon light>cached</v-icon>
-                </span>
-              </v-btn>
-              <v-btn color="amber" @click="cancel()">
-                Cancel
-                <span slot="loader" class="custom-loader">
-                  <v-icon light>cached</v-icon>
-                </span>
-              </v-btn>
-              
-            </div>
-          </v-layout>
-          <v-layout xs4 row wrap justify-space-around>
-            <v-col cols="12" md="10">
-              <v-alert :value="showDismissibleAlert" :color="alert_color" :type="alert_type">{{ alert_message }}</v-alert>
+                    <v-spacer></v-spacer>
+                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-dialog max-width="500px">
+                      <template v-slot:activator="{ on }">
+                        <v-btn color="primary" dark @click="validate" @v-on="on">Send Message</v-btn>
+                      </template>
+                    </v-dialog>
+                  </v-toolbar>
+                </template>
+              </v-data-table>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-layout row wrap justify-center>
+                <v-textarea
+                  v-model="message"
+                  label="Message"
+                  filled
+                  v-on:focus="dismiss()"
+                  :rules="rules"
+                  :auto-grow="true"
+                  :no-resize="false"
+                  :solo="true"
+                  counter="400"
+                ></v-textarea>
+              </v-layout>
+              <v-layout row wrap justify-center>
+                <v-file-input
+                  show-size
+                  label="Optional - Attach file (Image jpeg or png, PDF)"
+                  ref="file_input"
+                  outlined
+                  color="deep-purple accent-4"
+                  v-model="selectedFile"
+                  :name="uploadFieldName"
+                  @change="onFileChanged"
+                  accept="image/*, .pdf"
+                />
+              </v-layout>
+              <v-layout v-if="selected_classes.length > 0" row wrap r>
+                <v-card class="mx-auto">
+                  <v-card-text>
+                    <div class="font-weight-black">Selected Recepients ({{ selected_classes.length }})</div>
+                    <v-chip-group multiple column active-class="primary--text;">
+                      <v-chip
+                        v-for="recepient in selected_classes"
+                        :key="recepient.standard"
+                        :color="colors[Math.floor(Math.random() * 37)]"
+                      >{{ recepient.standard }}</v-chip>
+                    </v-chip-group>
+                  </v-card-text>
+                </v-card>
+              </v-layout>
             </v-col>
           </v-layout>
         </v-container>
       </v-form>
-      <v-dialog v-model="confirm" persistent max-width="360">
+      <v-dialog v-model="confirm" persistent max-width="430">
         <v-card>
           <v-card-title class="headline">{{ caption }}</v-card-title>
           <v-card-text>{{ alert_message }}</v-card-text>
@@ -125,6 +110,14 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <template>
+        <v-layout row wrap justify-center></v-layout>
+      </template>
+      <template>
+        <div class="text-xs-center">
+          <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+        </div>
+      </template>
     </v-content>
   </v-app>
 </template>
@@ -136,13 +129,21 @@ export default {
   data() {
     return {
       rules: [v => v.length <= 400 || "Max 400 characters"],
+      headers: [
+        {
+          text: "Class",
+          align: "left",
+          sortable: false,
+          value: "standard"
+        }
+      ],
       class_list: [],
       all_classes: true,
       selected_classes: [],
-      selected_staff: [],
       final_recepients: [],
       staff: ["Teachers", "Staff"],
       recepients: [],
+      whole_school: "",
       message: "",
       good_to_send: true,
       alert_message: "",
@@ -157,23 +158,39 @@ export default {
       image_included: false,
       uploadFieldName: "",
       selectedFile: null,
+      colors: [],
       image: null,
-      waiting: false
+      waiting: false,
+      confirm: "",
+      caption: "",
+      alert_type: "",
+      alert_message: "",
+      alert_color: "",
+      showDismissibleAlert: false,
     };
   },
   mounted: function() {
     let self = this;
     let school_id = this.$store.getters.get_school_id;
+    self.colors = this.$store.getters.get_colors;
     let ip = this.$store.getters.get_server_ip;
     let url = ip.concat("/academics/class_list/", school_id, "/");
     axios
       .get(url)
       .then(function(response) {
         // handle success
-        self.class_list = response.data;
         for (var i = 0; i < response.data.length; i++) {
-          self.class_list[i] = response.data[i]["standard"];
+          let a_class = {};
+          a_class["standard"] = response.data[i]["standard"];
+          self.class_list.push(a_class);
         }
+        // also add teachers & staff to this list
+        let a_class = {};
+        a_class["standard"] = "Teachers";
+        self.class_list.push(a_class);
+        a_class = {};
+        a_class["standard"] = "Staff";
+        self.class_list.push(a_class);
       })
       .catch(function(error) {
         // handle error
@@ -181,13 +198,14 @@ export default {
       });
   },
   methods: {
-    add_recepient(e) {
+    class_selected() {
+      this.showDismissibleAlert = false;
     },
     onFileChanged(event) {
       this.image_included = true;
     },
     validate() {
-      this.final_recepients = this.selected_classes.concat(this.selected_staff);
+      this.final_recepients = this.selected_classes;
       console.log(this.final_recepients);
       this.good_to_send = true;
       if (this.message == "") {
@@ -219,7 +237,9 @@ export default {
       let self = this;
       self.waiting = true;
       this.confirm = false;
-      this.final_recepients = this.selected_classes.concat(this.selected_staff);
+      for (var i = 0; i < self.selected_classes.length; i++) {
+        self.final_recepients[i] = self.selected_classes[i]["standard"];
+      }
 
       console.log(this.final_recepients);
 
@@ -247,7 +267,7 @@ export default {
       self.waiting = false;
       self.message = "";
       self.selected_classes = [];
-      self.selected_staff = [];
+    
       self.$refs.file_input.value = null;
 
       try {
@@ -257,10 +277,10 @@ export default {
         console.error(error);
       }
     },
-    select_all_classes(e) {
-      if (e) {
+    select_all() {
+      if (this.whole_school) {
         this.all_classes = false;
-        this.selected_classes = this.class_list.slice();
+        this.selected_classes = this.class_list;
         console.log("selected_classes", this.selected_classes);
       } else {
         this.all_classes = true;
@@ -274,7 +294,6 @@ export default {
     cancel() {
       this.message = "";
       this.selected_classes = null;
-      this.selected_staff = null;
       this.recepients = null;
       this.image_included = false;
       this.$refs.file_input.value = null;

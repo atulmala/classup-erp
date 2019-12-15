@@ -168,7 +168,7 @@ export default {
         { text: "Student", value: "name" }
       ],
       selected: [],
-
+      colors: [],
       loader: null,
       loading: false,
       confirm: "",
@@ -177,68 +177,13 @@ export default {
       alert_message: "",
       alert_color: "",
       showDismissibleAlert: false,
-      waiting: false,
-      colors: [
-        "#F44336",
-        "#BBDEFB",
-        "#9C27B0",
-        "#03A9F4",
-        "#00BCD4",
-        "#CDDC39",
-        "#CDDC39",
-        "#BF360C",
-        "#81C784",
-        "#FFCC80",
-        "#FF6D00",
-        "#FFECB3",
-        "#1B5E20",
-        "#827717",
-        "#3D5AFE",
-        "#9575CD",
-        "#880E4F",
-        "#EF5350",
-        "#F44336",
-        "#BBDEFB",
-        "#9C27B0",
-        "#03A9F4",
-        "#00BCD4",
-        "#CDDC39",
-        "#CDDC39",
-        "#BF360C",
-        "#81C784",
-        "#FFCC80",
-        "#FF6D00",
-        "#FFECB3",
-        "#1B5E20",
-        "#827717",
-        "#3D5AFE",
-        "#9575CD",
-        "#880E4F",
-        "#EF5350",
-        "#F44336",
-        "#BBDEFB",
-        "#9C27B0",
-        "#03A9F4",
-        "#00BCD4",
-        "#CDDC39",
-        "#CDDC39",
-        "#BF360C",
-        "#81C784",
-        "#FFCC80",
-        "#FF6D00",
-        "#FFECB3",
-        "#1B5E20",
-        "#827717",
-        "#3D5AFE",
-        "#9575CD",
-        "#880E4F",
-        "#EF5350"
-      ]
+      waiting: false
     };
   },
   mounted: function() {
     let self = this;
     this.school_id = this.$store.getters.get_school_id;
+    self.colors = this.$store.getters.get_colors;
     self.ip = this.$store.getters.get_server_ip;
     let url = self.ip.concat("/academics/class_list/", this.school_id, "/");
     axios
@@ -367,15 +312,15 @@ export default {
       formData.set("teacher", user);
       formData.set("message", this.message);
       formData.set("whole_class", this.whole_class);
-      
+
       formData.set("class", this.the_class);
       formData.set("section", this.section);
       formData.set("image_included", this.image_included);
       let recepient_list = [];
-          for (var i = 0; i < self.recepients.length; i++) {
-            recepient_list.push(self.recepients[i]["id"]);
-          }
-          console.log("recepient_list = ", recepient_list);
+      for (var i = 0; i < self.recepients.length; i++) {
+        recepient_list.push(self.recepients[i]["id"]);
+      }
+      console.log("recepient_list = ", recepient_list);
       formData.set("recepients", recepient_list);
 
       if (this.image_included == true) {
