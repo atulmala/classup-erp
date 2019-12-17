@@ -8,6 +8,8 @@
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-toolbar-title>Exam: {{ exam }}</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
+            <v-toolbar-title>Class: {{ the_class }}</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
             <v-toolbar-title>Subject: {{ subject }}</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-toolbar-title>Max Marks: {{ max_marks }}</v-toolbar-title>
@@ -175,6 +177,8 @@ export default {
       disable_sub_enrich: false,
       higher_class: false,
 
+      loading: "",
+      waiting: "",
       showDismissibleAlert: false,
       confirm: false,
       alert_message: "",
@@ -189,10 +193,13 @@ export default {
     self.subject = store.get_subject;
     self.exam = store.get_exam;
     self.test_id = store.get_test;
+    
     self.grade_based = store.get_grade_based;
+    
     self.test_type = store.get_test_type;
     self.max_marks = store.get_max_marks;
     console.log("test_type = ", self.test_type);
+    console.log("grade_based = ", self.grade_based);
 
     let only_class = self.the_class.slice(0, -4);
     if (only_class == "XI" || only_class == "XII") self.higher_class = true;
@@ -359,7 +366,7 @@ export default {
           }
 
           // all marks entered properly, can submit now
-          if (self.grade_based == "No") {
+          if (this.grade_based == "No") {
             params1["marks"] = this.marks_list[i]["marks_obtained"];
             if (this.marks_list[i]["marks_obtained"] == "")
               params1["marks"] = "-5000.00";
@@ -420,8 +427,8 @@ export default {
       let params = {};
       for (var i = 0; i < this.marks_list.length; i++) {
         let params1 = {};
-
-        if (self.grade_based == "No") {
+        console.log("grade_based = ", this.grade_based);
+        if (this.grade_based == "No") {
           params1["marks"] = this.marks_list[i]["marks_obtained"];
           if (this.marks_list[i]["marks_obtained"] == "")
             params1["marks"] = "-5000.00";

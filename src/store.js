@@ -57,7 +57,7 @@ export const store = new Vuex.Store({
       state.test = test;
     },
     SET_GRADE_BASED(state, grade_based) {
-      state.test_type = grade_based;
+      state.grade_based = grade_based
     },
     SET_TEST_TYPE(state, test_type) {
       state.test_type = test_type;

@@ -28,7 +28,7 @@
               <v-chip-group multiple column active-class="primary--text">
                 <v-chip
                   v-for="recepient in recepient_list"
-                  :color="colors[Math.floor(Math.random() * 37)]"
+                  :color="colors[Math.floor(Math.random() * 55)]"
                   :key="recepient.student"
                   @click="show_delivery_status(recepient)"
                 >{{ recepient.student }}</v-chip>
