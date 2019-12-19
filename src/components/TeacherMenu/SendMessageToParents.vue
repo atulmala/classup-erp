@@ -18,7 +18,7 @@
                 dense
                 dark
                 loading
-                loading-text="Fetching students... Please wait"
+                :loading-text="((the_class == '') || (section == '')) ? class_not_selected : loading_text"
                 v-model="recepients"
                 :headers="headers"
                 :items="student_list"
@@ -171,6 +171,8 @@ export default {
       colors: [],
       loader: null,
       loading: false,
+      loading_text: "Fetching student list for this class... Please wait",
+      class_not_selected: "Please select a Class & Section",
       confirm: "",
       caption: "",
       alert_type: "",
