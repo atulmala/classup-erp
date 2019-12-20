@@ -225,7 +225,12 @@ export default {
           action: this.class_search
         },
         {
-          icon: "mdi-cloud-print",
+          icon: "mdi-certificate",
+          title: "Exam Results",
+          action: this.exam_results
+        },
+        {
+          icon: "mdi-alpha-m-box",
           title: "Mark Sheets",
           action: this.mark_sheet
         },
@@ -359,6 +364,10 @@ export default {
     mark_sheet() {
       this.$store.dispatch("set_coming_status", "mark_sheet");
       this.$router.replace("/mark_sheet");
+    },
+    exam_results() {
+      this.$store.dispatch("set_coming_status", "exam_results")
+      this.$router.replace("/exam_results")
     },
     performance_analysis() {
       this.$store.dispatch("set_coming_status", "performance_analysis");

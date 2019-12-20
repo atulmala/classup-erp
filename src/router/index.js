@@ -14,6 +14,7 @@ import ClassMonthlyAttendance from '../components/TeacherMenu/ClassMonthlyAttend
 import ScheduleTest from '../components/Exams/ScheduleTest'
 import ShowTestList from '../components/Exams/ShowTestList'
 import MarksEntry from '../components/Exams/MarksEntry'
+import ExamResults from '../components/Exams/ExamResults'
 import StudentAttendance from '../components/Attendance/StudentAttendance'
 import SendMessageToParents from '../components/TeacherMenu/SendMessageToParents'
 import TeacherMessageHistory from '../components/TeacherMenu/TeacherMessageHistory'
@@ -73,6 +74,11 @@ export default new Router({
       path: '/mark_sheet',
       name: 'mark_sheet',
       component: Marksheet
+    },
+    {
+      path: '/exam_results',
+      name: 'exam_results',
+      component: ExamResults
     },
     {
       path: '/bulk_sms',

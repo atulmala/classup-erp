@@ -1,5 +1,3 @@
-/* eslint-disable no-inner-declarations */
-/* eslint-disable camelcase */
 <template>
   <v-app>
     <v-content class="ma-0">
@@ -20,6 +18,10 @@
           >
             <template v-slot:top>
               <v-toolbar flat color="#8D6E63">
+                <v-chip class="mt-4" color="#8D6E63" label>
+                  <div class="text-uppercase">Student Attendance</div>
+                </v-chip>
+                <v-divider class="mx-4" inset vertical></v-divider>
                 <v-col cols="12" md="2">
                   <v-select
                     class="mt-7"
@@ -42,7 +44,7 @@
                   ></v-select>
                 </v-col>
                 <v-divider class="mx-4" inset vertical></v-divider>
-                <v-col cols="12" md="3">
+                <v-col cols="12" md="2">
                   <v-select
                     class="mt-7"
                     disabled
@@ -83,7 +85,7 @@
                     </v-date-picker>
                   </v-menu>
                 </v-col>
-                <v-divider class="mx-4" inset vertical></v-divider>
+                
               </v-toolbar>
             </template>
             <template v-slot:item.action="{ item }">
@@ -269,6 +271,7 @@ export default {
       let self = this;
       if (this.the_class != "" && this.section != "") {
         this.students = []
+        this.absentee_list = []
 
         axios.all([this.get_student_list(), this.get_absentees_list()]).then(
           axios.spread(function(students, absentees) {
