@@ -88,13 +88,6 @@
                 
               </v-toolbar>
             </template>
-            <template v-slot:item.action="{ item }">
-              <v-icon
-                class="mr-2 material-icons"
-                :color="item.presence_color"
-                @click="mark_absence(item)"
-              >{{ item.toggle }}</v-icon>
-            </template>
             <template v-slot:item.presence="{ item }">
               <v-chip
                 :color="status_color(item.presence)"

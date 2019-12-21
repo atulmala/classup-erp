@@ -225,8 +225,8 @@ export default {
           action: this.class_search
         },
         {
-          icon: "mdi-certificate",
-          title: "Exam Results",
+          icon: "mdi-arrow-up-down-bold",
+          title: "Student Promote/Detain",
           action: this.exam_results
         },
         {
