@@ -9,6 +9,26 @@
       <div class="text-xs-center">
         <v-col cols="12" md="12">
           <v-row justify="center">
+            <v-dialog v-model="display_marks" scrollable max-width="700px">
+              <v-card>
+                <v-card-title>
+                  {{ operated_student }}
+                  <v-divider class="mx-4" vertical></v-divider>
+                  {{ active_term }}
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text style="height: 250px;">
+                  <div class="font-weight-black"></div>
+                  <v-chip-group multiple column active-class="primary--text;">
+                    <v-chip v-for="(subject, index) in term_marks" :color="color[index]" :key="subject">{{ subject }}</v-chip>
+                  </v-chip-group>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn color="blue darken-1" text @click="display_marks = false">Close</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
             <v-dialog v-model="promote_dialog" persistent max-width="520px">
               <template v-slot:activator="{ on }"></template>
               <v-card>
@@ -74,7 +94,6 @@
             :headers="headers"
             :items="student_list"
             :items-per-page="7"
-            class="elevation-1"
           >
             <template v-slot:top>
               <v-toolbar flat color="#827717">
@@ -107,13 +126,7 @@
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-btn
-                      color="#9575CD"
-                      dark
-                      class="mb-0"
-                      v-on="on"
-                      @click="process_attendance"
-                    >Save</v-btn>
+                    <v-btn color="#9575CD" dark class="mb-0" @click="save_results">Save</v-btn>
                   </template>
                 </v-dialog>
                 <v-divider class="mx-4" inset vertical></v-divider>
@@ -132,14 +145,18 @@
             </template>
             <template v-slot:item.action="{ item }">
               <v-icon
-                small
-                class="my-0"
+                large
                 color="#FFB74D"
-                @click="editItem(item)"
-              >mdi-account-card-details</v-icon>
+                @click="active_term='Term I'; get_marks(item)"
+              >mdi-numeric-1-box</v-icon>
+              <v-icon
+                large
+                color="#EEFF41"
+                @click="active_term='Term II'; get_marks(item)"
+              >mdi-numeric-2-box</v-icon>
             </template>
             <template v-slot:item.promotion_status="{ item }">
-              <v-radio-group class="my-0" dense row v-model="item.promotion_status">
+              <v-radio-group class="mb-n2" dense row v-model="item.promotion_status">
                 <v-radio label="promoted" value="promoted" color="green" @change="promote(item)"></v-radio>
                 <v-radio
                   label="not promoted"
@@ -162,6 +179,9 @@ export default {
   name: "ExamResults",
   data() {
     return {
+      ip: "",
+      school_id: "",
+
       loader: null,
       loading: false,
       loading_text: "Fetching student list for this class... Please wait",
@@ -176,12 +196,16 @@ export default {
       student_list: [],
       promote_dialog: false,
       detain_dialog: false,
+      display_marks: false,
 
       dialog: "",
       current_status: "",
       operated_student: "",
       operated_student_id: "",
       detain_reason: "",
+      term_marks: [],
+      color: [],
+      active_term: "",
       waiting: false,
       alert_type: "",
       alert_message: "",
@@ -204,15 +228,19 @@ export default {
 
   mounted: function() {
     let self = this;
-    let school_id = this.$store.getters.get_school_id;
-    let ip = this.$store.getters.get_server_ip;
-    let url = ip.concat("/academics/class_list/", school_id, "/");
+    self.school_id = this.$store.getters.get_school_id;
+    self.ip = this.$store.getters.get_server_ip;
+    let url = self.ip.concat("/academics/class_list/", self.school_id, "/");
 
     function get_class_list() {
-      return axios.get(ip.concat("/academics/class_list/", school_id, "/"));
+      return axios.get(
+        self.ip.concat("/academics/class_list/", self.school_id, "/")
+      );
     }
     function get_section_list() {
-      return axios.get(ip.concat("/academics/section_list/", school_id, "/"));
+      return axios.get(
+        self.ip.concat("/academics/section_list/", self.school_id, "/")
+      );
     }
 
     axios.all([get_class_list(), get_section_list()]).then(
@@ -233,13 +261,11 @@ export default {
   methods: {
     get_student_list() {
       let self = this;
-      let ip = this.$store.getters.get_server_ip;
-      let school_id = this.$store.getters.get_school_id;
       self.student_list = [];
       if (this.the_class != "" && this.section != "") {
-        let url = ip.concat(
+        let url = self.ip.concat(
           "/exam/get_promotion_list/?school_id=",
-          school_id,
+          self.school_id,
           "&the_class=",
           this.the_class,
           "&section=",
@@ -272,17 +298,6 @@ export default {
           });
       }
     },
-
-    status_color(status) {
-      if (status == "promoted") {
-        this.switch_color = "#4CAF50";
-        return "#4CAF50";
-      }
-      if (status == "not promoted") {
-        this.switch_color = "#EF5350";
-        return "#EF5350";
-      }
-    },
     promote(item) {
       this.promote_dialog = true;
       this.operated_student = item.name;
@@ -298,7 +313,7 @@ export default {
         }
       }
     },
-    cancel_promote()  {
+    cancel_promote() {
       this.promote_dialog = false;
       for (var i = 0; i < this.student_list.length; i++) {
         if (this.student_list[i]["id"] == this.operated_student_id) {
@@ -343,9 +358,122 @@ export default {
         }
       }
     },
-    dismiss() {
-      this.showDismissibleAlert = false;
+    save_results() {
+      let self = this;
+      let promotion_list = {};
+      for (var i = 0; i < this.student_list.length; i++) {
+        let promotee = {};
+        promotee["promotion_status"] = this.student_list[i]["promotion_status"];
+        promotee["detain_reason"] = this.student_list[i]["detain_reason"];
+        console.log(promotee);
+        promotion_list[this.student_list[i]["id"]] = promotee;
+      }
+      console.log(promotion_list);
+      let url = this.ip.concat("/exam/process_promotion/");
+      this.waiting = true;
+      axios
+        .post(url, promotion_list)
+        .then(function(response) {
+          console.log(response.data);
+          // handle success
+          self.waiting = false;
+          alert("Data Saved");
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        });
+    },
+    get_marks(item) {
+      this.operated_student = item.name;
+      let self = this;
+      let url = this.ip.concat("/exam/get_student_marks/?result_id=", item.id);
+      axios
+        .get(url)
+        .then(function(response) {
+          console.log(response.data);
+          var marks_string1 = "";
+          var marks_string2 = "";
+          // handle success
+          self.term_marks = [];
+          self.color = [];
+          for (var i = 0; i < response.data.length; i++) {
+            let subject = response.data[i]["subject"];
+
+            let marks = response.data[i]["marks"];
+            if (marks >= 60)  {
+              self.color[i] = "#00E676";
+            }
+            if (marks < 60 && marks >= 40)  {
+              self.color[i] = "#1E88E5";
+            }
+            if (marks < 40) {
+              self.color[i] = "#FF5722";
+            }
+
+            let pa = response.data[i]["periodic_test_marks"];
+            let multi_asses = response.data[i]["multi_asses_marks"];
+            let portfolio = response.data[i]["portfolio_marks"];
+            let sub_enrich = response.data[i]["sub_enrich_marks"];
+            let prac = response.data[i]["prac_marks"];
+            let total = response.data[i]["total_marks"];
+
+            let exam = response.data[i]["exam"];
+            if (exam.includes("Term-I")) {
+              marks_string1 = marks_string1.concat(
+                response.data[i]["subject"],
+                " |  Marks: ",
+                marks,
+                " |  PA: ",
+                pa,
+                " |  Mult Asse: ",
+                multi_asses,
+                " |  Port: ",
+                portfolio,
+                " |  Sub En: ",
+                sub_enrich,
+                " |  Total: ",
+                total
+              );
+            }
+            if (exam.includes("Term-II")) {
+              marks_string2 = marks_string2.concat(
+                response.data[i]["subject"],
+                " |  Marks: ",
+                marks,
+                " |  PA: ",
+                pa,
+                " |  Mult Asse: ",
+                multi_asses,
+                " |  Port: ",
+                portfolio,
+                " |  Sub En: ",
+                sub_enrich,
+                " |  Total: ",
+                total
+              );
+            }
+            if (self.active_term == "Term I") {
+              self.term_marks.push(marks_string1);
+              marks_string1 = "";
+            } else {
+              self.term_marks.push(marks_string2);
+              marks_string2 = "";
+            }
+          }
+
+          self.display_marks = true;
+          console.log(self.term1);
+          console.log(self.term2);
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        });
     }
+  },
+  dismiss() {
+    this.showDismissibleAlert = false;
   }
 };
 </script>
