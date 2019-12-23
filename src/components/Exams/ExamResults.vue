@@ -20,7 +20,12 @@
                 <v-card-text style="height: 250px;">
                   <div class="font-weight-black"></div>
                   <v-chip-group multiple column active-class="primary--text;">
-                    <v-chip v-for="(subject, index) in term_marks" :color="color[index]" :key="subject">{{ subject }}</v-chip>
+                    <v-chip
+                      outlined
+                      v-for="(subject, index) in term_marks"
+                      :color="color[index]"
+                      :key="subject"
+                    >{{ subject }}</v-chip>
                   </v-chip-group>
                 </v-card-text>
                 <v-divider></v-divider>
@@ -126,7 +131,7 @@
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="#9575CD" dark class="mb-0" @click="save_results">Save</v-btn>
+                    <v-btn color="#9575CD" dark class="mb-0" :disabled="!download" @click="save_results">Save</v-btn>
                   </template>
                 </v-dialog>
                 <v-divider class="mx-4" inset vertical></v-divider>
@@ -136,8 +141,8 @@
                       color="#7986CB"
                       dark
                       class="mb-0"
-                      v-on="on"
-                      @click="process_attendance"
+                      :disabled="!download"
+                      @click="download_excel"
                     >Download</v-btn>
                   </template>
                 </v-dialog>
@@ -194,6 +199,7 @@ export default {
       section_list: [],
 
       student_list: [],
+      download: false,
       promote_dialog: false,
       detain_dialog: false,
       display_marks: false,
@@ -219,20 +225,22 @@ export default {
           sortable: false,
           value: "name"
         },
-        { text: "Details", value: "action", sortable: false },
-        { text: "Status", value: "promotion_status" },
-        { text: "Detention Reason", value: "detain_reason" }
+        { text: "Term Marks Details", value: "action", sortable: false },
+        { text: "Promotion Status", value: "promotion_status" },
+        { text: "Not Promoted Reason", value: "detain_reason" }
       ]
     };
   },
 
   mounted: function() {
     let self = this;
+    self.waiting = true;
     self.school_id = this.$store.getters.get_school_id;
     self.ip = this.$store.getters.get_server_ip;
     let url = self.ip.concat("/academics/class_list/", self.school_id, "/");
 
     function get_class_list() {
+      
       return axios.get(
         self.ip.concat("/academics/class_list/", self.school_id, "/")
       );
@@ -254,6 +262,7 @@ export default {
         for (var i = 0; i < sections.data.length; i++) {
           self.section_list[i] = sections.data[i]["section"];
         }
+        self.waiting = false;
       })
     );
   },
@@ -290,6 +299,7 @@ export default {
 
               self.student_list.push(student);
             }
+            self.download = true;
             console.log(self.student_list);
           })
           .catch(function(error) {
@@ -384,9 +394,54 @@ export default {
           console.log(error);
         });
     },
+    download_excel() {
+      let self = this;
+      self.waiting = true;
+      let url = self.ip.concat(
+        "/exam/get_promotion_excel/?school_id=",
+        self.school_id,
+        "&the_class=",
+        self.the_class,
+        "&section=",
+        self.section
+      );
+      let options = {
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        },
+        responseType: "arraybuffer"
+      };
+      axios
+        .post(
+          url,
+          options
+        )
+        .then(function(response) {
+          self.waiting = false;
+          console.log(response);
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          var file_name =
+            "Promotion_List_" + self.the_class + "_" + self.section + ".xlsx";
+
+          link.setAttribute("download", file_name); //or any other extension
+          document.body.appendChild(link);
+          link.click();
+          confirm("Promotion List Downloaded");
+        })
+        .catch(function(error) {
+          console.log(error);
+        })
+        .then(function() {
+          // always executed
+        });
+    },
     get_marks(item) {
       this.operated_student = item.name;
       let self = this;
+      self.waiting = true;
       let url = this.ip.concat("/exam/get_student_marks/?result_id=", item.id);
       axios
         .get(url)
@@ -401,57 +456,84 @@ export default {
             let subject = response.data[i]["subject"];
 
             let marks = response.data[i]["marks"];
-            if (marks >= 60)  {
+            if (marks >= 60) {
               self.color[i] = "#00E676";
             }
-            if (marks < 60 && marks >= 40)  {
+            if (marks < 60 && marks >= 40) {
               self.color[i] = "#1E88E5";
             }
             if (marks < 40) {
               self.color[i] = "#FF5722";
             }
+            if (self.the_class == "XI" || self.the_class == "XII") {
+              let prac = response.data[i]["prac_marks"];
+              let total = response.data[i]["total_marks"];
+              let exam = response.data[i]["exam"];
+              if (exam.includes("Term-I")) {
+                marks_string1 = marks_string1.concat(
+                  response.data[i]["subject"],
+                  " |  Therory: ",
+                  marks,
+                  " |  Prac: ",
+                  prac,
+                  " |  Total: ",
+                  total
+                );
+              }
+              if (exam.includes("Term-II")) {
+                marks_string2 = marks_string2.concat(
+                  response.data[i]["subject"],
+                  " |  Theory: ",
+                  marks,
+                  " |  Prac: ",
+                  prac,
+                  " |  Total: ",
+                  total
+                );
+              }
+            } else {
+              let pa = response.data[i]["periodic_test_marks"];
+              let multi_asses = response.data[i]["multi_asses_marks"];
+              let portfolio = response.data[i]["portfolio_marks"];
+              let sub_enrich = response.data[i]["sub_enrich_marks"];
 
-            let pa = response.data[i]["periodic_test_marks"];
-            let multi_asses = response.data[i]["multi_asses_marks"];
-            let portfolio = response.data[i]["portfolio_marks"];
-            let sub_enrich = response.data[i]["sub_enrich_marks"];
-            let prac = response.data[i]["prac_marks"];
-            let total = response.data[i]["total_marks"];
+              let total = response.data[i]["total_marks"];
 
-            let exam = response.data[i]["exam"];
-            if (exam.includes("Term-I")) {
-              marks_string1 = marks_string1.concat(
-                response.data[i]["subject"],
-                " |  Marks: ",
-                marks,
-                " |  PA: ",
-                pa,
-                " |  Mult Asse: ",
-                multi_asses,
-                " |  Port: ",
-                portfolio,
-                " |  Sub En: ",
-                sub_enrich,
-                " |  Total: ",
-                total
-              );
-            }
-            if (exam.includes("Term-II")) {
-              marks_string2 = marks_string2.concat(
-                response.data[i]["subject"],
-                " |  Marks: ",
-                marks,
-                " |  PA: ",
-                pa,
-                " |  Mult Asse: ",
-                multi_asses,
-                " |  Port: ",
-                portfolio,
-                " |  Sub En: ",
-                sub_enrich,
-                " |  Total: ",
-                total
-              );
+              let exam = response.data[i]["exam"];
+              if (exam.includes("Term-I")) {
+                marks_string1 = marks_string1.concat(
+                  response.data[i]["subject"],
+                  " |  Marks: ",
+                  marks,
+                  " |  PA: ",
+                  pa,
+                  " |  Mult Asse: ",
+                  multi_asses,
+                  " |  Port: ",
+                  portfolio,
+                  " |  Sub En: ",
+                  sub_enrich,
+                  " |  Total: ",
+                  total
+                );
+              }
+              if (exam.includes("Term-II")) {
+                marks_string2 = marks_string2.concat(
+                  response.data[i]["subject"],
+                  " |  Marks: ",
+                  marks,
+                  " |  PA: ",
+                  pa,
+                  " |  Mult Asse: ",
+                  multi_asses,
+                  " |  Port: ",
+                  portfolio,
+                  " |  Sub En: ",
+                  sub_enrich,
+                  " |  Total: ",
+                  total
+                );
+              }
             }
             if (self.active_term == "Term I") {
               self.term_marks.push(marks_string1);
@@ -461,6 +543,7 @@ export default {
               marks_string2 = "";
             }
           }
+          self.waiting = false;
 
           self.display_marks = true;
           console.log(self.term1);
