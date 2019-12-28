@@ -25,11 +25,6 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'App',
-    //   component: App
-    // },
     {
       path: '/dashboard',
       name: 'Dashboard',

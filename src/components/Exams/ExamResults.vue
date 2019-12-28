@@ -131,7 +131,13 @@
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                   <template v-slot:activator="{ on }">
-                    <v-btn color="#9575CD" dark class="mb-0" :disabled="!download" @click="save_results">Save</v-btn>
+                    <v-btn
+                      color="#9575CD"
+                      dark
+                      class="mb-0"
+                      :disabled="!download"
+                      @click="save_results"
+                    >Save</v-btn>
                   </template>
                 </v-dialog>
                 <v-divider class="mx-4" inset vertical></v-divider>
@@ -240,7 +246,6 @@ export default {
     let url = self.ip.concat("/academics/class_list/", self.school_id, "/");
 
     function get_class_list() {
-      
       return axios.get(
         self.ip.concat("/academics/class_list/", self.school_id, "/")
       );
@@ -398,13 +403,9 @@ export default {
       let self = this;
       self.waiting = true;
       let url = self.ip.concat(
-        "/exam/get_promotion_excel/?school_id=",
-        self.school_id,
-        "&the_class=",
-        self.the_class,
-        "&section=",
-        self.section
+        "/exam/get_promotion_excel/"
       );
+      console.log("url = ", url);
       let options = {
         headers: {
           "Content-Type":
@@ -415,6 +416,12 @@ export default {
       axios
         .post(
           url,
+          {
+            school_id: self.school_id,
+            the_class: self.the_class,
+            section: self.section
+          },
+          
           options
         )
         .then(function(response) {

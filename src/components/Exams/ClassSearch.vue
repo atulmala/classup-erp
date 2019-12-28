@@ -174,7 +174,7 @@ export default {
             const link = document.createElement("a");
             link.href = url;
             let file_name =
-              "Result_Sheet_" + self.the_class + "-" + self.section + ".xlsx";
+              "Result_Analysis_Sheet_" + self.the_class + "-" + self.section + ".xlsx";
             link.setAttribute("download", file_name); //or any other extension
             document.body.appendChild(link);
             link.click();
