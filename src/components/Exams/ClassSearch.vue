@@ -1,6 +1,11 @@
 <template>
   <v-app>
     <v-content>
+      <template>
+        <div class="text-xs-center">
+          <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+        </div>
+      </template>
       <v-form v-if="show_search_criteria">
         <v-container fluid class="pa-md-4 mx-lg-auto">
           <h1>Download Result Analysis Sheets</h1>
@@ -79,6 +84,7 @@ export default {
       show_search_criteria: true,
       loader: null,
       loading: false,
+      waitng: false,
       the_class: "",
       class_list: [],
       section: "",
@@ -151,6 +157,8 @@ export default {
         can_search = false;
       }
       if (can_search) {
+        self.waitng = true;
+        self.loading = true;
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
         let school_name = this.$store.getters.get_school_name;
@@ -179,6 +187,8 @@ export default {
             document.body.appendChild(link);
             link.click();
             confirm("Result sheet downloaded");
+            self.waitng = false;
+            self.loading = false;
           })
           .catch(function(error) {
             console.log(error);
