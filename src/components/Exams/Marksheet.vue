@@ -228,7 +228,7 @@ export default {
           url = ip.concat("/analytics/performance_sheet/");
         if (this.coming_from == "mark_sheet")
           url = ip.concat(
-            "/exam/term_results/academics/prepare_results/",
+            "/exam/marksheet/",
             school_id,
             "/",
             the_class,
