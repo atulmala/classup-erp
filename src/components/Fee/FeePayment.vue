@@ -82,29 +82,30 @@
       <v-form>
         <v-container fluid>
           <v-layout row wrap justify-center>
-            <v-col cols="8" md="1">
+            <v-col cols="10" md="1">
               <v-text-field label="Due this Month/Qtr" v-model="due_this_term" disabled></v-text-field>
             </v-col>
             <v-col cols="10" md="1">
-              <v-text-field label="Previous Due" v-model="previous_due" disabled></v-text-field>
+              <v-text-field label="Previous Outstanding" v-model="previous_due" disabled></v-text-field>
             </v-col>
-            <v-col cols="10" md="1">
+            <!-- <v-col cols="10" md="1">
               <v-text-field
                 label="Paid Till Date"
                 v-model="paid_till_date"
                 disabled
                 v-on:focus="dismiss()"
               ></v-text-field>
-            </v-col>
-            <v-col cols="10" md="1">
+            </v-col> -->
+            <v-col cols="10" md="2">
               <v-text-field label="Delay" v-model="delay" disabled></v-text-field>
             </v-col>
             <v-col cols="10" md="1">
               <v-text-field label="Penalty" v-model="late_fee" v-on:focus="dismiss()"></v-text-field>
             </v-col>
+            
           </v-layout>
           <v-layout row wrap justify-center>
-            <v-col cols="8" md="1">
+            <v-col cols="10" md="1">
               <v-text-field
                 label="Other/One time Charges"
                 v-model="one_time"
@@ -114,18 +115,19 @@
             <v-col cols="8" md="1">
               <v-text-field label="Waivers" v-model="waiver" v-on:focus="dismiss()"></v-text-field>
             </v-col>
-            <v-col cols="8" md="1">
+            
+            <v-col cols="10" md="1">
               <v-text-field label="Net Payable" v-model="net_payable" disabled></v-text-field>
             </v-col>
-            <v-col cols="8" md="1">
+            <v-col cols="10" md="1">
               <v-text-field label="Actual Paid" v-model="actual_paid" v-on:focus="dismiss()"></v-text-field>
             </v-col>
-            <v-col cols="8" md="1">
+            <v-col cols="10" md="1">
               <v-text-field label="Remaining Balance" v-model="balance" disabled></v-text-field>
             </v-col>
           </v-layout>
           <v-layout row wrap justify-center>
-            <v-col cols="8" md="2">
+            <v-col cols="8" md="3">
               <v-radio-group v-model="payment_mode" @click="dismiss()" row>
                 <v-radio label="Cash" value="cash"></v-radio>
                 <v-radio label="Cheque" value="cheque"></v-radio>
@@ -232,10 +234,10 @@ export default {
     };
   },
   computed: {
-    previous_due: function() {
-      let self = this;
-      return this.dues + eval(this.due_till_now);
-    },
+    // previous_due: function() {
+    //   let self = this;
+    //   return this.dues + eval(this.due_till_now);
+    // },
     due_this_term: function() {
       let self = this;
       var amt = 0.0;
@@ -256,8 +258,8 @@ export default {
         eval(self.late_fee) +
         eval(self.one_time) +
         eval(this.previous_due) -
-        this.waiver -
-        this.paid_till_date
+        this.waiver
+        
       );
     },
     balance: function() {
@@ -304,6 +306,7 @@ export default {
         self.due_till_now = response.data["Due till now"];
         console.log(self.due_till_now);
         self.dues = response.data["Previous Outstanding"];
+        self.previous_due = response.data["Previous Outstanding"]
         self.paid_till_date = response.data["Paid till date"];
         self.delay =
           response.data["Days Delay"] +
