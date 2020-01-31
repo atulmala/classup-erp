@@ -17,21 +17,47 @@
               <v-text-field label="Surname/Last Name" v-model="last_name" v-on:focus="dismiss()"></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="1">
               <v-select
                 :items="class_list"
-                label="Class/Standard"
+                label="Class"
                 v-model="the_class"
                 v-on:focus="dismiss()"
               ></v-select>
             </v-col>
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="1">
               <v-select
                 :items="section_list"
                 label="Section"
                 v-model="section"
                 v-on:focus="dismiss()"
               ></v-select>
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-menu
+                ref="menu1"
+                v-model="menu1"
+                :close-on-content-click="false"
+                :return-value.sync="date1"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="date_of_admission"
+                    label="Date of Admission"
+                    prepend-icon="event"
+                    readonly
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date_of_admission" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu1 = false">Cancel</v-btn>
+                  <v-btn text color="primary" @click="$refs.menu1.save(date1)">OK</v-btn>
+                </v-date-picker>
+              </v-menu>
             </v-col>
           </v-layout>
           <v-layout xs6 row wrap justify-center>
@@ -164,7 +190,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat="flat" @click="add_student()">OK</v-btn>
-            <v-btn color="green darken-1" flat="flat" @click="confirm = false">Cancel</v-btn>
+            <v-btn color="green darken-1" flat="flat" @click="confirm = false; overlay = false">Cancel</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -178,13 +204,16 @@ export default {
   data() {
     return {
       date: null,
+      date1: null,
       menu: false,
+      menu1: false,
       modal: false,
       reg_no: "",
       first_name: "",
       last_name: "",
       the_class: "",
       section: "",
+      date_of_admission: "",
       gender: "",
       parent: "",
       alert_message: "",
@@ -207,6 +236,7 @@ export default {
       class_list: [],
       section_list: [],
 
+      loading: false,
       showDismissibleAlert: false,
       alert_type: "error",
       alert_color: "",
@@ -293,6 +323,12 @@ export default {
         this.alert_color = "red";
         return;
       }
+      if (this.date_of_admission == "") {
+        this.alert_message = "Please enter the date of Admission";
+        this.showDismissibleAlert = true;
+        this.alert_color = "red";
+        return;
+      }
       if (this.gender == "") {
         this.alert_message = "Please Select Gender)";
         this.showDismissibleAlert = true;
@@ -365,6 +401,7 @@ export default {
           last_name: this.last_name,
           the_class: this.the_class,
           section: this.section,
+          date_of_admission: this.date_of_admission,
           gender: this.gender,
           dob: this.dob,
           adhar: this.adhar,
