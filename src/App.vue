@@ -68,6 +68,29 @@
                 <v-icon>mdi-school</v-icon>
               </v-list-item-icon>
               <v-list-item>
+                <v-list-item-title>Teachrer Management</v-list-item-title>
+              </v-list-item>
+            </template>
+            <v-list-item
+              v-for="item in teacher_management_items"
+              :key="item.title"
+              v-on:click="item.action"
+            >
+              <v-list-item-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-divider class="mx-4"></v-divider>
+          <v-list-group prepend-icon value="true" color="green">
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-school</v-icon>
+              </v-list-item-icon>
+              <v-list-item>
                 <v-list-item-title>Student Management</v-list-item-title>
               </v-list-item>
             </template>
@@ -206,6 +229,23 @@ export default {
           action: this.parent_communication
         }
       ],
+      teacher_management_items: [
+        {
+          icon: "mdi-account-plus-outline",
+          title: "Add Teacher",
+          action: this.add_teacher
+        },
+        {
+          icon: "mdi-account-edit-outline",
+          title: "Update Teacher",
+          action: this.delete_teacher
+        },
+        {
+          icon: "mdi-account-remove-outline",
+          title: "Delete Teacher",
+          action: this.delete_teacher
+        }
+      ],
       student_management_items: [
         {
           icon: "mdi-account-plus",
@@ -320,6 +360,10 @@ export default {
       this.$store.dispatch("set_school_name", "ClassUp");
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
+    },
+    add_teacher() {
+      this.$store.dispatch("set_coming_from", "add_teacher")
+      this.$router.replace("/add_teacher")
     },
     teacher_message_history() {
       this.$store.dispatch("set_coming_status", "teacher_message_history");
