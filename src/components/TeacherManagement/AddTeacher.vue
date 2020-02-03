@@ -8,7 +8,10 @@
         <h2>Add Teacher</h2>
         <v-layout xs4 row wrap justify-center>
           <v-col cols="12" md="2">
-            <v-text-field label="Teacher Name" v-model="teacher_name" v-on:focus="dismiss()"></v-text-field>
+            <v-text-field label="First Name" v-model="first_name" v-on:focus="dismiss()"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="2">
+            <v-text-field label="Last Name" v-model="last_name" v-on:focus="dismiss()"></v-text-field>
           </v-col>
           <v-col cols="12" md="2">
             <v-text-field label="Mobile" v-model="mobile" v-on:focus="dismiss()"></v-text-field>
@@ -65,7 +68,8 @@ export default {
   name: "AddTeacher",
   data() {
     return {
-      teacher_name: "",
+      first_name: "",
+      last_name: "",
       mobile: "",
       login_id: "",
 
@@ -87,9 +91,16 @@ export default {
   },
   methods: {
     validate_entries() {
-      if (this.teacher_name == "") {
+      if (this.first_name == "") {
         this.alert_message =
-          "Please enter Teacher Name";
+          "Please enter First Name";
+        this.showDismissibleAlert = true;
+        this.alert_color = "red";
+        return;
+      }
+      if (this.last_name == "") {
+        this.alert_message =
+          "Please enter Last Name";
         this.showDismissibleAlert = true;
         this.alert_color = "red";
         return;
@@ -131,7 +142,7 @@ export default {
         .post(url, {
           school_id: school_id,
           user: sender,
-          full_name: self.teacher_name,
+          full_name: self.first_name + " " + self.last_name,
           mobile: self.mobile,
           email: self.login_id
           
@@ -142,6 +153,7 @@ export default {
           if (response.data["status"] == "success") {
             self.showDismissibleAlert = true;
             self.alert_message = response.data["message"];
+            self.alert_color = "green";
             confirm("Teacher successfully added");
             self.teacher_name = "";
             self.mobile = "";
@@ -155,9 +167,7 @@ export default {
               confirm(response.data["message"]);
               return;
           }
-
           
-        //   self.$router.replace("/student_search");
         })
         .catch(function(error) {
           console.log(error);

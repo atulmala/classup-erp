@@ -238,7 +238,7 @@ export default {
         {
           icon: "mdi-account-edit-outline",
           title: "Update Teacher",
-          action: this.delete_teacher
+          action: this.update_teacher
         },
         {
           icon: "mdi-account-remove-outline",
@@ -360,6 +360,11 @@ export default {
       this.$store.dispatch("set_school_name", "ClassUp");
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
+    },
+    update_teacher()  {
+      this.$store.dispatch("set_coming_from", "update_teacher");
+      this.$router.replace("/update_teacher");
+
     },
     add_teacher() {
       this.$store.dispatch("set_coming_from", "add_teacher")

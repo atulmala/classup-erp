@@ -21,6 +21,7 @@ import TeacherMessageHistory from '../components/TeacherMenu/TeacherMessageHisto
 import MonthlyCommunicationReport from '../components/Communication/MonthlyCommunicationReport'
 import ParentCommunicationReport from '../components/Communication/ParentCommunicationReport'
 import AddTeacher from '../components/TeacherManagement/AddTeacher'
+import UpdateTeacher from '../components/TeacherManagement/UpdateTeacher'
 
 Vue.use(Router)
 
@@ -30,6 +31,11 @@ export default new Router({
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard
+    },
+    {
+      path: '/update_teacher',
+      name: 'UpdateTeacher',
+      component: UpdateTeacher
     },
     {
       path: '/add_teacher',

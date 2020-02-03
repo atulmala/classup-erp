@@ -7,7 +7,7 @@
           <v-layout align-center justify-center>
             <v-flex xs12 sm8 md4>
               <img
-                src="https://storage.cloud.google.com/classup/classup2/static/prod/images/ClassUp_mobile_logo.png?_ga=2.134540216.-83250823.1538650499"
+                src="https://classup2.s3.us-east-2.amazonaws.com/static/prod/images/ClassUp_mobile_logo.png"
               >
               <h1>{{ msg }}</h1>
               <h2>Please Login</h2>
