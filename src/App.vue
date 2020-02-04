@@ -241,6 +241,11 @@ export default {
           action: this.update_teacher
         },
         {
+          icon: "mdi-google-classroom",
+          title: "Set Class Teacher",
+          action: this.set_class_teacher
+        },
+        {
           icon: "mdi-account-remove-outline",
           title: "Delete Teacher",
           action: this.delete_teacher
@@ -361,10 +366,17 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
     },
+    delete_teacher()  {
+      this.$store.dispatch("set_coming_from", "delete_teacher");
+      this.$router.replace("/delete_teacher");``
+    },
+    set_class_teacher() {
+      this.$store.dispatch("set_coming_from", "set_class_teacher");
+      this.$router.replace("/set_class_teacher");
+    },
     update_teacher()  {
       this.$store.dispatch("set_coming_from", "update_teacher");
       this.$router.replace("/update_teacher");
-
     },
     add_teacher() {
       this.$store.dispatch("set_coming_from", "add_teacher")

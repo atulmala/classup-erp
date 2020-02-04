@@ -22,6 +22,8 @@ import MonthlyCommunicationReport from '../components/Communication/MonthlyCommu
 import ParentCommunicationReport from '../components/Communication/ParentCommunicationReport'
 import AddTeacher from '../components/TeacherManagement/AddTeacher'
 import UpdateTeacher from '../components/TeacherManagement/UpdateTeacher'
+import SetClassTeacher from '../components/TeacherManagement/SetClassTeacher'
+import DeleteTeacher from '../components/TeacherManagement/DeleteTeacher'
 
 Vue.use(Router)
 
@@ -33,9 +35,19 @@ export default new Router({
       component: Dashboard
     },
     {
+      path: '/delete_teacher',
+      name: 'DeleteTeacher',
+      component: DeleteTeacher
+    },
+    {
       path: '/update_teacher',
       name: 'UpdateTeacher',
       component: UpdateTeacher
+    },
+    {
+      path: '/set_class_teacher',
+      name: 'SetClassTeacher',
+      component: SetClassTeacher
     },
     {
       path: '/add_teacher',
