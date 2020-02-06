@@ -32,16 +32,15 @@
         :mini-variant="drawer.mini"
         v-model="drawer.open"
       >
-        <v-list class="text-left" nav rounded >
-          
-          <v-list-item color="purple"> 
+        <v-list class="text-left" nav rounded>
+          <v-list-item color="purple">
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
           <v-divider dark class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="blue">
+          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="blue">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-message</v-icon>
@@ -56,13 +55,13 @@
               <v-list-item-action>
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-action>
-              <v-list-item-content >
+              <v-list-item-content>
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="green">
+          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="green">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-school</v-icon>
@@ -85,7 +84,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="green">
+          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="green">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-school</v-icon>
@@ -108,7 +107,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="purple">
+          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="purple">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-ab-testing</v-icon>
@@ -127,11 +126,11 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="teal">
+          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="teal">
             <template v-slot:activator>
               <v-list-item-icon>
-              <v-icon>mdi-currency-inr</v-icon>
-            </v-list-item-icon>
+                <v-icon>mdi-currency-inr</v-icon>
+              </v-list-item-icon>
               <v-list-item>
                 <v-list-item-title>Fees Management</v-list-item-title>
               </v-list-item>
@@ -146,11 +145,11 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group prepend-icon value="true" color="blue">
+          <v-list-group v-if="get_user_type === 'non_admin'" prepend-icon value="true" color="blue">
             <template v-slot:activator>
               <v-list-item-icon>
-              <v-icon>mdi-teach</v-icon>
-            </v-list-item-icon>
+                <v-icon>mdi-teach</v-icon>
+              </v-list-item-icon>
               <v-list-item>
                 <v-list-item-title>Teacher's Corner</v-list-item-title>
               </v-list-item>
@@ -166,27 +165,28 @@
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
-        <v-container fluid>
-      <template>
-        <div class="text-xs-center">
-          <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+      <v-container fluid>
+        <template>
+          <div class="text-xs-center">
+            <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+          </div>
+        </template>
+        <div v-if="get_logged_status === false">
+          <hello></hello>
         </div>
-      </template>
-      <div v-if="get_logged_status === false">
-        <hello></hello>
-      </div>
 
-      <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
-        <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
-      </v-footer>
-      <router-view />
-        </v-container>
+        <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
+          <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
+        </v-footer>
+        <router-view />
+      </v-container>
     </div>
   </v-app>
 </template>
 
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 import HelloWorld from "@/components/Common/HelloWorld";
 export default {
   name: "App",
@@ -261,6 +261,11 @@ export default {
           icon: "mdi-account-edit",
           title: "Update Student",
           action: this.update_student
+        },
+        {
+          icon: "mdi-account-remove",
+          title: "Delete Student",
+          action: this.delete_student
         }
       ],
       exam_items: [
@@ -337,9 +342,14 @@ export default {
       right: null
     };
   },
+ 
   mounted: function() {
     let self = this;
 
+    self.user_type = this.$store.getters.get_user_type;
+    console.log("user_type = " + self.user_type);
+  },
+  beforeUpdate: function () {
     self.user_type = this.$store.getters.get_user_type;
     console.log("user_type = " + self.user_type);
   },
@@ -366,27 +376,28 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
     },
-    delete_teacher()  {
+    delete_teacher() {
       this.$store.dispatch("set_coming_from", "delete_teacher");
-      this.$router.replace("/delete_teacher");``
+      this.$router.replace("/delete_teacher");
+      ``;
     },
     set_class_teacher() {
       this.$store.dispatch("set_coming_from", "set_class_teacher");
       this.$router.replace("/set_class_teacher");
     },
-    update_teacher()  {
+    update_teacher() {
       this.$store.dispatch("set_coming_from", "update_teacher");
       this.$router.replace("/update_teacher");
     },
     add_teacher() {
-      this.$store.dispatch("set_coming_from", "add_teacher")
-      this.$router.replace("/add_teacher")
+      this.$store.dispatch("set_coming_from", "add_teacher");
+      this.$router.replace("/add_teacher");
     },
     teacher_message_history() {
       this.$store.dispatch("set_coming_status", "teacher_message_history");
       this.$router.replace("/teacher_message_history");
     },
-    parent_communication()  {
+    parent_communication() {
       this.$store.dispatch("set_coming_status", "parent_communication");
       this.$router.replace("/parent_communication");
     },
@@ -398,11 +409,11 @@ export default {
       this.$store.dispatch("set_coming_status", "schedule_test");
       this.$router.replace("/schedule_test");
     },
-    student_attendance () {
+    student_attendance() {
       this.$store.dispatch("set_coming_status", "class_attendance");
       this.$router.replace("/student_attendance");
     },
-    communicate_with_parents()  {
+    communicate_with_parents() {
       this.$store.dispatch("set_coming_status", "send_message_to_parents");
       this.$router.replace("/send_message_to_parents");
     },
@@ -427,8 +438,8 @@ export default {
       this.$router.replace("/mark_sheet");
     },
     exam_results() {
-      this.$store.dispatch("set_coming_status", "exam_results")
-      this.$router.replace("/exam_results")
+      this.$store.dispatch("set_coming_status", "exam_results");
+      this.$router.replace("/exam_results");
     },
     performance_analysis() {
       this.$store.dispatch("set_coming_status", "performance_analysis");
@@ -445,6 +456,10 @@ export default {
     update_student() {
       this.$store.dispatch("set_coming_status", "update_student");
       this.$router.replace("/student_search");
+    },
+    delete_student()  {
+      this.$store.dispatch("set_coming_status", "delete_student");
+      this.$router.replace("/student_search")
     },
     defaulter_report() {
       let self = this;
@@ -487,6 +502,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters("user_type", ["school_admin", "non_admin"]),
     get_title() {
       return this.$store.getters.get_school_name;
     },
@@ -495,6 +511,9 @@ export default {
     },
     get_logged_status() {
       return this.$store.getters.get_logged_status;
+    },
+    get_user_type() {
+      return this.$store.getters.get_user_type;
     }
   }
 };

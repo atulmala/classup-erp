@@ -80,7 +80,6 @@
               </tbody>
             </template>
           </v-data-table>
-          
         </v-col>
       </div>
     </v-content>
@@ -190,6 +189,7 @@ export default {
               self.show_search_criteria = false;
               for (var i = 0; i < response.data.length; i++) {
                 var student = {};
+                student["id"] = response.data[i]["id"];
                 student["reg_no"] = response.data[i]["student_erp_id"];
                 student["name"] =
                   response.data[i]["fist_name"] +
@@ -267,7 +267,7 @@ export default {
             a.name +
             " (" +
             a.reg_no +
-            ")?"
+            ")"
         );
         if (response) {
           this.$store.dispatch("set_student_id", a.reg_no);
@@ -275,6 +275,57 @@ export default {
           this.$store.dispatch("set_student_class", a.the_class);
           this.$store.dispatch("set_parent", a.parent);
           this.$router.replace("/update_student");
+        }
+      }
+
+      if (coming_from == "delete_student") {
+        let response = confirm(
+          "Are you sure you want to Delete Student: " +
+            a.name +
+            " (" +
+            a.reg_no +
+            ")?" +
+            " Parent: " +
+            a.parent +
+            "?"
+        );
+        if (response) {
+          let self = this;
+          this.confirm = false;
+          let school_id = this.$store.getters.get_school_id;
+          let ip = this.$store.getters.get_server_ip;
+          let url = ip.concat("/setup/delete_student/");
+          axios
+            .post(url, {
+              student_id: a.id
+            })
+            .then(function(response) {
+              console.log(response);
+              self.overlay = false;
+              if (response.data["status"] == "success") {
+                confirm("Student successfully deleted");
+                self.first_name = "";
+                self.the_class = "";
+                self.replace = "";
+                self.last_name = "";
+                self.students = [];
+                self.show_search_criteria = true;
+                self.show_student_list = false;
+                return;
+              } else {
+                self.alert_color = "red";
+                self.alert_message = response.data["message"];
+                self.showDismissibleAlert = true;
+                confirm(response.data["message"]);
+                return;
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            })
+            .then(function() {
+              // always executed
+            });
         }
       }
     }

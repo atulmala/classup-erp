@@ -6,6 +6,7 @@ import FeePayment from '../components/Fee/FeePayment'
 import Correction from '../components/Fee/Correction'
 import AddStudent from '../components/Student/AddStudent'
 import UpdateStudent from '../components/Student/UpdateStudent'
+import DeleteStudent from '../components/Student/DeleteStudent'
 import ClassSearch from '../components/Exams/ClassSearch'
 import PerformanceAnalysis from '../components/Exams/PerformanceAnalysis'
 import Marksheet from '../components/Exams/Marksheet'
@@ -78,6 +79,11 @@ export default new Router({
       path: '/update_student',
       name: 'update_student',
       component: UpdateStudent
+    },
+    {
+      path: '/delete_student',
+      name: 'delete_student',
+      component: DeleteStudent
     },
     {
       path: '/class_search',
