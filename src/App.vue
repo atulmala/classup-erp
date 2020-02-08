@@ -64,10 +64,10 @@
           <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="green">
             <template v-slot:activator>
               <v-list-item-icon>
-                <v-icon>mdi-school</v-icon>
+                <v-icon>mdi-teach</v-icon>
               </v-list-item-icon>
               <v-list-item>
-                <v-list-item-title>Teachrer Management</v-list-item-title>
+                <v-list-item-title>Teacher Management</v-list-item-title>
               </v-list-item>
             </template>
             <v-list-item
@@ -266,6 +266,11 @@ export default {
           icon: "mdi-account-remove",
           title: "Delete Student",
           action: this.delete_student
+        },
+        {
+          icon: "mdi-file-download",
+          title: "Download Student List",
+          action: this.download_student_list
         }
       ],
       exam_items: [
@@ -460,6 +465,10 @@ export default {
     delete_student()  {
       this.$store.dispatch("set_coming_status", "delete_student");
       this.$router.replace("/student_search")
+    },
+    download_student_list() {
+      this.$store.dispatch("set_coming_status", "download_student_list");
+      this.$router.replace("/download_student_list");
     },
     defaulter_report() {
       let self = this;

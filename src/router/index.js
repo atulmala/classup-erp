@@ -7,6 +7,7 @@ import Correction from '../components/Fee/Correction'
 import AddStudent from '../components/Student/AddStudent'
 import UpdateStudent from '../components/Student/UpdateStudent'
 import DeleteStudent from '../components/Student/DeleteStudent'
+import DownloadStudentList from '../components/Student/DownloadStudentList'
 import ClassSearch from '../components/Exams/ClassSearch'
 import PerformanceAnalysis from '../components/Exams/PerformanceAnalysis'
 import Marksheet from '../components/Exams/Marksheet'
@@ -84,6 +85,11 @@ export default new Router({
       path: '/delete_student',
       name: 'delete_student',
       component: DeleteStudent
+    },
+    {
+      path: '/download_student_list',
+      name: 'download_student_list',
+      component: DownloadStudentList
     },
     {
       path: '/class_search',
