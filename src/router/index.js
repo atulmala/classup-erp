@@ -26,6 +26,9 @@ import AddTeacher from '../components/TeacherManagement/AddTeacher'
 import UpdateTeacher from '../components/TeacherManagement/UpdateTeacher'
 import SetClassTeacher from '../components/TeacherManagement/SetClassTeacher'
 import DeleteTeacher from '../components/TeacherManagement/DeleteTeacher'
+import SetupTimetable from '../components/Timetable/SetupTimetable'
+import TeacherAttendance from '../components/Timetable/TeacherAttendance'
+import UnscheduledTestReport from '../components/Exams/UnscheduledTestReport.vue'
 
 Vue.use(Router)
 
@@ -35,6 +38,21 @@ export default new Router({
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard
+    },
+    {
+      path: '/unscheduled_test_report',
+      name: 'UnscheduledTestReport',
+      component: UnscheduledTestReport
+    },
+    {
+      path: '/teacher_attendance',
+      name: 'TeacherAttendance',
+      component: TeacherAttendance
+    },
+    {
+      path: '/setup_time_table',
+      name: 'SetupTimetable',
+      component: SetupTimetable
     },
     {
       path: '/delete_teacher',

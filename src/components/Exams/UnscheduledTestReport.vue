@@ -6,27 +6,20 @@
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
         </div>
       </template>
-      <v-form v-if="show_search_criteria">
+      <v-form>
         <v-container fluid class="pa-md-4 mx-lg-auto">
-          <h1>Download Result Analysis Sheets</h1>
-          <h3>Select Class & Section</h3>
+          <h1>Download Unscheduled Test Report</h1>
+          <h3>Select an Exam</h3>
           <v-layout xs4 row wrap justify-center>
             <v-col cols="12" md="2">
               <v-select
-                :items="class_list"
-                label="Class/Standard"
-                v-model="the_class"
+                :items="exam_list"
+                label="Exam"
+                v-model="exam"
                 v-on:focus="dismiss()"
               ></v-select>
             </v-col>
-            <v-col cols="12" md="2">
-              <v-select
-                :items="section_list"
-                label="Section"
-                v-model="section"
-                v-on:focus="dismiss()"
-              ></v-select>
-            </v-col>
+            
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
@@ -81,60 +74,31 @@ import axios from "axios";
 export default {
   data() {
     return {
-      show_search_criteria: true,
       loader: null,
       loading: false,
       waitng: false,
-      the_class: "",
-      class_list: [],
-      section: "",
-      section_list: [],
+      exam: "",
+      exam_list: [],
 
       alert_type: "",
       alert_message: "",
       showDismissibleAlert: false,
-      headers: [
-        {
-          text: "Student Name",
-          align: "left",
-          sortable: false,
-          value: "name"
-        },
-        { text: "Reg/Adm/Sch Number", value: "reg_no" },
-        { text: "Class", value: "the_class" },
-        { text: "Parent", value: "parent" }
-      ]
     };
   },
   mounted: function() {
     let self = this;
     let school_id = this.$store.getters.get_school_id;
     let ip = this.$store.getters.get_server_ip;
-    let url = ip.concat("/academics/class_list/", school_id, "/");
+    let url = ip.concat("/academics/get_exam_list_school/", school_id, "/");
     axios
       .get(url)
       .then(function(response) {
         // handle success
-        self.class_list = response.data;
+        self.exam_list = response.data;
         for (var i = 0; i < response.data.length; i++) {
-          self.class_list[i] = response.data[i]["standard"];
+          self.exam_list[i] = response.data[i]["title"];
         }
-        console.log(self.class_list);
-      })
-      .catch(function(error) {
-        // handle error
-        console.log(error);
-      });
-    let url2 = ip.concat("/academics/section_list/", school_id, "/");
-    axios
-      .get(url2)
-      .then(function(response) {
-        // handle success
-        self.section_list = response.data;
-        for (var i = 0; i < response.data.length; i++) {
-          self.section_list[i] = response.data[i]["section"];
-        }
-        console.log(self.class_list);
+        console.log(self.exam_list);
       })
       .catch(function(error) {
         // handle error
@@ -146,13 +110,8 @@ export default {
     search() {
       let self = this;
       var can_search = true;
-      if (this.section == "") {
-        this.alert_message = "Please specify Section";
-        this.showDismissibleAlert = true;
-        can_search = false;
-      }
-      if (this.the_class == "") {
-        this.alert_message = "Please specify Class";
+      if (this.exam == "") {
+        this.alert_message = "Please select an Exam";
         this.showDismissibleAlert = true;
         can_search = false;
       }
@@ -162,7 +121,7 @@ export default {
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
         let school_name = this.$store.getters.get_school_name;
-        let url = ip.concat("/exam/result_sheet/");
+        let url = ip.concat("/exam/unscheuled_test_list/");
         axios
           .get(url, {
             headers: {
@@ -172,8 +131,7 @@ export default {
             responseType: "arraybuffer",
             params: {
               school_id: school_id,
-              the_class: this.the_class,
-              section: this.section
+              exam_title: this.exam,
             }
           })
           .then(function(response) {
@@ -182,7 +140,7 @@ export default {
             const link = document.createElement("a");
             link.href = url;
             let file_name =
-              "Result_Analysis_Sheet_" + self.the_class + "-" + self.section + ".xlsx";
+              "Unscheduled_test_" + self.exam + ".xlsx";
             link.setAttribute("download", file_name); //or any other extension
             document.body.appendChild(link);
             link.click();

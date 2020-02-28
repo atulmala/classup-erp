@@ -7,7 +7,7 @@
         </div>
       </template>
       <div class="text-xs-center">
-        <v-col cols="10" md="10">
+        <v-col cols="10" md="10" class="mx-auto">
           <v-data-table
             dark
             loading

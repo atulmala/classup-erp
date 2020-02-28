@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-content >
     <v-col cols="12" md="10" offset-sm4>
       <template>
         <v-data-table

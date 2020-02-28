@@ -214,6 +214,7 @@ export default {
       }
       if (can_search) {
         this.waiting = true;
+        this.loading = true;
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
         let school_name = this.$store.getters.get_school_name;
@@ -250,6 +251,7 @@ export default {
           })
           .then(function(response) {
             self.waiting = false;
+            self.loading = false;
             console.log(response);
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");

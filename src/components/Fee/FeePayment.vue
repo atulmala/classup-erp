@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-content class="ma-12 pa-0 ta-4">
+  <v-app class="mt-n12 pt-n12">
+    <v-content class="mt-n12 pt-n12">
       <h2>Fee Details</h2>
       <v-layout rxs4 row wrap justify-center offset-sm3>
         <v-col cols="8" md="2">
@@ -21,7 +21,7 @@
         </v-col>
       </v-layout>
       <v-layout rxs4 row wrap justify-center offset-sm6>
-        <v-col cols="8" md="7">
+        <v-col cols="8" md="8">
           <v-data-table
             dark
             :headers="headers"
@@ -82,10 +82,10 @@
       <v-form>
         <v-container fluid>
           <v-layout row wrap justify-center>
-            <v-col cols="10" md="1">
+            <v-col cols="10" md="2">
               <v-text-field label="Due this Month/Qtr" v-model="due_this_term" disabled></v-text-field>
             </v-col>
-            <v-col cols="10" md="1">
+            <v-col cols="10" md="2">
               <v-text-field label="Previous Outstanding" v-model="previous_due" disabled></v-text-field>
             </v-col>
             <!-- <v-col cols="10" md="1">
@@ -99,20 +99,20 @@
             <v-col cols="10" md="2">
               <v-text-field label="Delay" v-model="delay" disabled></v-text-field>
             </v-col>
-            <v-col cols="10" md="1">
+            <v-col cols="10" md="2">
               <v-text-field label="Penalty" v-model="late_fee" v-on:focus="dismiss()"></v-text-field>
             </v-col>
             
           </v-layout>
           <v-layout row wrap justify-center>
-            <v-col cols="10" md="1">
+            <v-col cols="10" md="2">
               <v-text-field
                 label="Other/One time Charges"
                 v-model="one_time"
                 v-on:focus="dismiss()"
               ></v-text-field>
             </v-col>
-            <v-col cols="8" md="1">
+            <v-col cols="8" md="2">
               <v-text-field label="Waivers" v-model="waiver" v-on:focus="dismiss()"></v-text-field>
             </v-col>
             
@@ -122,12 +122,12 @@
             <v-col cols="10" md="1">
               <v-text-field label="Actual Paid" v-model="actual_paid" v-on:focus="dismiss()"></v-text-field>
             </v-col>
-            <v-col cols="10" md="1">
+            <v-col cols="10" md="2">
               <v-text-field label="Remaining Balance" v-model="balance" disabled></v-text-field>
             </v-col>
           </v-layout>
           <v-layout row wrap justify-center>
-            <v-col cols="8" md="3">
+            <v-col cols="8" md="6">
               <v-radio-group v-model="payment_mode" @click="dismiss()" row>
                 <v-radio label="Cash" value="cash"></v-radio>
                 <v-radio label="Cheque" value="cheque"></v-radio>

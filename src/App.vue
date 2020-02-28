@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="mt-n12 pt-n12">
     <div id="app">
       <v-app-bar
         app
@@ -40,7 +40,7 @@
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
           <v-divider dark class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="blue">
+          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="#283593">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-message</v-icon>
@@ -61,7 +61,28 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="green">
+          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="#9575CD">
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-timetable</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Time Table & Arrangement </v-list-item-title>
+            </template>
+            <v-list-item
+              v-for="item in time_table_items"
+              :key="item.title"
+              v-on:click="item.action"
+            >
+              <v-list-item-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-divider class="mx-4"></v-divider>
+          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="#795548">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-teach</v-icon>
@@ -84,7 +105,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="green">
+          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="#1A237E">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-school</v-icon>
@@ -107,7 +128,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="purple">
+          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="purple">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-ab-testing</v-icon>
@@ -126,7 +147,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="teal">
+          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="teal">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-currency-inr</v-icon>
@@ -145,7 +166,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-if="get_user_type === 'non_admin'" prepend-icon value="true" color="blue">
+          <v-list-group v-if="get_user_type == 'non_admin'" prepend-icon value="true" color="blue">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-teach</v-icon>
@@ -165,7 +186,7 @@
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
-      <v-container fluid>
+      
         <template>
           <div class="text-xs-center">
             <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
@@ -179,7 +200,7 @@
           <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
         </v-footer>
         <router-view />
-      </v-container>
+      
     </div>
   </v-app>
 </template>
@@ -229,6 +250,18 @@ export default {
           action: this.parent_communication
         }
       ],
+      time_table_items: [
+        {
+          icon: "mdi-table-edit",
+          title: "Setup Time Table",
+          action: this.setup_time_table
+        },
+        {
+          icon: "mdi-alpha-p-circle",
+          title: "Teacher Attendance",
+          action: this.teacher_attendance
+        },
+      ],
       teacher_management_items: [
         {
           icon: "mdi-account-plus-outline",
@@ -274,6 +307,11 @@ export default {
         }
       ],
       exam_items: [
+        {
+          icon: "mdi-calendar-alert",
+          title: "Unscheduled Test Report",
+          action: this.unscheduled_test_report
+        },
         {
           icon: "mdi-chart-histogram",
           title: "Result Analysis Sheets",
@@ -381,21 +419,33 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
     },
+    unscheduled_test_report() {
+      this.$store.dispatch("set_coming_status", "unscheduled_test_report");
+      this.$router.replace("/unscheduled_test_report");
+    },
+    teacher_attendance()  {
+      this.$store.dispatch("set_coming_status", "teacher_attendance");
+      this.$router.replace("/teacher_attendance");
+    },
+    setup_time_table()  {
+      this.$store.dispatch("set_coming_status", "setup_time_table");
+      this.$router.replace("/setup_time_table");
+    },
     delete_teacher() {
-      this.$store.dispatch("set_coming_from", "delete_teacher");
+      this.$store.dispatch("set_coming_status", "delete_teacher");
       this.$router.replace("/delete_teacher");
-      ``;
+      
     },
     set_class_teacher() {
-      this.$store.dispatch("set_coming_from", "set_class_teacher");
+      this.$store.dispatch("set_coming_status", "set_class_teacher");
       this.$router.replace("/set_class_teacher");
     },
     update_teacher() {
-      this.$store.dispatch("set_coming_from", "update_teacher");
+      this.$store.dispatch("set_coming_status", "update_teacher");
       this.$router.replace("/update_teacher");
     },
     add_teacher() {
-      this.$store.dispatch("set_coming_from", "add_teacher");
+      this.$store.dispatch("set_coming_status", "add_teacher");
       this.$router.replace("/add_teacher");
     },
     teacher_message_history() {

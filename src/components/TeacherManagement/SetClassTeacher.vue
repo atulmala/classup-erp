@@ -126,7 +126,7 @@ export default {
       changed_index: "",
       selected: false,
       selected_teacher: "",
-      waiting: false, 
+      waiting: false,
       loading: false,
       showDismissibleAlert: false,
       alert_type: "error",
@@ -250,7 +250,7 @@ export default {
     },
 
     download_class_teacher_list() {
-        let self = this;
+      let self = this;
       this.waiting = true;
       this.loading = true;
       let ip = this.$store.getters.get_server_ip;

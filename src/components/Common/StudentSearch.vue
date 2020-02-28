@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="mt-n12 pt-n12">
     <v-content>
       <v-form v-if="show_search_criteria">
         <v-container>
@@ -55,9 +55,8 @@
           </div>
         </v-container>
       </v-form>
-      <div class="text-xs-center" offset-sm4>
-        <v-col cols="10" md="2"></v-col>
-        <v-col cols="10" md="8">
+      <div class="text-xs-center">
+        <v-col cols="10" md="8" class="mx-auto">
           <v-data-table
             v-if="show_student_list"
             :headers="headers"

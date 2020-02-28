@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="mt-n12 pt-n12">
     <v-content class="ma-0">
       <template>
         <div class="text-xs-center">
@@ -19,11 +19,29 @@
                 <v-divider></v-divider>
                 <v-card-text style="height: 250px;">
                   <div class="font-weight-black"></div>
-                  <v-chip-group multiple column active-class="primary--text;">
+                  <v-chip-group
+                    v-if="active_term=='Term I'"
+                    multiple
+                    column
+                    active-class="primary--text;"
+                  >
                     <v-chip
                       outlined
-                      v-for="(subject, index) in term_marks"
-                      :color="color[index]"
+                      v-for="(subject, index) in term_marks1"
+                      :color="color1[index]"
+                      :key="subject"
+                    >{{ subject }}</v-chip>
+                  </v-chip-group>
+                  <v-chip-group
+                    v-if="active_term=='Term II'"
+                    multiple
+                    column
+                    active-class="primary--text;"
+                  >
+                    <v-chip
+                      outlined
+                      v-for="(subject, index) in term_marks2"
+                      :color="color2[index]"
                       :key="subject"
                     >{{ subject }}</v-chip>
                   </v-chip-group>
@@ -106,7 +124,7 @@
                   <div class="text-uppercase">Student Promotion Operations</div>
                 </v-chip>
                 <v-divider class="mx-4" inset vertical></v-divider>
-                <v-col cols="12" md="2">
+                <v-col cols="12" md="1">
                   <v-select
                     class="mt-7"
                     :items="class_list"
@@ -127,6 +145,10 @@
                     v-on:change="get_student_list()"
                   ></v-select>
                 </v-col>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-chip class="mt-4" color="#827717" label>
+                  <div class="text-uppercase">Class Teacher: {{ class_teacher }}</div>
+                </v-chip>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
@@ -203,6 +225,7 @@ export default {
       class_list: [],
       section: "",
       section_list: [],
+      class_teacher: "",
 
       student_list: [],
       download: false,
@@ -215,8 +238,10 @@ export default {
       operated_student: "",
       operated_student_id: "",
       detain_reason: "",
-      term_marks: [],
-      color: [],
+      term_marks1: [],
+      term_marks2: [],
+      color1: [],
+      color2: [],
       active_term: "",
       waiting: false,
       alert_type: "",
@@ -257,7 +282,7 @@ export default {
     }
 
     axios.all([get_class_list(), get_section_list()]).then(
-      axios.spread(function(classes, sections, subjects) {
+      axios.spread(function(classes, sections) {
         self.class_list = classes.data;
         self.section_list = sections.data;
 
@@ -277,6 +302,26 @@ export default {
       let self = this;
       self.student_list = [];
       if (this.the_class != "" && this.section != "") {
+        let url1 = self.ip.concat(
+          "/teachers/get_class_teacher/?school_id=",
+          self.school_id,
+          "&the_class=",
+          this.the_class,
+          "&section=",
+          this.section
+        );
+        axios
+          .get(url1)
+          .then(function(response) {
+            // handle success
+            console.log(response)
+            self.class_teacher = response.data['class_teacher'];
+          })
+          .catch(function(error) {
+            // handle error
+            console.log(error);
+          });
+
         let url = self.ip.concat(
           "/exam/get_promotion_list/?school_id=",
           self.school_id,
@@ -305,7 +350,6 @@ export default {
               self.student_list.push(student);
             }
             self.download = true;
-            console.log(self.student_list);
           })
           .catch(function(error) {
             // handle error
@@ -380,10 +424,8 @@ export default {
         let promotee = {};
         promotee["promotion_status"] = this.student_list[i]["promotion_status"];
         promotee["detain_reason"] = this.student_list[i]["detain_reason"];
-        console.log(promotee);
         promotion_list[this.student_list[i]["id"]] = promotee;
       }
-      console.log(promotion_list);
       let url = this.ip.concat("/exam/process_promotion/");
       this.waiting = true;
       axios
@@ -402,10 +444,7 @@ export default {
     download_excel() {
       let self = this;
       self.waiting = true;
-      let url = self.ip.concat(
-        "/exam/get_promotion_excel/"
-      );
-      console.log("url = ", url);
+      let url = self.ip.concat("/exam/get_promotion_excel/");
       let options = {
         headers: {
           "Content-Type":
@@ -421,7 +460,7 @@ export default {
             the_class: self.the_class,
             section: self.section
           },
-          
+
           options
         )
         .then(function(response) {
@@ -454,31 +493,27 @@ export default {
         .get(url)
         .then(function(response) {
           console.log(response.data);
-          var marks_string1 = "";
-          var marks_string2 = "";
+
           // handle success
-          self.term_marks = [];
-          self.color = [];
+          self.term_marks1 = [];
+          self.term_marks2 = [];
+          self.color1 = [];
+          self.color2 = [];
           for (var i = 0; i < response.data.length; i++) {
+            var marks_string1 = "";
+            var marks_string2 = "";
+
             let subject = response.data[i]["subject"];
 
             let marks = response.data[i]["marks"];
-            if (marks >= 60) {
-              self.color[i] = "#00E676";
-            }
-            if (marks < 60 && marks >= 40) {
-              self.color[i] = "#1E88E5";
-            }
-            if (marks < 40) {
-              self.color[i] = "#FF5722";
-            }
+
             if (self.the_class == "XI" || self.the_class == "XII") {
               let prac = response.data[i]["prac_marks"];
               let total = response.data[i]["total_marks"];
               let exam = response.data[i]["exam"];
-              if (exam.includes("Term-I")) {
+              if (exam.includes("Term-I ")) {
                 marks_string1 = marks_string1.concat(
-                  response.data[i]["subject"],
+                  subject,
                   " |  Therory: ",
                   marks,
                   " |  Prac: ",
@@ -486,8 +521,17 @@ export default {
                   " |  Total: ",
                   total
                 );
+                if (marks >= 60) {
+                  self.color1.push("#00E676");
+                }
+                if (marks < 60 && marks >= 40) {
+                  self.color1.push("#1E88E5");
+                }
+                if (marks < 40) {
+                  self.color1.push("#FF5722");
+                }
               }
-              if (exam.includes("Term-II")) {
+              if (exam.includes("Term-II ")) {
                 marks_string2 = marks_string2.concat(
                   response.data[i]["subject"],
                   " |  Theory: ",
@@ -497,6 +541,15 @@ export default {
                   " |  Total: ",
                   total
                 );
+                if (marks >= 60) {
+                  self.color2.push("#00E676");
+                }
+                if (marks < 60 && marks >= 40) {
+                  self.color2.push("#1E88E5");
+                }
+                if (marks < 40) {
+                  self.color2.push("#FF5722");
+                }
               }
             } else {
               let pa = response.data[i]["periodic_test_marks"];
@@ -507,7 +560,7 @@ export default {
               let total = response.data[i]["total_marks"];
 
               let exam = response.data[i]["exam"];
-              if (exam.includes("Term-I")) {
+              if (exam.includes("Term-I (")) {
                 marks_string1 = marks_string1.concat(
                   response.data[i]["subject"],
                   " |  Marks: ",
@@ -523,8 +576,17 @@ export default {
                   " |  Total: ",
                   total
                 );
+                if (marks >= 60) {
+                  self.color1.push("#00E676");
+                }
+                if (marks < 60 && marks >= 40) {
+                  self.color1.push("#1E88E5");
+                }
+                if (marks < 40) {
+                  self.color1.push("#FF5722");
+                }
               }
-              if (exam.includes("Term-II")) {
+              if (exam.includes("Term-II (")) {
                 marks_string2 = marks_string2.concat(
                   response.data[i]["subject"],
                   " |  Marks: ",
@@ -540,21 +602,30 @@ export default {
                   " |  Total: ",
                   total
                 );
+                if (marks >= 60) {
+                  self.color2.push("#00E676");
+                }
+                if (marks < 60 && marks >= 40) {
+                  self.color2.push("#1E88E5");
+                }
+                if (marks < 40) {
+                  self.color2.push("#FF5722");
+                }
               }
             }
             if (self.active_term == "Term I") {
-              self.term_marks.push(marks_string1);
-              marks_string1 = "";
+              if (marks_string1 != "") {
+                self.term_marks1.push(marks_string1);
+              }
             } else {
-              self.term_marks.push(marks_string2);
-              marks_string2 = "";
+              if (marks_string2 != "") {
+                self.term_marks2.push(marks_string2);
+              }
             }
           }
           self.waiting = false;
 
           self.display_marks = true;
-          console.log(self.term1);
-          console.log(self.term2);
         })
         .catch(function(error) {
           // handle error
