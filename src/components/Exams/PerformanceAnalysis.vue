@@ -73,7 +73,6 @@
           <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
         </div>
       </template>
-      
     </v-content>
   </v-app>
 </template>
@@ -118,12 +117,12 @@ export default {
   },
   mounted: function() {
     let self = this;
-    
+
     this.coming_from = this.$store.getters.get_coming_from;
     if (this.coming_from == "performance_analysis")
-      this.heading = "Download Performance Analysis Sheet(s)"
+      this.heading = "Download Performance Analysis Sheet(s)";
     if (this.coming_from == "mark_sheet")
-      this.heading = "Download Mark Sheet(s)"
+      this.heading = "Download Mark Sheet(s)";
 
     this.school_id = this.$store.getters.get_school_id;
     self.ip = this.$store.getters.get_server_ip;
@@ -190,6 +189,10 @@ export default {
           })
           .catch(function(error) {
             // handle error
+            self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
             console.log(error);
           });
       }
@@ -213,54 +216,77 @@ export default {
         can_search = false;
       }
       if (can_search) {
-        this.waiting = true
+        this.waiting = true;
         let ip = this.$store.getters.get_server_ip;
         let school_id = this.$store.getters.get_school_id;
         let school_name = this.$store.getters.get_school_name;
         let the_class = self.the_class;
         let section = self.section;
-        var student = self.student
-        if (student == "")
-            student = "na"
-        let whole_class = this.whole_class
+        var student = self.student;
+        if (student == "") student = "na";
+        let whole_class = this.whole_class;
 
-        var url = ""
-        if (this.coming_from ==  "performance_analysis")
+        var url = "";
+        if (this.coming_from == "performance_analysis")
           url = ip.concat("/analytics/performance_sheet/");
         if (this.coming_from == "mark_sheet")
-          url = ip.concat("/exam/academics/prepare_results/", school_id, "/", the_class, "/", section)
-        console.log("url=", url)
-        
+          url = ip.concat(
+            "/exam/academics/prepare_results/",
+            school_id,
+            "/",
+            the_class,
+            "/",
+            section
+          );
+        console.log("url=", url);
+
         axios
           .get(url, {
-              params: {
-              "school_id": school_id,
-              "the_class": the_class,
-              "section": section,
-              "student": student,
-              "selected_student": student,
-              "whole_class": whole_class
+            params: {
+              school_id: school_id,
+              the_class: the_class,
+              section: section,
+              student: student,
+              selected_student: student,
+              whole_class: whole_class
             }
-            
           })
           .then(function(response) {
-            self.waiting = false
+            self.waiting = false;
             console.log(response);
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
 
-            var file_name = ""
+            var file_name = "";
             if (whole_class)
-              file_name = self.the_class + "-" + self.section + "_Performance_Analysis" +  ".pdf";
+              file_name =
+                self.the_class +
+                "-" +
+                self.section +
+                "_Performance_Analysis" +
+                ".pdf";
             if (student != "")
-              file_name = student + "_Performance_Analysis" +  ".pdf";
+              file_name = student + "_Performance_Analysis" + ".pdf";
             link.setAttribute("download", file_name); //or any other extension
             document.body.appendChild(link);
             link.click();
             confirm("Analysis sheet downloaded");
           })
           .catch(function(error) {
+            self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message.concat(
+              " Error summary: ",
+              error,
+              ". Please contact ClassUp Support"
+            );
+            self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
             console.log(error);
           })
           .then(function() {

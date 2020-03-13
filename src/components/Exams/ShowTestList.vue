@@ -1,5 +1,5 @@
 <template>
-  <v-content >
+  <v-content>
     <v-col cols="12" md="10" offset-sm4>
       <template>
         <v-data-table
@@ -620,7 +620,7 @@ export default {
             self.tests.push(test);
           }
 
-          // neutraliz thd test_details structure so that Schedule Test dialog doesn't show pre-populated
+          // neutralize the test_details structure so that Schedule Test dialog doesn't show pre-populated
           self.test_details.exam = "";
           self.test_details.the_class = "";
           self.test_details.section = "";
@@ -632,6 +632,15 @@ export default {
           self.test_details.syllabus = "";
         })
         .catch(function(error) {
+          self.waiting = false;
+          self.loading = false;
+          var error_message = "An error occured.";
+          error_message = error_message.concat(
+            " Error summary: ",
+            error,
+            ". Please contact ClassUp Support"
+          );
+          confirm(error_message);
           console.log(error);
         })
         .then(function() {
@@ -682,7 +691,7 @@ export default {
         this.editedIndex = -1;
       }, 300);
     },
-    edit_item(item)  {
+    edit_item(item) {
       console.log("inside edited item", item);
       this.$store.dispatch("set_class", item.the_class);
       this.$store.dispatch("set_section", item.section);
@@ -692,7 +701,7 @@ export default {
       this.$store.dispatch("set_grade_based", item.grade_based);
       this.$store.dispatch("set_test_type", item.test_type);
       this.$store.dispatch("set_max_marks", item.max_marks);
-      this.$router.replace('/marks_entry');
+      this.$router.replace("/marks_entry");
     }
   }
 };

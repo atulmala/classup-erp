@@ -81,11 +81,14 @@
                     <v-date-picker v-model="date" no-title color="green lighten-1" scrollable>
                       <v-spacer></v-spacer>
                       <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                      <v-btn text color="primary" @click="get_attendance_list();$refs.menu.save(date)">OK</v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="get_attendance_list();$refs.menu.save(date)"
+                      >OK</v-btn>
                     </v-date-picker>
                   </v-menu>
                 </v-col>
-                
               </v-toolbar>
             </template>
             <template v-slot:item.presence="{ item }">
@@ -263,8 +266,8 @@ export default {
     get_attendance_list() {
       let self = this;
       if (this.the_class != "" && this.section != "") {
-        this.students = []
-        this.absentee_list = []
+        this.students = [];
+        this.absentee_list = [];
 
         axios.all([this.get_student_list(), this.get_absentees_list()]).then(
           axios.spread(function(students, absentees) {

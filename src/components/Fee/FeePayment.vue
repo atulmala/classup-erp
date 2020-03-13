@@ -316,7 +316,12 @@ export default {
       })
       .catch(function(error) {
         // handle error
-        console.log(error);
+        self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
+            console.log(error);
       });
   },
   methods: {
@@ -457,7 +462,12 @@ export default {
           confirm("Fee Payment History Downloaded");
         })
         .catch(function(error) {
-          console.log(error);
+          self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
+            console.log(error);
         })
         .then(function() {
           // always executed
@@ -503,7 +513,12 @@ export default {
           self.$router.replace("/student_search");
         })
         .catch(function(error) {
-          console.log(error);
+          self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
+            console.log(error);
         })
         .then(function() {
           // always executed

@@ -29,6 +29,7 @@ import DeleteTeacher from '../components/TeacherManagement/DeleteTeacher'
 import SetupTimetable from '../components/Timetable/SetupTimetable'
 import TeacherAttendance from '../components/Timetable/TeacherAttendance'
 import UnscheduledTestReport from '../components/Exams/UnscheduledTestReport.vue'
+import DetainList from '../components/Exams/DetainList'
 
 Vue.use(Router)
 
@@ -38,6 +39,11 @@ export default new Router({
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard
+    },
+    {
+      path: '/detain_list',
+      name: 'DetainList',
+      component: DetainList
     },
     {
       path: '/unscheduled_test_report',

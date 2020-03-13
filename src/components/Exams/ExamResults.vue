@@ -146,9 +146,9 @@
                   ></v-select>
                 </v-col>
                 <v-divider class="mx-4" inset vertical></v-divider>
-                <v-chip class="mt-4" color="#827717" label>
-                  <div class="text-uppercase">Class Teacher: {{ class_teacher }}</div>
-                </v-chip>
+                
+                  <v-text-field label="Class Teacher" class="mt-7" v-model="class_teacher" disabled></v-text-field>
+                
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
@@ -438,7 +438,12 @@ export default {
         })
         .catch(function(error) {
           // handle error
-          console.log(error);
+          self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
+            console.log(error);
         });
     },
     download_excel() {
@@ -478,7 +483,12 @@ export default {
           confirm("Promotion List Downloaded");
         })
         .catch(function(error) {
-          console.log(error);
+          self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
+            console.log(error);
         })
         .then(function() {
           // always executed
@@ -629,7 +639,12 @@ export default {
         })
         .catch(function(error) {
           // handle error
-          console.log(error);
+          self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
+            console.log(error);
         });
     }
   },

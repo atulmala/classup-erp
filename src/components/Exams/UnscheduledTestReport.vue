@@ -12,14 +12,8 @@
           <h3>Select an Exam</h3>
           <v-layout xs4 row wrap justify-center>
             <v-col cols="12" md="2">
-              <v-select
-                :items="exam_list"
-                label="Exam"
-                v-model="exam"
-                v-on:focus="dismiss()"
-              ></v-select>
+              <v-select :items="exam_list" label="Exam" v-model="exam" v-on:focus="dismiss()"></v-select>
             </v-col>
-            
           </v-layout>
           <v-layout xs4 row wrap justify-space-around>
             <div class="text-xs-center">
@@ -82,7 +76,7 @@ export default {
 
       alert_type: "",
       alert_message: "",
-      showDismissibleAlert: false,
+      showDismissibleAlert: false
     };
   },
   mounted: function() {
@@ -131,7 +125,7 @@ export default {
             responseType: "arraybuffer",
             params: {
               school_id: school_id,
-              exam_title: this.exam,
+              exam_title: this.exam
             }
           })
           .then(function(response) {
@@ -139,8 +133,7 @@ export default {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            let file_name =
-              "Unscheduled_test_" + self.exam + ".xlsx";
+            let file_name = "Unscheduled_test_" + self.exam + ".xlsx";
             link.setAttribute("download", file_name); //or any other extension
             document.body.appendChild(link);
             link.click();
@@ -149,6 +142,15 @@ export default {
             self.loading = false;
           })
           .catch(function(error) {
+            self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(
+              " Error summary: ",
+              error,
+              ". Please contact ClassUp Support"
+            );
+            confirm(error_message);
             console.log(error);
           })
           .then(function() {

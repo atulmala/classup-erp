@@ -191,6 +191,11 @@ export default {
             self.loading = false;
           })
           .catch(function(error) {
+            self.waiting = false;
+            self.loading = false;
+            var error_message = "An error occured.";
+            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
+            confirm(error_message);
             console.log(error);
           })
           .then(function() {

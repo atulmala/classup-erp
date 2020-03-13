@@ -323,6 +323,11 @@ export default {
           action: this.exam_results
         },
         {
+          icon: "mdi-account-multiple-remove",
+          title: "Not Promoted/Detained List",
+          action: this.detain_list
+        },
+        {
           icon: "mdi-alpha-m-box",
           title: "Mark Sheets",
           action: this.mark_sheet
@@ -418,6 +423,10 @@ export default {
       this.$store.dispatch("set_school_name", "ClassUp");
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
+    },
+    detain_list() {
+      this.$store.dispatch("set_coming_staus", "detain_list");
+      this.$router.replace("/detain_list")
     },
     unscheduled_test_report() {
       this.$store.dispatch("set_coming_status", "unscheduled_test_report");
