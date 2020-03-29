@@ -372,6 +372,11 @@ export default {
           action: this.communicate_with_parents
         },
         {
+          icon: "mdi-share-circle",
+          title: "Share Lecture",
+          action: this.share_lecture
+        },
+        {
           icon: "mdi-message-text-clock",
           title: "Message History",
           action: this.teacher_message_history
@@ -424,8 +429,12 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$router.replace("/");
     },
+    share_lecture() {
+      this.$store.dispatch("set_coming_status", "share_lecture");
+      this.$router.replace("/share_lecture");
+    },
     detain_list() {
-      this.$store.dispatch("set_coming_staus", "detain_list");
+      this.$store.dispatch("set_coming_status", "detain_list");
       this.$router.replace("/detain_list")
     },
     unscheduled_test_report() {

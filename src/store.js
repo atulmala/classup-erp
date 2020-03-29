@@ -197,8 +197,8 @@ export const store = new Vuex.Store({
     }
   },
   state: {
-    // server_ip: 'http://localhost:8000',
-    server_ip: 'https://www.classupclient.com',
+    server_ip: 'http://localhost:8000',
+    // server_ip: 'https://www.classupclient.com',
     logged_status: false,
     logged_user: 'unknown',
     user_name: 'unknown',

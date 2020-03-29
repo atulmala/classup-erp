@@ -30,6 +30,7 @@ import SetupTimetable from '../components/Timetable/SetupTimetable'
 import TeacherAttendance from '../components/Timetable/TeacherAttendance'
 import UnscheduledTestReport from '../components/Exams/UnscheduledTestReport.vue'
 import DetainList from '../components/Exams/DetainList'
+import ShareLecture from '../components/Lectures/ShareLecture'
 
 Vue.use(Router)
 
@@ -39,6 +40,11 @@ export default new Router({
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard
+    },
+    {
+      path: '/share_lecture',
+      name: ShareLecture,
+      component: ShareLecture
     },
     {
       path: '/detain_list',

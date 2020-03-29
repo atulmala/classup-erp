@@ -81,14 +81,40 @@
                 </v-card-title>
                 <v-card-subtitle>
                   <hr />
-                  <h5>You are changing status to Not Promoted. Please mention reason</h5>
+                  <h5>You are changing status to Not Promoted. Please provide details</h5>
                 </v-card-subtitle>
                 <v-card-text>
-                  <v-container>
+                  <v-container text-xs-center>
+                    <v-row align="center" justify="center" class="mt-n10">
+                      <v-radio-group
+                        v-model="not_promoted"
+                        @click="dismiss()"
+                        @change="not_promote()"
+                        row
+                      >
+                        <v-radio label="Detained" value="detained"></v-radio>
+                        <v-radio label="Retest/Compartment" value="compartment"></v-radio>
+                      </v-radio-group>
+                    </v-row>
+                    <v-card-subtitle>
+                      <h3>Compartment Subjects</h3>
+                    </v-card-subtitle>
+                    <v-row align="center" justify="center" class="mt-n6">
+                      <v-layout v-for="(subject) in subject_list" :key="subject">
+                        <v-checkbox
+                          class="mx-2"
+                          v-model="compartment_subjects"
+                          :label="subject"
+                          :value="subject"
+                          :key="subject"
+                          :disabled="!compartment"
+                        ></v-checkbox>
+                      </v-layout>
+                    </v-row>
                     <v-row>
                       <v-col cols="12">
                         <v-text-field
-                          label="Reason*"
+                          label="Comments (Optional)"
                           v-model="detain_reason"
                           required
                         >{{ detain_reason }}</v-text-field>
@@ -146,9 +172,9 @@
                   ></v-select>
                 </v-col>
                 <v-divider class="mx-4" inset vertical></v-divider>
-                
-                  <v-text-field label="Class Teacher" class="mt-7" v-model="class_teacher" disabled></v-text-field>
-                
+
+                <v-text-field label="Class Teacher" class="mt-7" v-model="class_teacher" disabled></v-text-field>
+
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
@@ -228,6 +254,7 @@ export default {
       class_teacher: "",
 
       student_list: [],
+      subject_list: [],
       download: false,
       promote_dialog: false,
       detain_dialog: false,
@@ -237,12 +264,17 @@ export default {
       current_status: "",
       operated_student: "",
       operated_student_id: "",
-      detain_reason: "",
+      
       term_marks1: [],
       term_marks2: [],
       color1: [],
       color2: [],
       active_term: "",
+      detained: false,
+      detain_reason: "",
+      compartment: false,
+      compartment_subjects: [],
+      not_promoted: "",
       waiting: false,
       alert_type: "",
       alert_message: "",
@@ -262,6 +294,7 @@ export default {
       ]
     };
   },
+  
 
   mounted: function() {
     let self = this;
@@ -314,8 +347,8 @@ export default {
           .get(url1)
           .then(function(response) {
             // handle success
-            console.log(response)
-            self.class_teacher = response.data['class_teacher'];
+            console.log(response);
+            self.class_teacher = response.data["class_teacher"];
           })
           .catch(function(error) {
             // handle error
@@ -339,17 +372,30 @@ export default {
               student["id"] = response.data[i]["id"];
               student["s_no"] = i + 1;
               student["name"] = response.data[i]["student"];
+
+              let exact_status = response.data[i]["exact_status"];
+              student["exact_status"] = exact_status;
+
+              let compartment_subjects = response.data[i]["compartment_subjects"];
+              student["compartment_subjects"] = compartment_subjects;
+
               if (response.data[i]["status"] == true) {
                 student["promotion_status"] = "promoted";
+                student["detain_reason"] = "";
               } else {
                 student["promotion_status"] = "not promoted";
+                if (exact_status == "detained") {
+                  student["detain_reason"] = "Detained";
+                }
+                if (exact_status == "compartment") {
+                  student["detain_reason"] = "Compartment: " + compartment_subjects;
+                }
               }
-
-              student["detain_reason"] = response.data[i]["detain_reason"];
 
               self.student_list.push(student);
             }
             self.download = true;
+            console.log(self.student_list);
           })
           .catch(function(error) {
             // handle error
@@ -366,8 +412,9 @@ export default {
       this.promote_dialog = false;
       for (var i = 0; i < this.student_list.length; i++) {
         if (this.student_list[i]["id"] == this.operated_student_id) {
-          this.student_list[i]["detain_reason"] = "N/A";
+          this.student_list[i]["detain_reason"] = "";
           this.student_list[i]["promotion_status"] = "promoted";
+          this.student_list[i]["exact_status"] = "";
           this.detain_reason = "";
         }
       }
@@ -380,10 +427,43 @@ export default {
         }
       }
     },
+    not_promote() {
+      console.log("inside not_promote");
+      if (this.not_promoted == "detained") {
+        this.compartment = false;
+        this.detained = true;
+        this.compartment_subjects = [];
+      }
+      if (this.not_promoted == "compartment") {
+        this.detained = false;
+        this.compartment = true;
+      }
+    },
     detain(item) {
+      let self = this;
+      self.subject_list = [];
+      let url = self.ip.concat(
+        "/exam/student_subject_list/?result_id=",
+        item.id
+      );
+      axios
+        .get(url)
+        .then(function(response) {
+          // handle success
+          for (var i = 0; i < response.data.length; i = i + 2) {
+            self.subject_list.push(response.data[i]["subject"]);
+          }
+          console.log(self.subject_list);
+        })
+        .catch(function(error) {
+          // handle error
+          console.log(error);
+        });
+      this.not_promoted = "";
       this.detain_dialog = true;
       this.operated_student = item.name;
       this.operated_student_id = item.id;
+
       this.current_status = item.promotion_status;
       if (item.detain_reason == "N/A") {
         this.detain_reason = "";
@@ -392,40 +472,64 @@ export default {
       }
     },
     set_detain_reason() {
-      if (this.detain_reason == "") {
-        alert("Detain reason not provided. Please provide Detain Reason");
+      console.log("compartment_subjects = ", this.compartment_subjects);
+      if (!this.detained && !this.compartment) {
+        alert("Please select either Detained or Compartment");
         this.detain_dialog = true;
-      } else {
-        this.detain_dialog = false;
-        for (var i = 0; i < this.student_list.length; i++) {
-          if (this.student_list[i]["id"] == this.operated_student_id) {
-            this.student_list[i]["detain_reason"] = this.detain_reason;
-            this.student_list[i]["promotion_status"] = "not promoted";
-            this.detain_reason = "";
+        return;
+      }
+      if (this.compartment && this.compartment_subjects.length == 0) {
+        alert("Please select Compartment subjects");
+        this.detain_dialog = true;
+        return;
+      }
+
+      this.detain_dialog = false;
+      for (var i = 0; i < this.student_list.length; i++) {
+        if (this.student_list[i]["id"] == this.operated_student_id) {
+          this.student_list[i]["promotion_status"] = "not promoted";
+
+          if (this.detained) {
+            console.log("Detain case");
+            this.student_list[i]["exact_status"] = "detained";
+            this.student_list[i]["detain_reason"] = "Detained";
           }
+          if (this.compartment) {
+            console.log("Compartment case");
+            this.student_list[i]["exact_status"] = "compartment";
+            this.student_list[i]["compartment_subjects"] = this.compartment_subjects;
+            this.student_list[i]["detain_reason"] = "Compartment in: " + this.compartment_subjects;
+          } 
+          // this.detain_reason = "";
+          this.compartment_subjects = [];
+          this.compartment = false;
+          console.log(this.student_list[i]);
+          console.log(this.student_list);
         }
       }
     },
     cancel_detain() {
       this.detain_dialog = false;
-      this.detain_reason = "N/A";
       for (var i = 0; i < this.student_list.length; i++) {
         if (this.student_list[i]["id"] == this.operated_student_id) {
-          this.student_list[i]["detain_reason"] = this.detain_reason;
+          this.student_list[i]["detain_reason"] = "";
           this.student_list[i]["promotion_status"] = "promoted";
-          this.detain_reason = "N/A";
         }
       }
     },
     save_results() {
       let self = this;
       let promotion_list = {};
+
       for (var i = 0; i < this.student_list.length; i++) {
         let promotee = {};
         promotee["promotion_status"] = this.student_list[i]["promotion_status"];
+        promotee["exact_status"] = this.student_list[i]["exact_status"];
         promotee["detain_reason"] = this.student_list[i]["detain_reason"];
+        promotee["compartment_subjects"] = this.student_list[i]["compartment_subjects"];
         promotion_list[this.student_list[i]["id"]] = promotee;
       }
+
       let url = this.ip.concat("/exam/process_promotion/");
       this.waiting = true;
       axios
@@ -439,11 +543,15 @@ export default {
         .catch(function(error) {
           // handle error
           self.waiting = false;
-            self.loading = false;
-            var error_message = "An error occured.";
-            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
-            confirm(error_message);
-            console.log(error);
+          self.loading = false;
+          var error_message = "An error occured.";
+          error_message = error_message.concat(
+            " Error summary: ",
+            error,
+            ". Please contact ClassUp Support"
+          );
+          confirm(error_message);
+          console.log(error);
         });
     },
     download_excel() {
@@ -484,11 +592,15 @@ export default {
         })
         .catch(function(error) {
           self.waiting = false;
-            self.loading = false;
-            var error_message = "An error occured.";
-            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
-            confirm(error_message);
-            console.log(error);
+          self.loading = false;
+          var error_message = "An error occured.";
+          error_message = error_message.concat(
+            " Error summary: ",
+            error,
+            ". Please contact ClassUp Support"
+          );
+          confirm(error_message);
+          console.log(error);
         })
         .then(function() {
           // always executed
@@ -640,11 +752,15 @@ export default {
         .catch(function(error) {
           // handle error
           self.waiting = false;
-            self.loading = false;
-            var error_message = "An error occured.";
-            error_message = error_message.concat(" Error summary: ", error, ". Please contact ClassUp Support");
-            confirm(error_message);
-            console.log(error);
+          self.loading = false;
+          var error_message = "An error occured.";
+          error_message = error_message.concat(
+            " Error summary: ",
+            error,
+            ". Please contact ClassUp Support"
+          );
+          confirm(error_message);
+          console.log(error);
         });
     }
   },
