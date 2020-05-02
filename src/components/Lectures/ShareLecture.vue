@@ -17,16 +17,17 @@
               <v-select
                 :items="section_list"
                 label="Section"
-                v-model="section"
+                v-model="selected_sections"
                 :disabled="all_sections"
                 v-on:focus="dismiss()"
+                multiple
               ></v-select>
             </v-col>
             <v-col cols="12" md="2">
               <v-checkbox
                 v-model="all_sections"
                 :label="`All Sections`"
-                @change="section=''; dismiss(); "
+                @change="selected_sections=[]; dismiss(); "
               ></v-checkbox>
             </v-col>
             <v-col cols="12" md="2">
@@ -126,6 +127,7 @@ export default {
       the_class: "",
       class_list: [],
       section: "",
+      selected_sections: [],
       section_list: [],
       all_sections: false,
       subject: "",
@@ -211,7 +213,7 @@ export default {
         this.alert_color = "red";
         can_share = false;
       }
-      if (this.section == "" && this.all_sections == false) {
+      if (this.selected_sections.length == 0 && this.all_sections == false) {
         this.alert_message = "Please select a Section";
         this.showDismissibleAlert = true;
         this.alert_color = "red";
@@ -270,15 +272,17 @@ export default {
       formData.set("teacher", teacher);
       formData.set("school_id", this.school_id);
       formData.set("the_class", this.the_class);
-      formData.set("section", this.section);
+      formData.set("section", this.selected_sections);
       formData.set("subject", this.subject);
       formData.set("all_sections", this.all_sections);
       formData.set("youtube_link", this.youtube_link);
       formData.set("lesson_topic", this.lesson_topic);
       formData.set("file_included", this.file_included);
       if (this.file_included == true) {
-        formData.append("file", this.selectedFile);
-        formData.set("file_name", this.selectedFile.name);
+        if (this.selectedFile != null) {
+          formData.append("file", this.selectedFile);
+          formData.set("file_name", this.selectedFile.name);
+        }
       }
 
       confirm("Messages Sent. \nWill be delivered in about an hour's time.\n");
@@ -287,9 +291,12 @@ export default {
       self.message = "";
       self.the_class = "";
       self.section = "";
+      self.selected_sections = [];
       self.subject = "";
       self.youtube_link = "";
       self.lesson_topic = "";
+      self.file_included = false;
+      self.selectedFile = null;
       self.$refs.file_input.value = null;
 
       try {

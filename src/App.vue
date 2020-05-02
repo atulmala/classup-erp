@@ -166,7 +166,7 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-if="get_user_type == 'non_admin'" prepend-icon value="true" color="blue">
+          <v-list-group v-if="get_user_type == 'teacher'" prepend-icon value="true" color="blue">
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-teach</v-icon>
