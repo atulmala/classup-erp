@@ -5,6 +5,9 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   mutations: {
+    SET_WARD_SELECTED(state, ward_selected)  {
+      state.ward_selected = ward_selected;
+    },
     SET_LOGGED_STATUS(state, status) {
       state.logged_status = status;
     },
@@ -22,6 +25,9 @@ export const store = new Vuex.Store({
     },
     SET_SCHOOL_NAME(state, school_name) {
       state.school_name = school_name;
+    },
+    SET_CURRENT_ACTION(state, action) {
+      state.current_action = action;
     },
     SET_STUDENT_ID(state, id) {
       state.student_id = id;
@@ -57,13 +63,19 @@ export const store = new Vuex.Store({
       state.test = test;
     },
     SET_GRADE_BASED(state, grade_based) {
-      state.grade_based = grade_based
+      state.grade_based = grade_based;
     },
     SET_TEST_TYPE(state, test_type) {
       state.test_type = test_type;
     },
     SET_MAX_MARKS(state, max_marks) {
       state.max_marks = max_marks;
+    },
+    SET_VIDEO_URL(state, url) {
+      state.video_url = url;
+    },
+    SET_LECTURE_TITLE(state, lecture_title) {
+      state.lecture_title = lecture_title;
     }
   },
   actions: {
@@ -88,6 +100,9 @@ export const store = new Vuex.Store({
     set_student_id(context, id) {
       context.commit('SET_STUDENT_ID', id)
     },
+    set_current_action(context, action) {
+      context.commit('SET_CURRENT_ACTION', action)
+    },
     set_student_name(context, name) {
       context.commit('SET_STUDENT_NAME', name)
     },
@@ -96,6 +111,9 @@ export const store = new Vuex.Store({
     },
     set_parent(context, parent) {
       context.commit('SET_PARENT', parent)
+    },
+    set_ward_selected(context, ward_selected) {
+      context.commit('SET_WARD_SELECTED', ward_selected)
     },
     set_adm_fee(context, status) {
       context.commit('SET_ADM_FEE', status)
@@ -126,6 +144,12 @@ export const store = new Vuex.Store({
     },
     set_max_marks(context, max_marks) {
       context.commit('SET_MAX_MARKS', max_marks);
+    },
+    set_video_url(context, url) {
+      context.commit('SET_VIDEO_URL', url);
+    },
+    set_lecture_title(context, lecture_title) {
+      context.commit('SET_LECTURE_TITLE', lecture_title)
     }
   },
   getters: {
@@ -150,6 +174,9 @@ export const store = new Vuex.Store({
     get_server_ip(state) {
       return state.server_ip
     },
+    get_current_action(state) {
+      return state.current_action
+    },
     get_student_id(state) {
       return state.student_id
     },
@@ -161,6 +188,9 @@ export const store = new Vuex.Store({
     },
     get_parent(state) {
       return state.parent
+    },
+    get_ward_selected(state)  {
+      return state.ward_selected
     },
     get_adm_fee(state) {
       return state.adm_fee
@@ -192,13 +222,19 @@ export const store = new Vuex.Store({
     get_max_marks(state)  {
       return state.max_marks;
     },
+    get_video_url(state) {
+      return state.video_url;
+    },
+    get_lecture_title(state)  {
+      return state.lecture_title;
+    },
     get_colors(state) {
       return state.colors;
     }
   },
   state: {
-    // server_ip: 'http://localhost:8000',
-    server_ip: 'https://www.classupclient.com',
+    server_ip: 'http://localhost:8000',
+    // server_ip: 'https://www.classupclient.com',
     logged_status: false,
     logged_user: 'unknown',
     user_name: 'unknown',
@@ -208,9 +244,13 @@ export const store = new Vuex.Store({
     student_name: 'unknown',
     student_class: 'unknown',
     parent: 'unknown',
+    ward_selected: false,
     school_name: 'ClassUp',
+    current_action: '',
     coming_from: 'unknown',
     adm_fee: false,
+    video_url: "unknown",
+    lecture_title: "unknown",
 
     // 01/12/2019 - for marks entry component
     the_class: 'unknown',

@@ -31,6 +31,10 @@ import TeacherAttendance from '../components/Timetable/TeacherAttendance'
 import UnscheduledTestReport from '../components/Exams/UnscheduledTestReport.vue'
 import DetainList from '../components/Exams/DetainList'
 import ShareLecture from '../components/Lectures/ShareLecture'
+import SelectWard from '../components/ParentMenu/SelectWard'
+import OnlineClasses from '../components/ParentMenu/OnlineClasses'
+import YoutubePlayer from '../components/ParentMenu/YoutubePlayer'
+import ParentCommunicationHistory from '../components/ParentMenu/ParentCommunicationHistory'
 
 Vue.use(Router)
 
@@ -42,9 +46,29 @@ export default new Router({
       component: Dashboard
     },
     {
+      path: '/select_ward',
+      name: 'SelectWard',
+      component: SelectWard
+    },
+    {
+      path: '/parent_communication_history',
+      name: 'ParentCommunicationHistory',
+      component: ParentCommunicationHistory
+    },
+    {
+      path: '/online_classes',
+      name: 'OnlineCasses',
+      component: OnlineClasses
+    },
+    {
       path: '/share_lecture',
-      name: ShareLecture,
+      name:'ShareLecture',
       component: ShareLecture
+    },
+    {
+      path: '/youtube_player',
+      name: 'YoutubePlayer',
+      component: YoutubePlayer
     },
     {
       path: '/detain_list',

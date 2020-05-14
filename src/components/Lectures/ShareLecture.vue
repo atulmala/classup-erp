@@ -11,6 +11,7 @@
                 label="Class"
                 v-model="the_class"
                 v-on:focus="dismiss()"
+                single-line
               ></v-select>
             </v-col>
             <v-col cols="12" md="2">

@@ -8,6 +8,9 @@ import { store } from './store.js'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
+import VueYouTubeEmbed from 'vue-youtube-embed'
+import { getIdFromURL, getTimeFromURL } from 'vue-youtube-embed'
+
  
 const opts = {
   theme: { disable: true },
@@ -17,6 +20,7 @@ const opts = {
   }
 }
 Vue.use(Vuetify)
+Vue.use(VueYouTubeEmbed)
 
 Vue.config.productionTip = false
 /* eslint-disable no-new */

@@ -19,9 +19,16 @@
             </v-avatar>
             {{ get_user_name }}
           </v-chip>
+          <v-chip v-if="get_ward_selected" color="#AD1457" large class="ma-1" text-color="white">
+            <v-avatar>
+              <v-icon>mdi-human-child</v-icon>
+            </v-avatar>
+            {{ get_ward_name }}
+          </v-chip>
           <v-btn text :disabled="!get_logged_status" v-on:click="logout()">Log Out</v-btn>
         </v-toolbar-items>
       </v-app-bar>
+
       <v-navigation-drawer
         app
         v-if="get_logged_status"
@@ -40,7 +47,12 @@
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
           <v-divider dark class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type === 'school_admin'" prepend-icon value="true" color="#283593">
+          <v-list-group
+            v-show="get_user_type === 'school_admin'"
+            prepend-icon
+            value="true"
+            color="#283593"
+          >
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-message</v-icon>
@@ -61,12 +73,17 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="#9575CD">
+          <v-list-group
+            v-show="get_user_type == 'school_admin'"
+            prepend-icon
+            value="true"
+            color="#9575CD"
+          >
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-timetable</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>Time Table & Arrangement </v-list-item-title>
+              <v-list-item-title>Time Table & Arrangement</v-list-item-title>
             </template>
             <v-list-item
               v-for="item in time_table_items"
@@ -82,7 +99,12 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="#795548">
+          <v-list-group
+            v-show="get_user_type == 'school_admin'"
+            prepend-icon
+            value="true"
+            color="#795548"
+          >
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-teach</v-icon>
@@ -105,7 +127,12 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="#1A237E">
+          <v-list-group
+            v-show="get_user_type == 'school_admin'"
+            prepend-icon
+            value="true"
+            color="#1A237E"
+          >
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-school</v-icon>
@@ -128,7 +155,12 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="purple">
+          <v-list-group
+            v-show="get_user_type == 'school_admin'"
+            prepend-icon
+            value="true"
+            color="purple"
+          >
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-ab-testing</v-icon>
@@ -147,7 +179,12 @@
             </v-list-item>
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
-          <v-list-group v-show="get_user_type == 'school_admin'" prepend-icon value="true" color="teal">
+          <v-list-group
+            v-show="get_user_type == 'school_admin'"
+            prepend-icon
+            value="true"
+            color="teal"
+          >
             <template v-slot:activator>
               <v-list-item-icon>
                 <v-icon>mdi-currency-inr</v-icon>
@@ -184,23 +221,41 @@
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
+          <v-divider class="mx-4"></v-divider>
+          <v-list-group v-if="get_user_type == 'parent'" prepend-icon value="true" color="blue">
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-human-male-female</v-icon>
+              </v-list-item-icon>
+              <v-list-item>
+                <v-list-item-title>Parent's Menu</v-list-item-title>
+              </v-list-item>
+            </template>
+            <v-list-item v-for="item in parent_menu" :key="item.title" v-on:click="item.action">
+              <v-list-item-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
         </v-list>
       </v-navigation-drawer>
-      
-        <template>
-          <div class="text-xs-center">
-            <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
-          </div>
-        </template>
-        <div v-if="get_logged_status === false">
-          <hello></hello>
-        </div>
 
-        <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
-          <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
-        </v-footer>
-        <router-view />
-      
+      <template>
+        <div class="text-xs-center">
+          <v-progress-circular v-if="waiting" :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+        </div>
+      </template>
+      <div v-if="get_logged_status === false">
+        <hello></hello>
+      </div>
+
+      <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
+        <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
+      </v-footer>
+      <router-view />
     </div>
   </v-app>
 </template>
@@ -217,6 +272,9 @@ export default {
   data() {
     return {
       user_type: "",
+      ward_selected: this.$store.getters.get_ward_selected,
+      ward_name: this.$store.getters.get_student_name,
+
       waiting: false,
       drawer: {
         open: true,
@@ -260,7 +318,7 @@ export default {
           icon: "mdi-alpha-p-circle",
           title: "Teacher Attendance",
           action: this.teacher_attendance
-        },
+        }
       ],
       teacher_management_items: [
         {
@@ -355,6 +413,28 @@ export default {
           action: this.defaulter_report
         }
       ],
+      parent_menu: [
+        {
+          icon: "mdi-human-greeting",
+          title: "Select Ward",
+          action: this.select_ward
+        },
+        {
+          icon: "mdi-desktop-mac-dashboard",
+          title: "Online Class",
+          action: this.online_classes
+        },
+        // {
+        //   icon: "mdi-gamepad-circle-down",
+        //   title: "Online Test",
+        //   action: this.online_test
+        // },
+        {
+          icon: "mdi-message-text-clock",
+          title: "Message History",
+          action: this.parent_communication_history
+        }
+      ],
       teacher_menu: [
         {
           icon: "mdi-alpha-p-circle-outline",
@@ -395,20 +475,45 @@ export default {
       right: null
     };
   },
- 
+
   mounted: function() {
     let self = this;
 
     self.user_type = this.$store.getters.get_user_type;
     console.log("user_type = " + self.user_type);
+
+    if (self.user_type == "parent") {
+      // var ward_selected = this.$store.getters.get_ward_selected;
+      if (ward_selected == "unknown") {
+        console.log("Ward not Selected");
+        this.select_ward();
+        // ward_selected = this.$store.getters.get_ward_selected;
+        // this.ward_name = this.$store.getters.get_student_name;
+      }
+    }
+    // if back button is pressed
+   window.onpopstate = function(event) {
+     alert("location: " + document.location + ", state: " + JSON.stringify(event.state));
+   };
   },
-  beforeUpdate: function () {
+  beforeUpdate: function() {
     self.user_type = this.$store.getters.get_user_type;
     console.log("user_type = " + self.user_type);
   },
   updated: function() {
     self.user_type = this.$store.getters.get_user_type;
     console.log("user_type = " + self.user_type);
+
+    if (self.user_type == "parent") {
+      let ward_selected = this.$store.getters.get_ward_selected;
+      console.log("ward_selected = ", ward_selected);
+      if (ward_selected == "unknown" || !ward_selected) {
+        console.log("Ward not Selected");
+        this.select_ward();
+      } else {
+        this.ward_name = this.$store.getters.get_student_name;
+      }
+    }
   },
   methods: {
     toggleDrawer() {
@@ -425,9 +530,31 @@ export default {
       this.$store.dispatch("set_logged_status", false);
       this.$store.dispatch("set_user", "unknown");
       this.$store.dispatch("set_user_type", "unknown");
+      this.$store.dispatch("set_ward_selected", "unknown");
       this.$store.dispatch("set_school_name", "ClassUp");
       this.$store.dispatch("set_id", 0);
+      this.$store.dispatch("set_ward_selected", false);
+      this.$store.dispatch("set_student_name", "unknown");
       this.$router.replace("/");
+    },
+    select_ward() {
+      console.log("inside select_ward");
+      this.$store.dispatch("set_ward_selected", false);
+      this.$store.dispatch("set_coming_status", "select_ward");
+      this.$router.replace("/select_ward");
+    },
+    online_classes() {
+      let ward_selected = this.$store.getters.get_ward_selected;
+      if (!ward_selected) {
+        alert("Please Select a Ward");
+        return;
+      }
+      this.$store.dispatch("set_coming_status", "online_classes");
+      this.$router.replace("/online_classes");
+    },
+    parent_communication_history() {
+      this.$store.dispatch("set_coming_status", "parent_communication_history");
+      this.$router.replace("/parent_communication_history");
     },
     share_lecture() {
       this.$store.dispatch("set_coming_status", "share_lecture");
@@ -435,24 +562,23 @@ export default {
     },
     detain_list() {
       this.$store.dispatch("set_coming_status", "detain_list");
-      this.$router.replace("/detain_list")
+      this.$router.replace("/detain_list");
     },
     unscheduled_test_report() {
       this.$store.dispatch("set_coming_status", "unscheduled_test_report");
       this.$router.replace("/unscheduled_test_report");
     },
-    teacher_attendance()  {
+    teacher_attendance() {
       this.$store.dispatch("set_coming_status", "teacher_attendance");
       this.$router.replace("/teacher_attendance");
     },
-    setup_time_table()  {
+    setup_time_table() {
       this.$store.dispatch("set_coming_status", "setup_time_table");
       this.$router.replace("/setup_time_table");
     },
     delete_teacher() {
       this.$store.dispatch("set_coming_status", "delete_teacher");
       this.$router.replace("/delete_teacher");
-      
     },
     set_class_teacher() {
       this.$store.dispatch("set_coming_status", "set_class_teacher");
@@ -530,9 +656,9 @@ export default {
       this.$store.dispatch("set_coming_status", "update_student");
       this.$router.replace("/student_search");
     },
-    delete_student()  {
+    delete_student() {
       this.$store.dispatch("set_coming_status", "delete_student");
-      this.$router.replace("/student_search")
+      this.$router.replace("/student_search");
     },
     download_student_list() {
       this.$store.dispatch("set_coming_status", "download_student_list");
@@ -591,6 +717,12 @@ export default {
     },
     get_user_type() {
       return this.$store.getters.get_user_type;
+    },
+    get_ward_selected() {
+      return this.$store.getters.get_ward_selected;
+    },
+    get_ward_name() {
+      return this.$store.getters.get_student_name;
     }
   }
 };

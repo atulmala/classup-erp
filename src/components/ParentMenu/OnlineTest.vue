@@ -4,17 +4,18 @@
       <v-container fluid class="pa-md-4 mx-lg-auto"></v-container>
       <v-layout xs4 row wrap justify-center>
         <v-col cols="12" md="10" v-for="item in message_list">
-          <v-card class="mx-auto text-left">
-            <v-card-title>
-              {{ item.date }}
-              <v-divider class="mx-4" vertical></v-divider>
-              {{ item.the_class }} - {{ item.section }}
-              <v-divider class="mx-4" vertical></v-divider>
-              Sent to: {{ item.sent_to }}
-            </v-card-title>
-            <v-card-text>{{ item.message }}</v-card-text>
+          <v-card class="mx-auto">
+            <v-card-title>{{ item.date }}</v-card-title>
+            <v-card-text>
+              <v-list-item-content>
+                <div
+                  class="overline mb-4"
+                >{{ item.the_class }} - {{ item.section }} {{ item.sent_to }}</div>
+              </v-list-item-content>
+              {{ item.message }}
+            </v-card-text>
             <v-card-actions>
-              <v-btn text color="deep-purple accent-4" @click="show_recepients(item.id)"> Show Recepients</v-btn>
+              <v-btn text color="deep-purple accent-4" @click="show_recepients(item.id)">Recepients</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -63,13 +64,11 @@ export default {
       ip: "",
       school_id: "",
       coming_from: "",
-      teacher: "",
+      parent: "",
       loader: null,
       loading: false,
-      message_list: [],
-      recepient_list: [],
+      question_list: [],
       dialog: "false",
-      delivery_status: "",
       snackbar: false,
 
       colors: [],
@@ -87,7 +86,7 @@ export default {
     this.ip = this.$store.getters.get_server_ip;
     this.coming_from = this.$store.getters.get_coming_from;
     this.school_id = this.$store.getters.get_school_id;
-    this.teacher = this.$store.getters.get_logged_user;
+    this.parent = this.$store.getters.get_logged_user;
     let url = self.ip.concat("/teachers/message_list/", this.teacher, "/");
     axios
       .get(url)
