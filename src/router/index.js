@@ -35,8 +35,9 @@ import SelectWard from '../components/ParentMenu/SelectWard'
 import OnlineClasses from '../components/ParentMenu/OnlineClasses'
 import YoutubePlayer from '../components/ParentMenu/YoutubePlayer'
 import ParentCommunicationHistory from '../components/ParentMenu/ParentCommunicationHistory'
+import OnlineTest from '../components/ParentMenu/OnlineTest'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
@@ -59,6 +60,11 @@ export default new Router({
       path: '/online_classes',
       name: 'OnlineCasses',
       component: OnlineClasses
+    },
+    {
+      path: '/online_test',
+      name: 'OnlineTest',
+      component: OnlineTest
     },
     {
       path: '/share_lecture',
@@ -216,4 +222,4 @@ export default new Router({
       component: ParentCommunicationReport
     }
   ]
-})
+});

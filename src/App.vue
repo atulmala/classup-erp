@@ -13,6 +13,13 @@
         <v-toolbar-title>{{ get_title }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
+          <v-chip
+            v-if="get_test_in_progress"
+            color="#E65100"
+            class="ma-4"
+            label
+            text-color="white"
+          >Time Remaining - {{ get_min_remaining }}:{{ get_sec_remaining }}</v-chip>
           <v-chip color="indigo" large class="ma-1" text-color="white">
             <v-avatar>
               <v-icon>account_circle</v-icon>
@@ -25,7 +32,11 @@
             </v-avatar>
             {{ get_ward_name }}
           </v-chip>
-          <v-btn text :disabled="!get_logged_status" v-on:click="logout()">Log Out</v-btn>
+          <v-btn
+            text
+            :disabled="!get_logged_status"
+            v-on:click="caption='Please Confirm Logout';confirm=true"
+          >Log Out</v-btn>
         </v-toolbar-items>
       </v-app-bar>
 
@@ -242,6 +253,17 @@
           </v-list-group>
         </v-list>
       </v-navigation-drawer>
+      <v-dialog v-model="confirm" persistent max-width="500">
+        <v-card>
+          <v-card-title class="headline">{{ caption }}</v-card-title>
+          <v-card-text>Are you sure to Lof off.</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" @click="logout()">Yes, I want to Log out</v-btn>
+            <v-btn color="#E65100" @click="confirm = false; overlay = false">No</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
       <template>
         <div class="text-xs-center">
@@ -253,7 +275,7 @@
       </div>
 
       <v-footer app :fixed="footer.fixed" :clipped-left="footer.clippedLeft">
-        <span class="caption mx-3">&copy; 2019, EmergeTech Mobile Products & Services Pvt Ltd</span>
+        <span class="caption mx-3">&copy; 2020, EmergeTech Mobile Products & Services Pvt Ltd</span>
       </v-footer>
       <router-view />
     </div>
@@ -274,6 +296,11 @@ export default {
       user_type: "",
       ward_selected: this.$store.getters.get_ward_selected,
       ward_name: this.$store.getters.get_student_name,
+      test_in_progress: this.$store.getters.get_test_in_progress,
+      min_remaining: this.$store.getters.get_min_remaining,
+      sec_remaining: this.$store.getters.get_sec_remaining,
+      confirm: false,
+      caption: "",
 
       waiting: false,
       drawer: {
@@ -424,11 +451,11 @@ export default {
           title: "Online Class",
           action: this.online_classes
         },
-        // {
-        //   icon: "mdi-gamepad-circle-down",
-        //   title: "Online Test",
-        //   action: this.online_test
-        // },
+        {
+          icon: "mdi-gamepad-circle-down",
+          title: "Online Test",
+          action: this.online_test
+        },
         {
           icon: "mdi-message-text-clock",
           title: "Message History",
@@ -483,30 +510,21 @@ export default {
     console.log("user_type = " + self.user_type);
 
     if (self.user_type == "parent") {
-      // var ward_selected = this.$store.getters.get_ward_selected;
       if (ward_selected == "unknown") {
         console.log("Ward not Selected");
         this.select_ward();
-        // ward_selected = this.$store.getters.get_ward_selected;
-        // this.ward_name = this.$store.getters.get_student_name;
       }
     }
-    // if back button is pressed
-   window.onpopstate = function(event) {
-     alert("location: " + document.location + ", state: " + JSON.stringify(event.state));
-   };
   },
+
   beforeUpdate: function() {
     self.user_type = this.$store.getters.get_user_type;
-    console.log("user_type = " + self.user_type);
   },
   updated: function() {
     self.user_type = this.$store.getters.get_user_type;
-    console.log("user_type = " + self.user_type);
 
     if (self.user_type == "parent") {
       let ward_selected = this.$store.getters.get_ward_selected;
-      console.log("ward_selected = ", ward_selected);
       if (ward_selected == "unknown" || !ward_selected) {
         console.log("Ward not Selected");
         this.select_ward();
@@ -514,6 +532,10 @@ export default {
         this.ward_name = this.$store.getters.get_student_name;
       }
     }
+
+    self.test_in_progress = this.$store.getters.get_test_in_progress;
+    self.min_remaining = this.$store.getters.get_min_remaining;
+    self.sec_remaining = this.$store.getters.get_sec_remaining;
   },
   methods: {
     toggleDrawer() {
@@ -526,6 +548,7 @@ export default {
       }
     },
     logout() {
+      this.confirm = false;
       this.drawer.open = false;
       this.$store.dispatch("set_logged_status", false);
       this.$store.dispatch("set_user", "unknown");
@@ -535,26 +558,49 @@ export default {
       this.$store.dispatch("set_id", 0);
       this.$store.dispatch("set_ward_selected", false);
       this.$store.dispatch("set_student_name", "unknown");
+      this.$store.dispatch("set_test_in_progress", false);
       this.$router.replace("/");
     },
     select_ward() {
       console.log("inside select_ward");
-      this.$store.dispatch("set_ward_selected", false);
-      this.$store.dispatch("set_coming_status", "select_ward");
-      this.$router.replace("/select_ward");
+      let test_in_progress = this.$store.getters.get_test_in_progress;
+      if (!test_in_progress) {
+        this.$store.dispatch("set_ward_selected", false);
+        this.$store.dispatch("set_coming_status", "select_ward");
+        this.$router.replace("/select_ward");
+      } else {
+        alert("Please finish the online Test before going to other sections");
+      }
     },
     online_classes() {
-      let ward_selected = this.$store.getters.get_ward_selected;
-      if (!ward_selected) {
-        alert("Please Select a Ward");
-        return;
+      let test_in_progress = this.$store.getters.get_test_in_progress;
+      if (!test_in_progress) {
+        let ward_selected = this.$store.getters.get_ward_selected;
+        if (!ward_selected) {
+          alert("Please Select a Ward");
+          return;
+        }
+        this.$store.dispatch("set_coming_status", "online_classes");
+        this.$router.replace("/online_classes");
+      } else {
+        alert("Please finish the online Test before going to other sections");
       }
-      this.$store.dispatch("set_coming_status", "online_classes");
-      this.$router.replace("/online_classes");
+    },
+    online_test() {
+      this.$store.dispatch("set_coming_status", "online_test");
+      this.$router.replace("/online_test");
     },
     parent_communication_history() {
-      this.$store.dispatch("set_coming_status", "parent_communication_history");
-      this.$router.replace("/parent_communication_history");
+      let test_in_progress = this.$store.getters.get_test_in_progress;
+      if (!test_in_progress) {
+        this.$store.dispatch(
+          "set_coming_status",
+          "parent_communication_history"
+        );
+        this.$router.replace("/parent_communication_history");
+      } else {
+        alert("Please finish the online Test before going to other sections");
+      }
     },
     share_lecture() {
       this.$store.dispatch("set_coming_status", "share_lecture");
@@ -708,6 +754,15 @@ export default {
     ...mapGetters("user_type", ["school_admin", "non_admin"]),
     get_title() {
       return this.$store.getters.get_school_name;
+    },
+    get_min_remaining() {
+      return this.$store.getters.get_min_remaining;
+    },
+    get_sec_remaining() {
+      return this.$store.getters.get_sec_remaining;
+    },
+    get_test_in_progress() {
+      return this.$store.getters.get_test_in_progress;
     },
     get_user_name() {
       return this.$store.getters.get_user_name;

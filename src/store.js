@@ -76,6 +76,15 @@ export const store = new Vuex.Store({
     },
     SET_LECTURE_TITLE(state, lecture_title) {
       state.lecture_title = lecture_title;
+    },
+    SET_TEST_IN_PROGRESS(state, status) {
+      state.test_in_progress = status;
+    },
+    SET_MIN_REMAINING(state, min_remaining) {
+      state.min_remaining = min_remaining;
+    },
+    SET_SEC_REMAINING(state, sec_remaining) {
+      state.sec_remaining = sec_remaining;
     }
   },
   actions: {
@@ -149,69 +158,79 @@ export const store = new Vuex.Store({
       context.commit('SET_VIDEO_URL', url);
     },
     set_lecture_title(context, lecture_title) {
-      context.commit('SET_LECTURE_TITLE', lecture_title)
+      context.commit('SET_LECTURE_TITLE', lecture_title);
+    },
+    set_test_in_progress(context, status) {
+      context.commit('SET_TEST_IN_PROGRESS', status);
+    },
+    set_min_remaining(context, min_remaining) {
+      context.commit('SET_MIN_REMAINING', min_remaining);
+    },
+    set_sec_remaining(context, sec_remaining) {
+      context.commit('SET_SEC_REMAINING', sec_remaining);
     }
+
   },
   getters: {
     get_logged_status(state) {
-      return state.logged_status
+      return state.logged_status;
     },
     get_logged_user(state) {
-      return state.logged_user
+      return state.logged_user;
     },
     get_user_name(state) {
-      return state.user_name
+      return state.user_name;
     },
     get_user_type(state) {
-      return state.user_type
+      return state.user_type;
     },
     get_school_id(state) {
-      return state.school_id
+      return state.school_id;
     },
     get_school_name(state) {
-      return state.school_name
+      return state.school_name;
     },
     get_server_ip(state) {
-      return state.server_ip
+      return state.server_ip;
     },
     get_current_action(state) {
-      return state.current_action
+      return state.current_action;
     },
     get_student_id(state) {
-      return state.student_id
+      return state.student_id;
     },
     get_student_name(state) {
-      return state.student_name
+      return state.student_name;
     },
     get_student_class(state) {
-      return state.student_class
+      return state.student_class;
     },
     get_parent(state) {
-      return state.parent
+      return state.parent;
     },
     get_ward_selected(state)  {
-      return state.ward_selected
+      return state.ward_selected;
     },
     get_adm_fee(state) {
-      return state.adm_fee
+      return state.adm_fee;
     },
     get_coming_from(state) {
-      return state.coming_from
+      return state.coming_from;
     },
     get_class(state) {
-      return state.the_class
+      return state.the_class;
     },
     get_section(state) {
-      return state.section
+      return state.section;
     },
     get_subject(state) {
-      return state.subject
+      return state.subject;
     },
     get_exam(state) {
-      return state.exam
+      return state.exam;
     },
     get_test(state) {
-      return state.test
+      return state.test;
     },
     get_grade_based(state) {
       return state.grade_based;
@@ -227,6 +246,15 @@ export const store = new Vuex.Store({
     },
     get_lecture_title(state)  {
       return state.lecture_title;
+    },
+    get_test_in_progress(state) {
+      return state.test_in_progress;
+    },
+    get_min_remaining(state) {
+      return state.min_remaining;
+    },
+    get_sec_remaining(state)  {
+      return state.sec_remaining;
     },
     get_colors(state) {
       return state.colors;
@@ -251,6 +279,9 @@ export const store = new Vuex.Store({
     adm_fee: false,
     video_url: "unknown",
     lecture_title: "unknown",
+    min_remaining: 29,
+    sec_remaining: 60,
+    test_in_progress: false,
 
     // 01/12/2019 - for marks entry component
     the_class: 'unknown',

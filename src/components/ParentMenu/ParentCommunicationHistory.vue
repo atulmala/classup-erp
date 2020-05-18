@@ -5,17 +5,13 @@
       <v-layout xs4 row wrap justify-center>
         <v-col cols="12" md="10" v-for="item in message_list">
           <v-card class="mx-auto">
-            <v-card-title class="title">
-              {{ item.date }}
-              
-            </v-card-title>
-
+            <v-card-title class="title">{{ item.date }}</v-card-title>
             <v-card-text>
               <p class="body-1 text-left">{{ item.message }}</p>
             </v-card-text>
-             <v-card-text class="font-italic">
-              To activate link, please select, right click and then in drop down menu, select Open in new Tab
-            </v-card-text>
+            <v-card-text
+              class="font-italic"
+            >To activate link, please select, right click and then in drop down menu, select Open in new Tab</v-card-text>
           </v-card>
         </v-col>
       </v-layout>
@@ -107,8 +103,9 @@ export default {
       this.showDismissibleAlert = false;
     },
     download(url) {
-      let headers = {"Access-Control-Allow-Origin": "*"}
-      axios.get(url, { responseType: "blob" }, headers)
+      let headers = { "Access-Control-Allow-Origin": "*" };
+      axios
+        .get(url, { responseType: "blob" }, headers)
         .then(response => {
           // const blob = new Blob([response.data], { type: "application/pdf" });
           // const link = document.createElement("a");
@@ -117,15 +114,14 @@ export default {
           // link.click();
           // URL.revokeObjectURL(link.href);
 
-
           const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            var file_name = "lecture.pdf";
-            
-            link.setAttribute("download", file_name); //or any other extension
-            document.body.appendChild(link);
-            link.click();
+          const link = document.createElement("a");
+          link.href = url;
+          var file_name = "lecture.pdf";
+
+          link.setAttribute("download", file_name); //or any other extension
+          document.body.appendChild(link);
+          link.click();
         })
         .catch(console.error);
     }

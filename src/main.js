@@ -1,15 +1,14 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 
-import Vue from 'vue'
-import App from './App'
-import router from './router'
-import { store } from './store.js'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
-import '@mdi/font/css/materialdesignicons.css'
-import VueYouTubeEmbed from 'vue-youtube-embed'
-import { getIdFromURL, getTimeFromURL } from 'vue-youtube-embed'
+import Vue from 'vue';
+import App from './App';
+import router from './router';
+import { store } from './store.js';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
+import '@mdi/font/css/materialdesignicons.css';
+import VueYouTubeEmbed from 'vue-youtube-embed';
 
  
 const opts = {
@@ -18,11 +17,11 @@ const opts = {
   icons: {
     iconfont: 'mdiSvg' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
   }
-}
-Vue.use(Vuetify)
-Vue.use(VueYouTubeEmbed)
+};
+Vue.use(Vuetify);
+Vue.use(VueYouTubeEmbed);
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

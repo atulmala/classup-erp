@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="mt-n12 pt-n12">
     <v-content class="ma-0">
       <template>
         <div class="text-xs-center">
@@ -10,6 +10,7 @@
         <v-col cols="10" md="10" class="mx-auto">
           <v-data-table
             dark
+            dense
             loading
             :loading-text="((the_class == '') || (section == '')) ? class_not_selected : loading_text"
             :headers="headers"
@@ -93,6 +94,7 @@
             </template>
             <template v-slot:item.presence="{ item }">
               <v-chip
+              class="mt-1 mb-1"
                 :color="status_color(item.presence)"
                 @click="mark_absence(item)"
               >{{ item.presence }}</v-chip>
