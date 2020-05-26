@@ -3,14 +3,14 @@
     <v-content>
       <v-container fluid class="pa-md-4 mx-lg-auto"></v-container>
       <v-layout xs4 row wrap justify-center>
-        <v-col cols="12" md="10" v-for="item in message_list">
+        <v-col cols="12" md="10" v-for="item in message_list" :key="item.i">
           <v-card class="mx-auto">
-            <v-card-title class="title">{{ item.date }}</v-card-title>
+            <v-card-title class="title font-italic font-weight-bold teal--text">{{ item.date }}</v-card-title>
             <v-card-text>
               <p class="body-1 text-left">{{ item.message }}</p>
             </v-card-text>
             <v-card-text
-              class="font-italic"
+              class="font-italic purple--text"
             >To activate link, please select, right click and then in drop down menu, select Open in new Tab</v-card-text>
           </v-card>
         </v-col>

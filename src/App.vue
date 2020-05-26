@@ -256,7 +256,7 @@
       <v-dialog v-model="confirm" persistent max-width="500">
         <v-card>
           <v-card-title class="headline">{{ caption }}</v-card-title>
-          <v-card-text>Are you sure to Lof off.</v-card-text>
+          <v-card-text>Are you sure to Log off.</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" @click="logout()">Yes, I want to Log out</v-btn>
@@ -460,6 +460,11 @@ export default {
           icon: "mdi-message-text-clock",
           title: "Message History",
           action: this.parent_communication_history
+        },
+        {
+          icon: "mdi-chart-bar",
+          title: "Test Results",
+          action: this.test_results
         }
       ],
       teacher_menu: [
@@ -587,12 +592,39 @@ export default {
       }
     },
     online_test() {
+      let test_in_progress = this.$store.getters.get_test_in_progress;
+      if (!test_in_progress) {
+        let ward_selected = this.$store.getters.get_ward_selected;
+        if (!ward_selected) {
+          alert("Please Select a Ward");
+          return;
+        }
+      }
       this.$store.dispatch("set_coming_status", "online_test");
       this.$router.replace("/online_test");
+    },
+    test_results() {
+      let test_in_progress = this.$store.getters.get_test_in_progress;
+      if (!test_in_progress) {
+        let ward_selected = this.$store.getters.get_ward_selected;
+        if (!ward_selected) {
+          alert("Please Select a Ward");
+          return;
+        }
+        this.$store.dispatch("set_coming_status", "test_results");
+        this.$router.replace("/test_results");
+      } else {
+        alert("Please finish the online Test before going to other sections");
+      }
     },
     parent_communication_history() {
       let test_in_progress = this.$store.getters.get_test_in_progress;
       if (!test_in_progress) {
+        let ward_selected = this.$store.getters.get_ward_selected;
+        if (!ward_selected) {
+          alert("Please Select a Ward");
+          return;
+        }
         this.$store.dispatch(
           "set_coming_status",
           "parent_communication_history"

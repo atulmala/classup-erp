@@ -1,7 +1,7 @@
 <template>
   <v-app class="mt-n12 pt-n12">
     <v-content>
-      <v-form v-if="!ward_chosen">
+      <v-form v-if="!ward_selected">
         <v-container fluid class="pa-md-4 mx-lg-auto">
           <v-layout xs4 row wrap justify-center>
             <v-col cols="6" md="6">
@@ -23,7 +23,6 @@
               </v-card>
             </v-col>
           </v-layout>
-          
         </v-container>
       </v-form>
       <template>
@@ -45,7 +44,6 @@ export default {
       school_id: "",
       coming_from: "",
       ward_list: [],
-      // ward_chosen: false,
       selected_ward: "",
       loader: null,
       loading: false,
@@ -76,7 +74,7 @@ export default {
       .then(function(response) {
         self.waiting = false;
         self.loading = false;
-        self.ward_chosen = true;
+        self.ward_selected = true;
         console.log(response);
         for (var i = 0; i < response.data.length; i++) {
           var ward = {};
@@ -111,23 +109,21 @@ export default {
       let school_id = this.$store.getters.get_school_id;
     },
     set_ward(id) {
-      // this.ward_chosen = true;
       this.$store.dispatch("set_student_id", id);
       this.$store.dispatch("set_ward_selected", true);
       console.log("student_id = ", id);
       for (var i = 0; i < this.ward_list.length; i++) {
         if (this.ward_list[i]["id"] == id) {
           this.changed_index = i;
-          this.ward_chosen = true;
+          this.ward_selected = true;
           this.id = id;
           this.ward_name = this.ward_list[i]["name"];
           this.selected_ward = this.ward_list[i]["name"];
-          console.log("selected_ward = ", this.selected_ward)
+          console.log("selected_ward = ", this.selected_ward);
           this.$store.dispatch("set_student_name", this.ward_list[i]["name"]);
           break;
         }
       }
-      
     },
     dismiss() {
       this.showDismissibleAlert = false;
@@ -139,11 +135,12 @@ export default {
     }
   },
   computed: {
-   
-    ward_chosen() {
-      return this.$store.getters.get_ward_selected;
-    },
-   
+    ward_selected: {
+      get: function() {
+        return this.$store.getters.get_ward_selected;
+      },
+      
+    }
   }
 };
 </script>

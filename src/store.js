@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import Vuex from 'Vuex'
+import Vue from 'vue';
+import Vuex from 'Vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   mutations: {
@@ -89,67 +89,67 @@ export const store = new Vuex.Store({
   },
   actions: {
     set_logged_status(context, status) {
-      context.commit('SET_LOGGED_STATUS', status)
+      context.commit('SET_LOGGED_STATUS', status);
     },
     set_user(context, user) {
-      context.commit('SET_USER', user)
+      context.commit('SET_USER', user);
     },
     set_user_name(context, user_name) {
-      context.commit('SET_USER_NAME', user_name)
+      context.commit('SET_USER_NAME', user_name);
     },
     set_user_type(context, user_type) {
-      context.commit('SET_USER_TYPE', user_type)
+      context.commit('SET_USER_TYPE', user_type);
     },
     set_id(context, id) {
-      context.commit('SET_ID', id)
+      context.commit('SET_ID', id);
     },
     set_school_name(context, school_name) {
-      context.commit('SET_SCHOOL_NAME', school_name)
+      context.commit('SET_SCHOOL_NAME', school_name);
     },
     set_student_id(context, id) {
-      context.commit('SET_STUDENT_ID', id)
+      context.commit('SET_STUDENT_ID', id);
     },
     set_current_action(context, action) {
-      context.commit('SET_CURRENT_ACTION', action)
+      context.commit('SET_CURRENT_ACTION', action);
     },
     set_student_name(context, name) {
-      context.commit('SET_STUDENT_NAME', name)
+      context.commit('SET_STUDENT_NAME', name);
     },
     set_student_class(context, the_class) {
-      context.commit('SET_STUDENT_CLASS', the_class)
+      context.commit('SET_STUDENT_CLASS', the_class);
     },
     set_parent(context, parent) {
-      context.commit('SET_PARENT', parent)
+      context.commit('SET_PARENT', parent);
     },
     set_ward_selected(context, ward_selected) {
-      context.commit('SET_WARD_SELECTED', ward_selected)
+      context.commit('SET_WARD_SELECTED', ward_selected);
     },
     set_adm_fee(context, status) {
-      context.commit('SET_ADM_FEE', status)
+      context.commit('SET_ADM_FEE', status);
     },
     set_coming_status(context, coming_from) {
-      context.commit('SET_COMING_STATUS', coming_from)
+      context.commit('SET_COMING_STATUS', coming_from);
     },
     set_class(context, the_class) {
-      context.commit('SET_CLASS', the_class)
+      context.commit('SET_CLASS', the_class);
     },
     set_section(context, section) {
-      context.commit('SET_SECTION', section)
+      context.commit('SET_SECTION', section);
     },
     set_subject(context, subject) {
-      context.commit('SET_SUBJECT', subject)
+      context.commit('SET_SUBJECT', subject);
     },
     set_exam(context, exam) {
-      context.commit('SET_EXAM', exam)
+      context.commit('SET_EXAM', exam);
     },
     set_test(context, test) {
-      context.commit('SET_TEST', test)
+      context.commit('SET_TEST', test);
     },
     set_grade_based(context, grade_based) {
-      context.commit('SET_GRADE_BASED', grade_based)
+      context.commit('SET_GRADE_BASED', grade_based);
     },
     set_test_type(context, test_type) {
-      context.commit('SET_TEST_TYPE', test_type)
+      context.commit('SET_TEST_TYPE', test_type);
     },
     set_max_marks(context, max_marks) {
       context.commit('SET_MAX_MARKS', max_marks);

@@ -11,10 +11,16 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@types/jquery": "^3.3.38",
     "axios": "^0.18.0",
+    "chart.js": "^2.9.3",
+    "hchs-vue-charts": "^1.2.8",
     "material-design-icons": "^3.0.1",
     "v-file-input": "^0.1.1",
     "vue": "^2.5.2",
+    "vue-chartjs": "^3.5.0",
+    "vue-chartkick": "^0.6.0",
+    "vue-morris": "^1.1.0",
     "vue-router": "^3.0.1",
     "vue-session": "^1.0.0",
     "vue-youtube-embed": "^2.2.2",

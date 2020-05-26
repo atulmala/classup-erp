@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="mt-n12 pt-n12">
     <v-content>
       <v-form v-if="show_search_criteria">
         <v-container fluid class="pa-md-4 mx-lg-auto">

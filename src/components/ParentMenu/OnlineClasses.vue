@@ -3,7 +3,7 @@
     <v-content>
       <v-container fluid class="pa-md-4 mx-lg-auto"></v-container>
       <v-layout xs4 row wrap justify-center>
-        <v-col cols="12" md="10" v-for="item in lecture_list">
+        <v-col cols="12" md="10" v-for="item in lecture_list" :key="item.id">
           <v-card class="mx-auto">
             <v-card-title class="title">
               {{ item.date }}

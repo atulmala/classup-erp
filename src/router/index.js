@@ -1,41 +1,42 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Dashboard from '../components/Common/Dashboard'
-import StudentSearch from '../components/Common/StudentSearch'
-import FeePayment from '../components/Fee/FeePayment'
-import Correction from '../components/Fee/Correction'
-import AddStudent from '../components/Student/AddStudent'
-import UpdateStudent from '../components/Student/UpdateStudent'
-import DeleteStudent from '../components/Student/DeleteStudent'
-import DownloadStudentList from '../components/Student/DownloadStudentList'
-import ClassSearch from '../components/Exams/ClassSearch'
-import PerformanceAnalysis from '../components/Exams/PerformanceAnalysis'
-import Marksheet from '../components/Exams/Marksheet'
-import BulkSMS from '../components/Communication/BulkSMS'
-import ClassMonthlyAttendance from '../components/TeacherMenu/ClassMonthlyAttendance'
-import ScheduleTest from '../components/Exams/ScheduleTest'
-import ShowTestList from '../components/Exams/ShowTestList'
-import MarksEntry from '../components/Exams/MarksEntry'
-import ExamResults from '../components/Exams/ExamResults'
-import StudentAttendance from '../components/Attendance/StudentAttendance'
-import SendMessageToParents from '../components/TeacherMenu/SendMessageToParents'
-import TeacherMessageHistory from '../components/TeacherMenu/TeacherMessageHistory'
-import MonthlyCommunicationReport from '../components/Communication/MonthlyCommunicationReport'
-import ParentCommunicationReport from '../components/Communication/ParentCommunicationReport'
-import AddTeacher from '../components/TeacherManagement/AddTeacher'
-import UpdateTeacher from '../components/TeacherManagement/UpdateTeacher'
-import SetClassTeacher from '../components/TeacherManagement/SetClassTeacher'
-import DeleteTeacher from '../components/TeacherManagement/DeleteTeacher'
-import SetupTimetable from '../components/Timetable/SetupTimetable'
-import TeacherAttendance from '../components/Timetable/TeacherAttendance'
-import UnscheduledTestReport from '../components/Exams/UnscheduledTestReport.vue'
-import DetainList from '../components/Exams/DetainList'
-import ShareLecture from '../components/Lectures/ShareLecture'
-import SelectWard from '../components/ParentMenu/SelectWard'
-import OnlineClasses from '../components/ParentMenu/OnlineClasses'
-import YoutubePlayer from '../components/ParentMenu/YoutubePlayer'
-import ParentCommunicationHistory from '../components/ParentMenu/ParentCommunicationHistory'
-import OnlineTest from '../components/ParentMenu/OnlineTest'
+import Vue from 'vue';
+import Router from 'vue-router';
+import Dashboard from '../components/Common/Dashboard';
+import StudentSearch from '../components/Common/StudentSearch';
+import FeePayment from '../components/Fee/FeePayment';
+import Correction from '../components/Fee/Correction';
+import AddStudent from '../components/Student/AddStudent';
+import UpdateStudent from '../components/Student/UpdateStudent';
+import DeleteStudent from '../components/Student/DeleteStudent';
+import DownloadStudentList from '../components/Student/DownloadStudentList';
+import ClassSearch from '../components/Exams/ClassSearch';
+import PerformanceAnalysis from '../components/Exams/PerformanceAnalysis';
+import Marksheet from '../components/Exams/Marksheet';
+import BulkSMS from '../components/Communication/BulkSMS';
+import ClassMonthlyAttendance from '../components/TeacherMenu/ClassMonthlyAttendance';
+import ScheduleTest from '../components/Exams/ScheduleTest';
+import ShowTestList from '../components/Exams/ShowTestList';
+import MarksEntry from '../components/Exams/MarksEntry';
+import ExamResults from '../components/Exams/ExamResults';
+import StudentAttendance from '../components/Attendance/StudentAttendance';
+import SendMessageToParents from '../components/TeacherMenu/SendMessageToParents';
+import TeacherMessageHistory from '../components/TeacherMenu/TeacherMessageHistory';
+import MonthlyCommunicationReport from '../components/Communication/MonthlyCommunicationReport';
+import ParentCommunicationReport from '../components/Communication/ParentCommunicationReport';
+import AddTeacher from '../components/TeacherManagement/AddTeacher';
+import UpdateTeacher from '../components/TeacherManagement/UpdateTeacher';
+import SetClassTeacher from '../components/TeacherManagement/SetClassTeacher';
+import DeleteTeacher from '../components/TeacherManagement/DeleteTeacher';
+import SetupTimetable from '../components/Timetable/SetupTimetable';
+import TeacherAttendance from '../components/Timetable/TeacherAttendance';
+import UnscheduledTestReport from '../components/Exams/UnscheduledTestReport.vue';
+import DetainList from '../components/Exams/DetainList';
+import ShareLecture from '../components/Lectures/ShareLecture';
+import SelectWard from '../components/ParentMenu/SelectWard';
+import OnlineClasses from '../components/ParentMenu/OnlineClasses';
+import YoutubePlayer from '../components/ParentMenu/YoutubePlayer';
+import ParentCommunicationHistory from '../components/ParentMenu/ParentCommunicationHistory';
+import OnlineTest from '../components/ParentMenu/OnlineTest';
+import TestResults from '../components/ParentMenu/TestResults';
 
 Vue.use(Router);
 
@@ -65,6 +66,11 @@ export default new Router({
       path: '/online_test',
       name: 'OnlineTest',
       component: OnlineTest
+    },
+    {
+      path: '/test_results',
+      name: 'TestResults',
+      component: TestResults
     },
     {
       path: '/share_lecture',
