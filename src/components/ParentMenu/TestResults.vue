@@ -71,7 +71,7 @@ export default {
       mark_list: [],
       colors: ["#311B92", "#1B5E20", "#F4511E"],
       dataset_options: {
-        borderWidth: 5,
+        borderWidth: 2,
         
       },
       xtitle: "Subjects",

@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="mt-n12">
     <v-content>
       <v-container fluid class="pa-md-4 mx-lg-auto"></v-container>
       <v-layout xs4 row wrap justify-center>

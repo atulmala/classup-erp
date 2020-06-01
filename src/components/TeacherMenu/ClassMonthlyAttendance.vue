@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="mt-n12">
     <v-content>
       <v-form>
         <v-container fluid class="pa-md-4 mx-lg-auto">

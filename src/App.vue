@@ -85,7 +85,7 @@
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
           <v-list-group
-            v-show="get_user_type == 'school_admin'"
+            v-show="get_user_type == 'academics'"
             prepend-icon
             value="true"
             color="#9575CD"
@@ -167,7 +167,7 @@
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
           <v-list-group
-            v-show="get_user_type == 'school_admin'"
+            v-show="get_user_type == 'academics'"
             prepend-icon
             value="true"
             color="purple"
@@ -191,7 +191,7 @@
           </v-list-group>
           <v-divider class="mx-4"></v-divider>
           <v-list-group
-            v-show="get_user_type == 'school_admin'"
+            v-show="get_user_type == 'accounts'"
             prepend-icon
             value="true"
             color="teal"
@@ -457,15 +457,16 @@ export default {
           action: this.online_test
         },
         {
+          icon: "mdi-chart-bar",
+          title: "Test Results",
+          action: this.test_results
+        },
+        {
           icon: "mdi-message-text-clock",
           title: "Message History",
           action: this.parent_communication_history
         },
-        {
-          icon: "mdi-chart-bar",
-          title: "Test Results",
-          action: this.test_results
-        }
+        
       ],
       teacher_menu: [
         {
