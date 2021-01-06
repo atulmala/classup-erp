@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@types/jquery": "^3.3.38",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "chart.js": "^2.9.3",
     "hchs-vue-charts": "^1.2.8",
     "material-design-icons": "^3.0.1",
