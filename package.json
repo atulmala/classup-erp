@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/jquery": "^3.3.38",
     "axios": "^0.18.0",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "hchs-vue-charts": "^1.2.8",
     "material-design-icons": "^3.0.1",
     "v-file-input": "^0.1.1",
